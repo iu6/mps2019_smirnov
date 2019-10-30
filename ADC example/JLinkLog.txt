@@ -1,0 +1,34 @@
+T2310 026:232 SEGGER J-Link V6.46 Log File (0001ms, 0941ms total)
+T2310 026:232 DLL Compiled: May 23 2019 17:49:56 (0001ms, 0941ms total)
+T2310 026:232 Logging started @ 2019-10-31 00:15 (0001ms, 0941ms total)
+T2310 026:233 JLINK_SetWarnOutHandler(...) (0000ms, 0941ms total)
+T2310 026:233 JLINK_OpenEx(...)
+Firmware: J-Link ARM V7 compiled Jun 20 2012 19:45:53
+Hardware: V7.00
+S/N: 57000442
+Feature(s): RDI, FlashBP, FlashDL, JFlash, GDB
+TELNET listener socket opened on port 19021Device "CORTEX-M3" selected.WEBSRV 
+Starting webserver (0036ms, 0977ms total)
+T2310 026:233 WEBSRV Webserver running on local port 19080 (0036ms, 0977ms total)
+T2310 026:233   returns O.K. (0036ms, 0977ms total)
+T2310 026:269 JLINK_GetEmuCaps()  returns 0xB9FF7BBF (0000ms, 0977ms total)
+T2310 026:270 JLINK_TIF_GetAvailable(...) (0000ms, 0977ms total)
+T2310 026:270 JLINK_SetErrorOutHandler(...) (0000ms, 0977ms total)
+T2310 026:270 JLINK_ExecCommand("ProjectFile = "C:\Users\Alexandr\Desktop\apps\mps2019_smirnov\ADC example\JLinkSettings.ini"", ...). Device "CORTEX-M3" selected.  returns 0x00 (0009ms, 0986ms total)
+T2310 026:282 JLINK_ExecCommand("Device = MDR1986BE92", ...). Device "CORTEX-M3" selected.  returns 0x00 (0005ms, 0991ms total)
+T2310 026:287 JLINK_ExecCommand("DisableConnectionTimeout", ...).   returns 0x01 (0000ms, 0991ms total)
+T2310 026:287 JLINK_GetHardwareVersion()  returns 0x11170 (0000ms, 0991ms total)
+T2310 026:287 JLINK_GetDLLVersion()  returns 64600 (0000ms, 0991ms total)
+T2310 026:288 JLINK_GetFirmwareString(...) (0000ms, 0991ms total)
+T2310 026:297 JLINK_GetDLLVersion()  returns 64600 (0000ms, 0991ms total)
+T2310 026:297 JLINK_GetCompileDateTime() (0000ms, 0991ms total)
+T2310 026:300 JLINK_GetFirmwareString(...) (0000ms, 0991ms total)
+T2310 026:303 JLINK_GetHardwareVersion()  returns 0x11170 (0000ms, 0991ms total)
+T2310 026:315 JLINK_TIF_Select(JLINKARM_TIF_SWD)  returns 0x00 (0002ms, 0993ms total)
+T2310 026:317 JLINK_SetSpeed(1000) (0000ms, 0993ms total)
+T2310 026:317 JLINK_GetId() >0x10B TIF> >0x10F TIF> >0x10B TIF>Found SW-DP with ID 0x2BA01477 >0x0D TIF> >0x28 TIF> >0x0D TIF> >0x28 TIF> >0x0D TIF> >0x28 TIF> >0x0D TIF> >0x28 TIF> >0x0D TIF> >0x21 TIF> >0x0D TIF> >0x28 TIF>Scanning AP map to find all available APs >0x0D TIF> >0x28 TIF> >0x0D TIF> >0x21 TIF> >0x0D TIF>AP[0]: Stopped AP scan as end of AP map seems to be reached >0x6A TIF>Iterating through AP map to find AHB-AP to use
+  ***** Error: Could not find core in Coresight setup >0x0D TIF>
+ >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x10B TIF> >0x10F TIF>Found SW-DP with ID 0x2BA01477 >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF>  returns 0x00000000 (0403ms, 1396ms total)
+T2310 027:310 JLINK_Close() (0007ms, 1403ms total)
+T2310 027:310  (0007ms, 1403ms total)
+T2310 027:310 Closed (0007ms, 1403ms total)
