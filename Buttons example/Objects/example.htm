@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\example.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\example.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Sat Nov 09 17:20:02 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Fri Nov 01 16:17:21 2019
 <BR><P>
 <H3>Maximum Stack Usage =         72 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -389,15 +389,15 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3d]"></a>PORT_ReadInputDataBit</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, mdr32f9qx_port.o(i.PORT_ReadInputDataBit))
+<P><STRONG><a name="[3d]"></a>PORT_ReadInputData</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, mdr32f9qx_port.o(i.PORT_ReadInputData))
 <BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3f]"></a>PORT_ResetBits</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, mdr32f9qx_port.o(i.PORT_ResetBits))
+<P><STRONG><a name="[3e]"></a>PORT_ResetBits</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, mdr32f9qx_port.o(i.PORT_ResetBits))
 <BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3e]"></a>PORT_SetBits</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, mdr32f9qx_port.o(i.PORT_SetBits))
+<P><STRONG><a name="[3f]"></a>PORT_SetBits</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, mdr32f9qx_port.o(i.PORT_SetBits))
 <BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -427,9 +427,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RST_CLK_PCLKcmd
 <LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PORT_StructInit
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PORT_SetBits
-<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PORT_ResetBits
-<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PORT_ReadInputDataBit
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PORT_SetBits
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PORT_ResetBits
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PORT_ReadInputData
 <LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PORT_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
