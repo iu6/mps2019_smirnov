@@ -7,9 +7,9 @@ Section Cross References
     main.o(i.main) refers to mdr32f9qx_rst_clk.o(i.RST_CLK_PCLKcmd) for RST_CLK_PCLKcmd
     main.o(i.main) refers to mdr32f9qx_port.o(i.PORT_StructInit) for PORT_StructInit
     main.o(i.main) refers to mdr32f9qx_port.o(i.PORT_Init) for PORT_Init
-    main.o(i.main) refers to mdr32f9qx_port.o(i.PORT_ReadInputData) for PORT_ReadInputData
-    main.o(i.main) refers to mdr32f9qx_port.o(i.PORT_ResetBits) for PORT_ResetBits
+    main.o(i.main) refers to mdr32f9qx_port.o(i.PORT_ReadInputDataBit) for PORT_ReadInputDataBit
     main.o(i.main) refers to mdr32f9qx_port.o(i.PORT_SetBits) for PORT_SetBits
+    main.o(i.main) refers to mdr32f9qx_port.o(i.PORT_ResetBits) for PORT_ResetBits
     mlt_lcd.o(i.U_MLT_Clear_Chip) refers to mlt_lcd.o(i.U_MLT_Clear_Page) for U_MLT_Clear_Page
     mlt_lcd.o(i.U_MLT_Clear_Page) refers to mlt_lcd.o(i.U_MLT_Set_Page) for U_MLT_Set_Page
     mlt_lcd.o(i.U_MLT_Clear_Page) refers to mlt_lcd.o(i.U_MLT_Set_Address) for U_MLT_Set_Address
@@ -628,7 +628,7 @@ Removing Unused input sections from the image.
     Removing mdr32f9qx_port.o(.rev16_text), (4 bytes).
     Removing mdr32f9qx_port.o(.revsh_text), (4 bytes).
     Removing mdr32f9qx_port.o(i.PORT_DeInit), (20 bytes).
-    Removing mdr32f9qx_port.o(i.PORT_ReadInputDataBit), (16 bytes).
+    Removing mdr32f9qx_port.o(i.PORT_ReadInputData), (6 bytes).
     Removing mdr32f9qx_port.o(i.PORT_Write), (24 bytes).
     Removing mdr32f9qx_port.o(i.PORT_WriteBit), (44 bytes).
     Removing mdr32f9qx_power.o(.rev16_text), (4 bytes).
@@ -761,7 +761,7 @@ Removing Unused input sections from the image.
     Removing mdr32f9qx_uart.o(i.UART_SendData), (6 bytes).
     Removing mdr32f9qx_uart.o(i.UART_StructInit), (24 bytes).
 
-319 unused section(s) (total 15600 bytes) removed from the image.
+319 unused section(s) (total 15590 bytes) removed from the image.
 
 ==============================================================================
 
@@ -996,14 +996,14 @@ Image Symbol Table
     .text                                    0x08000214   Section        2  use_no_semi.o(.text)
     .text                                    0x08000216   Section        0  indicate_semi.o(.text)
     i.PORT_Init                              0x08000218   Section        0  mdr32f9qx_port.o(i.PORT_Init)
-    i.PORT_ReadInputData                     0x080003e0   Section        0  mdr32f9qx_port.o(i.PORT_ReadInputData)
-    i.PORT_ResetBits                         0x080003e8   Section        0  mdr32f9qx_port.o(i.PORT_ResetBits)
-    i.PORT_SetBits                           0x08000404   Section        0  mdr32f9qx_port.o(i.PORT_SetBits)
-    i.PORT_StructInit                        0x08000420   Section        0  mdr32f9qx_port.o(i.PORT_StructInit)
-    i.RST_CLK_PCLKcmd                        0x0800043c   Section        0  mdr32f9qx_rst_clk.o(i.RST_CLK_PCLKcmd)
-    i.SystemCoreClockUpdate                  0x0800045c   Section        0  system_mdr32f9qx.o(i.SystemCoreClockUpdate)
-    i.SystemInit                             0x080004ec   Section        0  system_mdr32f9qx.o(i.SystemInit)
-    i.main                                   0x0800052c   Section        0  main.o(i.main)
+    i.PORT_ReadInputDataBit                  0x080003e0   Section        0  mdr32f9qx_port.o(i.PORT_ReadInputDataBit)
+    i.PORT_ResetBits                         0x080003f0   Section        0  mdr32f9qx_port.o(i.PORT_ResetBits)
+    i.PORT_SetBits                           0x0800040c   Section        0  mdr32f9qx_port.o(i.PORT_SetBits)
+    i.PORT_StructInit                        0x08000428   Section        0  mdr32f9qx_port.o(i.PORT_StructInit)
+    i.RST_CLK_PCLKcmd                        0x08000444   Section        0  mdr32f9qx_rst_clk.o(i.RST_CLK_PCLKcmd)
+    i.SystemCoreClockUpdate                  0x08000464   Section        0  system_mdr32f9qx.o(i.SystemCoreClockUpdate)
+    i.SystemInit                             0x080004f4   Section        0  system_mdr32f9qx.o(i.SystemInit)
+    i.main                                   0x08000534   Section        0  main.o(i.main)
     .data                                    0x20000000   Section        4  system_mdr32f9qx.o(.data)
     .bss                                     0x20000004   Section       96  libspace.o(.bss)
     HEAP                                     0x20000068   Section      512  startup_mdr32f9qx.o(HEAP)
@@ -1144,16 +1144,16 @@ Image Symbol Table
     __use_no_semihosting_swi                 0x08000215   Thumb Code     2  use_no_semi.o(.text)
     __semihosting_library_function           0x08000217   Thumb Code     0  indicate_semi.o(.text)
     PORT_Init                                0x08000219   Thumb Code   450  mdr32f9qx_port.o(i.PORT_Init)
-    PORT_ReadInputData                       0x080003e1   Thumb Code     6  mdr32f9qx_port.o(i.PORT_ReadInputData)
-    PORT_ResetBits                           0x080003e9   Thumb Code    22  mdr32f9qx_port.o(i.PORT_ResetBits)
-    PORT_SetBits                             0x08000405   Thumb Code    22  mdr32f9qx_port.o(i.PORT_SetBits)
-    PORT_StructInit                          0x08000421   Thumb Code    28  mdr32f9qx_port.o(i.PORT_StructInit)
-    RST_CLK_PCLKcmd                          0x0800043d   Thumb Code    26  mdr32f9qx_rst_clk.o(i.RST_CLK_PCLKcmd)
-    SystemCoreClockUpdate                    0x0800045d   Thumb Code   130  system_mdr32f9qx.o(i.SystemCoreClockUpdate)
-    SystemInit                               0x080004ed   Thumb Code    54  system_mdr32f9qx.o(i.SystemInit)
-    main                                     0x0800052d   Thumb Code   146  main.o(i.main)
-    Region$$Table$$Base                      0x080005c8   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x080005e8   Number         0  anon$$obj.o(Region$$Table)
+    PORT_ReadInputDataBit                    0x080003e1   Thumb Code    16  mdr32f9qx_port.o(i.PORT_ReadInputDataBit)
+    PORT_ResetBits                           0x080003f1   Thumb Code    22  mdr32f9qx_port.o(i.PORT_ResetBits)
+    PORT_SetBits                             0x0800040d   Thumb Code    22  mdr32f9qx_port.o(i.PORT_SetBits)
+    PORT_StructInit                          0x08000429   Thumb Code    28  mdr32f9qx_port.o(i.PORT_StructInit)
+    RST_CLK_PCLKcmd                          0x08000445   Thumb Code    26  mdr32f9qx_rst_clk.o(i.RST_CLK_PCLKcmd)
+    SystemCoreClockUpdate                    0x08000465   Thumb Code   130  system_mdr32f9qx.o(i.SystemCoreClockUpdate)
+    SystemInit                               0x080004f5   Thumb Code    54  system_mdr32f9qx.o(i.SystemInit)
+    main                                     0x08000535   Thumb Code   146  main.o(i.main)
+    Region$$Table$$Base                      0x080005d0   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x080005f0   Number         0  anon$$obj.o(Region$$Table)
     SystemCoreClock                          0x20000000   Data           4  system_mdr32f9qx.o(.data)
     __libspace_start                         0x20000004   Data          96  libspace.o(.bss)
     __temporary_stack_top$libspace           0x20000064   Data           0  libspace.o(.bss)
@@ -1166,9 +1166,9 @@ Memory Map of the image
 
   Image Entry point : 0x0800015d
 
-  Load Region LR_1 (Base: 0x08000000, Size: 0x000005ec, Max: 0xffffffff, ABSOLUTE)
+  Load Region LR_1 (Base: 0x08000000, Size: 0x000005f4, Max: 0xffffffff, ABSOLUTE)
 
-    Execution Region ER_RO (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000005e8, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RO (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000005f0, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1231,31 +1231,30 @@ Memory Map of the image
     0x08000216   0x08000216   0x00000000   Code   RO         2384    .text               c_w.l(indicate_semi.o)
     0x08000216   0x08000216   0x00000002   PAD
     0x08000218   0x08000218   0x000001c8   Code   RO         1228    i.PORT_Init         mdr32f9qx_port.o
-    0x080003e0   0x080003e0   0x00000006   Code   RO         1229    i.PORT_ReadInputData  mdr32f9qx_port.o
-    0x080003e6   0x080003e6   0x00000002   PAD
-    0x080003e8   0x080003e8   0x0000001c   Code   RO         1231    i.PORT_ResetBits    mdr32f9qx_port.o
-    0x08000404   0x08000404   0x0000001c   Code   RO         1232    i.PORT_SetBits      mdr32f9qx_port.o
-    0x08000420   0x08000420   0x0000001c   Code   RO         1233    i.PORT_StructInit   mdr32f9qx_port.o
-    0x0800043c   0x0800043c   0x00000020   Code   RO         1426    i.RST_CLK_PCLKcmd   mdr32f9qx_rst_clk.o
-    0x0800045c   0x0800045c   0x00000090   Code   RO          267    i.SystemCoreClockUpdate  system_mdr32f9qx.o
-    0x080004ec   0x080004ec   0x00000040   Code   RO          268    i.SystemInit        system_mdr32f9qx.o
-    0x0800052c   0x0800052c   0x0000009c   Code   RO            3    i.main              main.o
-    0x080005c8   0x080005c8   0x00000020   Data   RO         2434    Region$$Table       anon$$obj.o
+    0x080003e0   0x080003e0   0x00000010   Code   RO         1230    i.PORT_ReadInputDataBit  mdr32f9qx_port.o
+    0x080003f0   0x080003f0   0x0000001c   Code   RO         1231    i.PORT_ResetBits    mdr32f9qx_port.o
+    0x0800040c   0x0800040c   0x0000001c   Code   RO         1232    i.PORT_SetBits      mdr32f9qx_port.o
+    0x08000428   0x08000428   0x0000001c   Code   RO         1233    i.PORT_StructInit   mdr32f9qx_port.o
+    0x08000444   0x08000444   0x00000020   Code   RO         1426    i.RST_CLK_PCLKcmd   mdr32f9qx_rst_clk.o
+    0x08000464   0x08000464   0x00000090   Code   RO          267    i.SystemCoreClockUpdate  system_mdr32f9qx.o
+    0x080004f4   0x080004f4   0x00000040   Code   RO          268    i.SystemInit        system_mdr32f9qx.o
+    0x08000534   0x08000534   0x0000009c   Code   RO            3    i.main              main.o
+    0x080005d0   0x080005d0   0x00000020   Data   RO         2434    Region$$Table       anon$$obj.o
 
 
-    Execution Region ER_RW (Exec base: 0x20000000, Load base: 0x080005e8, Size: 0x00000004, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RW (Exec base: 0x20000000, Load base: 0x080005f0, Size: 0x00000004, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x080005e8   0x00000004   Data   RW          269    .data               system_mdr32f9qx.o
+    0x20000000   0x080005f0   0x00000004   Data   RW          269    .data               system_mdr32f9qx.o
 
 
-    Execution Region ER_ZI (Exec base: 0x20000004, Load base: 0x080005ec, Size: 0x00000664, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_ZI (Exec base: 0x20000004, Load base: 0x080005f4, Size: 0x00000664, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x20000004        -       0x00000060   Zero   RW         2159    .bss                c_w.l(libspace.o)
-    0x20000064   0x080005ec   0x00000004   PAD
+    0x20000064   0x080005f4   0x00000004   PAD
     0x20000068        -       0x00000200   Zero   RW          259    HEAP                startup_mdr32f9qx.o
     0x20000268        -       0x00000400   Zero   RW          258    STACK               startup_mdr32f9qx.o
 
@@ -1267,16 +1266,16 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       156         10          0          0          0      54439   main.o
-       546         18          0          0          0       4387   mdr32f9qx_port.o
+       156         10          0          0          0      54435   main.o
+       556         18          0          0          0       4462   mdr32f9qx_port.o
         32          6          0          0          0        662   mdr32f9qx_rst_clk.o
         64         26        192          0       1536        824   startup_mdr32f9qx.o
        208         24          0          4          0       1423   system_mdr32f9qx.o
 
     ----------------------------------------------------------------------
-      1008         84        224          4       1536      61735   Object Totals
+      1016         84        224          4       1536      61806   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-         2          0          0          0          0          0   (incl. Padding)
+         0          0          0          0          0          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -1323,15 +1322,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      1288        100        224          4       1636      61795   Grand Totals
-      1288        100        224          4       1636      61795   ELF Image Totals
-      1288        100        224          4          0          0   ROM Totals
+      1296        100        224          4       1636      61866   Grand Totals
+      1296        100        224          4       1636      61866   ELF Image Totals
+      1296        100        224          4          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 1512 (   1.48kB)
+    Total RO  Size (Code + RO Data)                 1520 (   1.48kB)
     Total RW  Size (RW Data + ZI Data)              1640 (   1.60kB)
-    Total ROM Size (Code + RO Data + RW Data)       1516 (   1.48kB)
+    Total ROM Size (Code + RO Data + RW Data)       1524 (   1.49kB)
 
 ==============================================================================
 
