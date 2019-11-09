@@ -13,7 +13,7 @@ int i;
 
 
 int main () {
-	//taktirovanie porta
+	//taktirovanie porta c
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTC, ENABLE);
 	
 	//nastroyka porta c
@@ -55,11 +55,11 @@ int main () {
 				 
 				//proverka najatiya knopki
 				uint16_t in_data;
-				in_data = PORT_ReadInputData (MDR_PORTB);
-				if (in_data == PORT_Pin_5) {
-					PORT_ResetBits(MDR_PORTC, PORT_Pin_0 | PORT_Pin_1);
+				in_data = PORT_ReadInputDataBit (MDR_PORTB, PORT_Pin_5);
+				if (in_data == 0) { //in_data = 0 -> knopka najata
+					PORT_SetBits(MDR_PORTC, PORT_Pin_0 | PORT_Pin_1);
 				} else {
-					PORT_SetBits (MDR_PORTC, PORT_Pin_0 | PORT_Pin_1);
+					PORT_ResetBits (MDR_PORTC, PORT_Pin_0 | PORT_Pin_1);
 				}
 				
 	}
