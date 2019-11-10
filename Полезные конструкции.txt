@@ -1,0 +1,71 @@
+//includes для работы ЖК и других пер. устройств
+
+
+#include "MDR32F9Qx_board.h"
+#include "MDR32F9Qx_config.h"
+#include "MDR32Fx.h"
+#include "MDR32F9Qx_eeprom.h"
+#include "MDR32F9Qx_port.h"
+#include "MDR32F9Qx_rst_clk.h"
+#include "MDR32F9Qx_timer.h"
+#include "MDR32F9Qx_bkp.h"
+#include "lcd.h"
+#include "mlt_lcd.h"
+#include "time.h"
+#include "common.h"
+#include <MDR32F9Qx_adc.h>
+
+//команды для вывода строки на экран
+
+    U_MLT_Init();
+    U_MLT_Put_String ("test_string", 3);
+
+
+
+//Процедура настройки тактирования ядра процессора на 8/2*3 = 12МГц (в т.ч. для АЦП)
+
+void MY_U_RST_Init(void)
+{
+	RST_CLK_PCLKcmd (RST_CLK_PCLK_BKP, ENABLE);
+
+	RST_CLK_HSEconfig (RST_CLK_HSE_ON);
+	while (RST_CLK_HSEstatus () != SUCCESS);
+
+
+	//8MHZ/2*3 = 12MHZ
+	RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSEdiv2,
+	RST_CLK_CPU_PLLmul3);
+
+	RST_CLK_CPU_PLLcmd (ENABLE);
+	while (RST_CLK_CPU_PLLstatus () != SUCCESS);
+	RST_CLK_CPUclkPrescaler (RST_CLK_CPUclkDIV1);
+	RST_CLK_CPU_PLLuse (ENABLE);
+	RST_CLK_CPUclkSelection (RST_CLK_CPUclkCPU_C3);
+}
+
+
+//Процедура настройки порта С (светодиоды) на вывод
+void PORT_C_Init() {
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTC, ENABLE);
+	
+	PORT_InitTypeDef nastroyka_c;
+	PORT_StructInit(&nastroyka_c);
+	
+	nastroyka_c.PORT_OE = PORT_OE_OUT;
+	nastroyka_c.PORT_SPEED = PORT_SPEED_SLOW;
+	nastroyka_c.PORT_MODE = PORT_MODE_DIGITAL;
+	
+	PORT_Init( MDR_PORTC, &nastroyka_c);
+}
+
+//Процедура переключения светодиода PORT_Pin_0
+int led_i;
+void LED(void){
+	
+	if (led_i%2 == 0){
+		PORT_SetBits(MDR_PORTC, PORT_Pin_0);
+	} else {
+		PORT_ResetBits(MDR_PORTC, PORT_Pin_0);
+	}
+	led_i+=1;
+}
