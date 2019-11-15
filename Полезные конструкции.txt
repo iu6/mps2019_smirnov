@@ -1,4 +1,4 @@
-//includes для работы ЖК и других пер. устройств
+﻿//includes для работы ЖК и других пер. устройств
 
 
 #include "MDR32F9Qx_board.h"
@@ -14,6 +14,7 @@
 #include "time.h"
 #include "common.h"
 #include <MDR32F9Qx_adc.h>
+#include <stdio.h>
 
 //команды для вывода строки на экран
 
