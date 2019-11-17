@@ -9,6 +9,71 @@
 #define UP PORT_Pin_5//define pin 5  to UP butto
 
 /* Private variables ---------------------------------------------------------*/
+int current_btn_status(int btn_name) {
+  int status = 0xA;
+	if (btn_name == 1) {
+		status = PORT_ReadInputDataBit(MDR_PORTB, PORT_Pin_5);
+	}
+	
+	if (btn_name == 0) {
+		status = PORT_ReadInputDataBit(MDR_PORTC, PORT_Pin_2);
+
+	}
+	
+	if (status == 1) {
+		return 0;}
+	if (status == 0) {
+		return 1;}
+	if (status != 0 && status != 1){
+		return 0xA;}
+}
+
+void PORTS_Init(void) {
+	PORT_InitTypeDef GPIO_user_ini;
+  /* Enables the clock on PORTC */
+  RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTC | RST_CLK_PCLK_PORTB, ENABLE);
+	//init port B like input	
+	GPIO_user_ini.PORT_OE = PORT_OE_IN; // port mode -> input
+	GPIO_user_ini.PORT_FUNC = PORT_FUNC_PORT; // port mode
+	GPIO_user_ini.PORT_MODE = PORT_MODE_DIGITAL; // digital port mode
+	GPIO_user_ini.PORT_SPEED = PORT_SPEED_SLOW;  // choose slow mode for front
+	GPIO_user_ini.PORT_Pin = UP; // pin number 5 (PB5) which is connected to button
+	
+	PORT_Init(MDR_PORTB, &GPIO_user_ini); // init port
+}
+
+void BUTTONS_Init(void) {
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTB | RST_CLK_PCLK_PORTE, ENABLE); //taktirovanie porta b i e
+
+	//nastroyka UP (s1)
+	PORT_InitTypeDef Nastroyka_b;
+	PORT_StructInit (&Nastroyka_b);
+	
+	Nastroyka_b.PORT_Pin = PORT_Pin_5;
+	Nastroyka_b.PORT_MODE = PORT_MODE_DIGITAL;
+	Nastroyka_b.PORT_OE = PORT_OE_IN;
+	Nastroyka_b.PORT_SPEED = PORT_SPEED_SLOW;
+	Nastroyka_b.PORT_PD = PORT_PD_DRIVER;
+	//OtherStructure.PORT_PULL_UP = PORT_PULL_UP_ON; //vkluchenie podtyagivaushego rezistora
+	
+	PORT_Init (MDR_PORTB, &Nastroyka_b);
+	
+	//nastroyka DOWN (s3 - select na plate)
+	PORT_InitTypeDef Nastroyka_c;
+	PORT_StructInit (&Nastroyka_c);
+	
+	//Nastroyka_e.PORT_Pin = PORT_Pin_1;
+	Nastroyka_c.PORT_Pin = PORT_Pin_2;
+	Nastroyka_c.PORT_MODE = PORT_MODE_DIGITAL;
+	Nastroyka_c.PORT_OE = PORT_OE_IN;
+	Nastroyka_c.PORT_SPEED = PORT_SPEED_SLOW;
+	Nastroyka_c.PORT_PD = PORT_PD_DRIVER;
+	//OtherStructure.PORT_PULL_UP = PORT_PULL_UP_ON; //vkluchenie podtyagivaushego rezistora
+	
+
+	PORT_Init (MDR_PORTC, &Nastroyka_c);
+	
+}
 
 uint32_t Pseudo_Rand(uint32_t addr)
 {
@@ -37,6 +102,10 @@ uint32_t Pseudo_Rand(uint32_t addr)
 
 void Delay(int num)
 {
+	
+	
+
+
   volatile uint32_t i = 0;
   for (i = 0; i < num; i++)
   {
@@ -45,6 +114,10 @@ void Delay(int num)
 
 int32_t main (void)
 {
+	int current_track = 0, num_of_tracks = 10; 
+	char stroka[32]; //stroka dlya vivoda resultata
+	char track_array[10][32] = {"track_1" , "track_2", "track_3","track_4" , "track_5", "track_6", "track_7" , "track_8", "track_9", "track_10" };
+	
   uint32_t Address = 0;
   uint32_t BankSelector = 0;
   uint32_t Data = 0;
@@ -52,28 +125,57 @@ int32_t main (void)
   uint32_t ibegin = 0;
   uint32_t isend = 0;
   uint32_t iend = 9;
-	char stroka[33];
-	PORT_InitTypeDef GPIO_user_ini;
+	char str[33];
 
-  /* Enables the clock on PORTC */
-  RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTC | RST_CLK_PCLK_PORTB, ENABLE);
+
   /* Enables the clock on EEPROM */
   RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
 	
 	U_MLT_Init();
-
-
+	BUTTONS_Init();
 	
-  //init port B like input	
-	GPIO_user_ini.PORT_OE = PORT_OE_IN; // port mode -> input
-	GPIO_user_ini.PORT_FUNC = PORT_FUNC_PORT; // port mode
-	GPIO_user_ini.PORT_MODE = PORT_MODE_DIGITAL; // digital port mode
-	GPIO_user_ini.PORT_SPEED = PORT_SPEED_SLOW;  // choose slow mode for front
-	GPIO_user_ini.PORT_Pin = UP; // pin number 5 (PB5) which is connected to button
 	
-	PORT_Init(MDR_PORTB, &GPIO_user_ini); // init port
+	int current_status_up = 0;
+	int current_status_down = 0;
+	
 
-  //Write to EEPROM
+	while (1) { 
+		
+		//proverka knopok i vivod spiska na ekran
+		//UP
+		if (current_btn_status(1) == 1 && current_status_up == 0){
+			current_status_up = 1;
+			current_track += 1;
+			if (current_track == num_of_tracks) current_track = 0;
+		}
+		current_status_up = current_btn_status(1);
+		
+		//DOWN
+		if (current_btn_status(0) == 1 && current_status_down == 0){
+			current_status_down = 1;
+			current_track -= 1;
+			if (current_track == -1) current_track = num_of_tracks-1;
+		}
+		current_status_down = current_btn_status(0);
+		
+		U_MLT_Put_String(track_array[current_track], 3);
+		Delay(100);
+		
+	}
+	
+	while (1)
+  {
+		
+  }
+}
+
+
+
+
+
+/*
+
+//Write to EEPROM
   Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
   BankSelector = EEPROM_Main_Bank_Select;
 
@@ -93,11 +195,5 @@ int32_t main (void)
 		U_MLT_Put_String(stroka, 3);
 		Delay(1000);
   }
-	
-	//U_MLT_Clear_Chip(1);	
-	
-	while (1)
-  {
-		
-  }
-}
+*/
+
