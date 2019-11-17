@@ -49,7 +49,7 @@ void BUTTONS_Init(void) {
 	PORT_InitTypeDef Nastroyka_b;
 	PORT_StructInit (&Nastroyka_b);
 	
-	Nastroyka_b.PORT_Pin = PORT_Pin_5;
+	Nastroyka_b.PORT_Pin = PORT_Pin_5 | PORT_Pin_6;
 	Nastroyka_b.PORT_MODE = PORT_MODE_DIGITAL;
 	Nastroyka_b.PORT_OE = PORT_OE_IN;
 	Nastroyka_b.PORT_SPEED = PORT_SPEED_SLOW;
@@ -69,6 +69,9 @@ void BUTTONS_Init(void) {
 	Nastroyka_c.PORT_SPEED = PORT_SPEED_SLOW;
 	Nastroyka_c.PORT_PD = PORT_PD_DRIVER;
 	//OtherStructure.PORT_PULL_UP = PORT_PULL_UP_ON; //vkluchenie podtyagivaushego rezistora
+	
+	PORT_InitTypeDef Nastroyka_e;
+	PORT_StructInit(&Nastroyka_e);
 	
 
 	PORT_Init (MDR_PORTC, &Nastroyka_c);
@@ -153,7 +156,7 @@ int32_t main (void)
 		//DOWN
 		if (current_btn_status(0) == 1 && current_status_down == 0){
 			current_status_down = 1;
-			current_track -= 1;
+			current_track -= 1; 
 			if (current_track == -1) current_track = num_of_tracks-1;
 		}
 		current_status_down = current_btn_status(0);
