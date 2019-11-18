@@ -9,72 +9,93 @@
 #define UP											PORT_Pin_5//define pin 5  to UP butto
 /* Private variables ---------------------------------------------------------*/
 
-void erise_mem(size_in_bytes){
+
+//===============================================================================
+//=========    FUNCTIONS FOR WORK WITH MEMORY    ================================
+//===============================================================================
+
+void erise_mem(){
+	int num_of_tracks = 2;
+	uint32_t size_in_words = 26624;
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint32_t i = 0;
+	uint32_t Debug_address = 0;
 	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
+
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	for (i = 0; i < size_in_bytes; i++){
-		EEPROM_ProgramWord(Address + i, BankSelector, 0xFF);
+	//ochistka tolko flagov zapolnennosti trekov
+	for (i = 0; i < num_of_tracks; i++){
+		Debug_address = Address + (53248 * i) + (size_in_words - 1)*2;
+		EEPROM_ProgramWord(Debug_address, BankSelector, 0xFF);
 	}
+
+
 }
 
-void write_track(int num, int size_in_bytes){
+void write_track(int num){
 //Write to EEPROM
-	uint32_t size_in_words = size_in_bytes / 4;
+	uint32_t size_in_words = 26624;
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
-	uint32_t Data = num;
+	uint16_t Data = num; //16 bit na odnu zipis'
 	uint32_t i = 0;
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + 0x1500*(num - 1); // Address = 0x08005000
-	BankSelector = EEPROM_Main_Bank_Select;
+	uint32_t Debug_address = 0;
+	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE; // Address = 0x08012000 dlya treka 2
+	BankSelector = EEPROM_Main_Bank_Select;																				//Address = 0x08005000 dlya traka 1
 
-	for (i = 0; i < size_in_words - 1; i++)
+	for (i = 0; i < (size_in_words - 1); i++)
 	{
-	  EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
+	  //EEPROM_ProgramWord (Address + i*2, BankSelector, Data);
 	}
 
 	//metka, chto dannie zapisani
-	EEPROM_ProgramWord(Address + size_in_words*4, BankSelector, 0xAAAA);
+	Debug_address = Address + (53248 * (num - 1)) + (size_in_words - 1)*2;
+	EEPROM_ProgramWord(Debug_address, BankSelector, 0xAA);
 }
 
 
-void read_track(int num, int size_in_bytes){
+void read_track(int num){
   //Read from EEPROM 
- 	uint32_t size_in_words = size_in_bytes / 4;
+ 	uint32_t size_in_words = 26624;
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
-	uint32_t Data = 0;
+	uint16_t Data = 0;
 	uint32_t i = 0;
 	char stroka[33];
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + 0x1500*(num - 1);
+	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (53248 * (num - 1));
 	BankSelector = EEPROM_Main_Bank_Select;
-	for (i = 0; i < size_in_words - 1; i++)
+	for (i = 0; i < (size_in_words - 1); i++)
 	{
-		Data = EEPROM_ReadWord(Address + i*4, BankSelector);
-		sprintf(stroka, "%d", Data);
-		U_MLT_Put_String(stroka, 3);
-		Delay(1000);
+		//Data = EEPROM_ReadWord(Address + i*2, BankSelector);
+		//sprintf(stroka, "%d", Data);
+		//U_MLT_Put_String(stroka, 3);
+		//Delay(1000);
 	}
 }
 
-int track_is_empty(int num, int size_in_bytes){
-	uint32_t size_in_words = size_in_bytes / 4;
+int track_is_empty(int num){
+	uint32_t size_in_words = 26624;
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint32_t Data = 0;
 	uint32_t i = 0;
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + 0x1500*(num - 1);
+	uint32_t Debug_address = 0;
+	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
 	BankSelector = EEPROM_Main_Bank_Select;
+	Debug_address = Address + (53248 * (num - 1)) + (size_in_words - 1)*2;
 
-	if (EEPROM_ReadWord(Address + 4*size_in_words, BankSelector) == 0xAAAA){
+	if (EEPROM_ReadWord(Debug_address, BankSelector) == 0xAA){
 		return 0;
 	} else {
 		return 1;
 	}
 }
+
+//===============================================================================
+//=========  END  FUNCTIONS FOR WORK WITH MEMORY    =============================
+//===============================================================================
 
 void Screen_put_number(int num, int position) {
 	char stroka[33];
@@ -212,7 +233,7 @@ void Delay(int num)
 
 int32_t main (void)
 {
-	int current_track = 0, num_of_tracks = 10; 
+	int current_track = 0, num_of_tracks = 2; 
 	char stroka[40]; //stroka dlya vivoda resultata
 	char track_array[10][32] = {"track_1" , "track_2", "track_3","track_4" , "track_5", "track_6", "track_7" , "track_8", "track_9", "track_10" };
 	int track_size_in_bytes = 0x1500;
@@ -234,47 +255,66 @@ int32_t main (void)
 	
 	int current_status_up = 0;
 	int current_status_down = 0;
+	int current_status_select = 0; //button to erase entire memory
 	
-	erise_mem(0x1500*10);
-
-	write_track(1, track_size_in_bytes);
-	write_track(2, track_size_in_bytes);
-	write_track(5, track_size_in_bytes);
-
-	Screen_put_number(track_is_empty(1, track_size_in_bytes), 3);
-	Delay(300000);
-	Screen_put_number(0xAAAA, 3);
-	Delay(300000);
-	Screen_put_number(track_is_empty(2, track_size_in_bytes), 3);
-	Delay(300000);
-	Screen_put_number(0xAAAA, 3);
-	Delay(300000);
-	Screen_put_number(track_is_empty(3, track_size_in_bytes), 3);
-	Delay(300000);
-
-
 
 	while (1) { 
 		
-		// //proverka knopok i vivod spiska na ekran
-		// //UP
-		// if (current_btn_status(1) == 1 && current_status_up == 0){
-		// 	current_status_up = 1;
-		// 	current_track += 1;
-		// 	if (current_track == num_of_tracks) current_track = 0;
-		// }
-		// current_status_up = current_btn_status(1);
+		//proverka knopok i vivod spiska na ekran
+
+		//UP
+		if (current_btn_status(1) == 1 && current_status_up == 0){
+			current_status_up = 1;
+			current_track += 1;
+			if (current_track == num_of_tracks) current_track = 0;
+		}
+		current_status_up = current_btn_status(1);
 		
-		// //DOWN
-		// if (current_btn_status(4) == 1 && current_status_down == 0){
-		// 	current_status_down = 1;
-		// 	current_track -= 1; 
-		// 	if (current_track == -1) current_track = num_of_tracks-1;
-		// }
-		// current_status_down = current_btn_status(4);
-		
-		// U_MLT_Put_String(track_array[current_track], 3);
-		// Delay(100);
+		//DOWN
+		if (current_btn_status(4) == 1 && current_status_down == 0){
+			current_status_down = 1;
+			current_track -= 1; 
+			if (current_track == -1) current_track = num_of_tracks-1;
+		}
+		current_status_down = current_btn_status(4);
+
+		//SELECT -> ERASE MEMROY
+		if (current_btn_status(0) == 1 && current_status_select == 0){
+			Delay(1000);
+
+			current_status_select = 1;
+			U_MLT_Put_String("Erise mem...");
+			erise_mem();
+
+			Delay(500000);
+		}
+		current_status_select = current_btn_status(0);
+
+
+		//RIGHT and LEFT  -- RECORD and PLAY
+		if (current_btn_status(2) == 1 || current_btn_status(3) == 1) {
+			//RIGHT -> RECORD SOUND
+			if (current_btn_status(2) == 1){
+				U_MLT_Put_String("Record...", 3);
+				write_track(current_track);
+				Delay(1000000);
+			} 
+			//LEFT -> PLAY SOUND
+			if (current_btn_status(3) == 1){
+				if (track_is_empty(current_track) == 1){
+					U_MLT_Put_String("Empty!", 3);
+				} else {
+					U_MLT_Put_String("Play...", 3);
+				}
+				Delay(700000);
+			}
+			Delay(1000000);
+
+		} else {
+			U_MLT_Put_String(track_array[current_track], 3);
+			Delay(100);
+		}
+
 
 	}
 	

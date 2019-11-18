@@ -28,55 +28,55 @@ Project File Date:  11/17/2019
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
 compiling main.c...
-user\main.c(12): warning:  #1294-D: Old-style function erise_mem
-  void erise_mem(size_in_bytes){
-user\main.c(12): warning:  #1079-D: standard requires that parameter "size_in_bytes"  be given a type by a subsequent declaration ("int" assumed)
-  void erise_mem(size_in_bytes){
-user\main.c(57): warning:  #223-D: function "sprintf" declared implicitly
-  		sprintf(stroka, "%d", Data);
-user\main.c(58): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  		U_MLT_Put_String(stroka, 3);
-user\main.c(59): warning:  #223-D: function "Delay" declared implicitly
-  		Delay(1000);
-user\main.c(67): warning:  #177-D: variable "Data"  was declared but never referenced
+user\main.c(39): warning:  #177-D: variable "Data"  was declared but never referenced
+  	uint16_t Data = num; //16 bit na odnu zipis'
+user\main.c(57): warning:  #550-D: variable "Address"  was set but never used
+  	uint32_t Address = 0;
+user\main.c(58): warning:  #550-D: variable "BankSelector"  was set but never used
+  	uint32_t BankSelector = 0;
+user\main.c(59): warning:  #177-D: variable "Data"  was declared but never referenced
+  	uint16_t Data = 0;
+user\main.c(61): warning:  #177-D: variable "stroka"  was declared but never referenced
+  	char stroka[33];
+user\main.c(77): warning:  #177-D: variable "Data"  was declared but never referenced
   	uint32_t Data = 0;
-user\main.c(68): warning:  #177-D: variable "i"  was declared but never referenced
+user\main.c(78): warning:  #177-D: variable "i"  was declared but never referenced
   	uint32_t i = 0;
-user\main.c(81): warning:  #223-D: function "sprintf" declared implicitly
+user\main.c(95): warning:  #223-D: function "sprintf" declared implicitly
   	sprintf(stroka, "%d", num);
-user\main.c(82): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+user\main.c(96): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
   	U_MLT_Put_String(stroka, position);
-user\main.c(127): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
+user\main.c(141): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
   }
-user\main.c(205): warning:  #159-D: declaration is incompatible with previous "Delay"  (declared at line 59)
-  void Delay(int num)
-user\main.c(230): warning:  #223-D: function "U_MLT_Init" declared implicitly
+user\main.c(244): warning:  #223-D: function "U_MLT_Init" declared implicitly
   	U_MLT_Init();
-user\main.c(281): warning:  #128-D: loop is not reachable
+user\main.c(279): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  			U_MLT_Put_String("Erise mem...");
+user\main.c(291): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  				U_MLT_Put_String("Record...", 3);
+user\main.c(298): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  					U_MLT_Put_String("Empty!", 3);
+user\main.c(300): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  					U_MLT_Put_String("Play...", 3);
+user\main.c(307): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  			U_MLT_Put_String(track_array[current_track], 3);
+user\main.c(314): warning:  #128-D: loop is not reachable
   	while (1)
-user\main.c(215): warning:  #177-D: variable "current_track"  was declared but never referenced
-  	int current_track = 0, num_of_tracks = 10; 
-user\main.c(215): warning:  #177-D: variable "num_of_tracks"  was declared but never referenced
-  	int current_track = 0, num_of_tracks = 10; 
-user\main.c(216): warning:  #177-D: variable "stroka"  was declared but never referenced
+user\main.c(230): warning:  #177-D: variable "stroka"  was declared but never referenced
   	char stroka[40]; //stroka dlya vivoda resultata
-user\main.c(217): warning:  #177-D: variable "track_array"  was declared but never referenced
-  	char track_array[10][32] = {"track_1" , "track_2", "track_3","track_4" , "track_5", "track_6", "track_7" , "track_8", "track_9", "track_10" };
-user\main.c(221): warning:  #177-D: variable "ibegin"  was declared but never referenced
+user\main.c(232): warning:  #177-D: variable "track_size_in_bytes"  was declared but never referenced
+  	int track_size_in_bytes = 0x1500;
+user\main.c(235): warning:  #177-D: variable "ibegin"  was declared but never referenced
   	uint32_t ibegin = 0;
-user\main.c(222): warning:  #177-D: variable "isend"  was declared but never referenced
+user\main.c(236): warning:  #177-D: variable "isend"  was declared but never referenced
   	uint32_t isend = 0;
-user\main.c(223): warning:  #177-D: variable "iend"  was declared but never referenced
+user\main.c(237): warning:  #177-D: variable "iend"  was declared but never referenced
   	uint32_t iend = 9;
-user\main.c(224): warning:  #177-D: variable "str"  was declared but never referenced
+user\main.c(238): warning:  #177-D: variable "str"  was declared but never referenced
   	char str[33];
-user\main.c(235): warning:  #177-D: variable "current_status_up"  was declared but never referenced
-  	int current_status_up = 0;
-user\main.c(236): warning:  #177-D: variable "current_status_down"  was declared but never referenced
-  	int current_status_down = 0;
 user\main.c: 23 warnings, 0 errors
 linking...
-Program Size: Code=5064 RO-data=2400 RW-data=8 ZI-data=1636  
+Program Size: Code=4792 RO-data=2400 RW-data=8 ZI-data=1636  
 ".\Objects\example.axf" - 0 Error(s), 23 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -104,11 +104,11 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: Keil::Device:Startup:1.5
-      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c
-      Include file:  Config\MDR32F9Qx_config.h
       Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\startup_MDR32F9Qx.s
+      Include file:  Config\MDR32F9Qx_config.h
       Include file:  Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.h
       Include file:  Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
+      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c
 
    * Component: Keil::Drivers:EEPROM:1.5
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c
@@ -118,8 +118,8 @@ Package Vendor: Keil
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_lib.h
 
    * Component: Keil::Drivers:PORT:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_port.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c
 
    * Component: Keil::Drivers:POWER:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_power.h
@@ -130,12 +130,12 @@ Package Vendor: Keil
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c
 
    * Component: Keil::Drivers:TIMER:1.5
-      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_timer.h
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_timer.c
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_timer.h
 
    * Component: Keil::Drivers:WWDG:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_wwdg.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c
 Build Time Elapsed:  00:00:01
 </pre>
 </body>
