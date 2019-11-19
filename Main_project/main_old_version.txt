@@ -15,21 +15,26 @@
 //===============================================================================
 
 //erise only flags
-//not ready
 void erise_mem(){
 	int num_of_tracks = 2;
-	uint32_t entire_size_in_words = 26624;//word 32bit
+	uint32_t size_in_words = 26624;//word 32bit
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint32_t i = 0;
+	uint32_t Debug_address = 0;
 	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
 
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	//EEPROM_EraseAllPages(BankSelector);
+	//ochistka tolko flagov zapolnennosti trekov
+	for (i = 0; i < num_of_tracks; i++){
+		Debug_address = Address + (i + 1)*13312*4;  //13312 - size in words of 1 track
+		EEPROM_ProgramWord(Debug_address, BankSelector, 0xFFFFFFFF);
+	}
+
+
 }
 
-//num should be  > 0
 void write_track(int num){
 //Write to EEPROM
 	uint32_t size_in_words = 13312;//word 32bit
@@ -37,19 +42,22 @@ void write_track(int num){
 	uint32_t BankSelector = 0;
 	uint32_t Data = num; //16 bit na odnu zipis'
 	uint32_t i = 0;
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1)*size_in_words*4 ; // Address = 0x08012000 dlya treka 2
+	uint32_t Debug_address = 0;
+	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE; // Address = 0x08012000 dlya treka 2
 	BankSelector = EEPROM_Main_Bank_Select;																				//Address = 0x08005000 dlya traka 1
 
-	for (i = 1; i < (size_in_words - 1); i++)
+	for (i = 0; i < (size_in_words - 1); i++)
 	{
 	  EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
 	}
 
-	//sozdanie metki
-	EEPROM_ProgramWord (Address, BankSelector, 0xABCDEFAB );
+	//metka, chto dannie zapisani
+	Debug_address = Address + num*size_in_words*4;
+	EEPROM_ProgramWord(Debug_address, BankSelector, 0xAAAAAAAA);
 }
 
 
+//not done
 void read_track(int num){
   //Read from EEPROM 
  	uint32_t size_in_words = 13312;//word 32bit
@@ -58,29 +66,30 @@ void read_track(int num){
 	uint32_t Data = 0;
 	uint32_t i = 0;
 	char stroka[33];
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1)*size_in_words*4;
+	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (53248 * (num - 1));
 	BankSelector = EEPROM_Main_Bank_Select;
-	for (i = 1; i < (size_in_words - 1); i++)
+	for (i = 0; i < (size_in_words - 1); i++)
 	{
-		// Data = EEPROM_ReadWord(Address + i*4, BankSelector);
-		// sprintf(stroka, "%d", Data);
-		// U_MLT_Put_String(stroka, 3);
-		// Delay(1000);
+		//Data = EEPROM_ReadWord(Address + i*2, BankSelector);
+		//sprintf(stroka, "%d", Data);
+		//U_MLT_Put_String(stroka, 3);
+		//Delay(1000);
 	}
 }
 
 // arguments = 1,2... (>0)
-//not ready
 int track_is_empty(int num){
 	uint32_t size_in_words = 13312;//word 32bit
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint32_t Data = 0;
 	uint32_t i = 0;
+	uint32_t Debug_address = 0;
 	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
 	BankSelector = EEPROM_Main_Bank_Select;
+	Debug_address =  Address + num*size_in_words*4;
 
-	if (EEPROM_ReadWord(Address + (num - 1)*size_in_words*4, BankSelector) == 0xABCDEFAB){
+	if (EEPROM_ReadWord(Debug_address, BankSelector) == 0xAAAAAAAA){
 		return 0;
 	} else {
 		return 1;
@@ -192,6 +201,30 @@ void BUTTONS_Init(void) {
 	
 }
 
+uint32_t Pseudo_Rand(uint32_t addr)
+{
+  uint32_t hash = 0;
+  uint32_t i = 0;
+  uint8_t* key = (uint8_t *)&addr;
+
+  for (i = 0; i < 4; i++)
+  {
+    hash += key[i];
+    hash += (hash << 10);
+    hash ^= (hash >> 6);
+  }
+
+  for (i = 0; i < 256; i++)
+  {
+    hash += (hash << 10);
+    hash ^= (hash >> 6);
+  }
+
+  hash += (hash << 3);
+  hash ^= (hash >> 11);
+  hash += (hash << 15);
+  return hash;
+}
 
 void Delay(int num)
 {
@@ -203,10 +236,16 @@ void Delay(int num)
 
 int32_t main (void)
 {
-	int current_track = 0;  //current_track = 0,1,...
-	int num_of_tracks = 2;
+	int current_track = 0, num_of_tracks = 2; 
 	char stroka[40]; //stroka dlya vivoda resultata
-	char track_array[10][32] = {"track_1" , "track_2", "track_3","track_4" , "track_5", "track_6", "track_7" , "track_8", "track_9", "track_10" };	
+	char track_array[10][32] = {"track_1" , "track_2", "track_3","track_4" , "track_5", "track_6", "track_7" , "track_8", "track_9", "track_10" };
+	int track_size_in_bytes = 0x1500;
+	
+
+	uint32_t ibegin = 0;
+	uint32_t isend = 0;
+	uint32_t iend = 9;
+	char str[33];
 
 
   /* Enables the clock on EEPROM */
@@ -217,9 +256,9 @@ int32_t main (void)
 	PORTC_Init();
 	
 	
-	int current_status_up = 0;		//button to select track above
-	int current_status_down = 0;	//butotn to select tarck below
-	int current_status_select = 0;  //button to erase memory
+	int current_status_up = 0;
+	int current_status_down = 0;
+	int current_status_select = 0; //button to erase entire memory
 	
 
 	while (1) { 
@@ -247,9 +286,8 @@ int32_t main (void)
 			Delay(1000);
 
 			current_status_select = 1;
-			U_MLT_Put_String("Erase doesn't", 3);
-			U_MLT_Put_String("work", 4);
-			//erise_mem();
+			U_MLT_Put_String("Erise mem...");
+			erise_mem();
 
 			Delay(500000);
 		}
@@ -270,20 +308,22 @@ int32_t main (void)
 					U_MLT_Put_String("Empty!", 3);
 				} else {
 					U_MLT_Put_String("Play...", 3);
-					read_track(current_track + 1);
 				}
-
+				Delay(700000);
 			}
 			Delay(500000);
 
 		} else {
 			U_MLT_Put_String(track_array[current_track], 3);
-			U_MLT_Put_String("", 4);
 			Delay(100);
 		}
 
 
 	}
 	
+	while (1)
+  {
+		
+  }
 }
 
