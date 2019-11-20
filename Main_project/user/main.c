@@ -17,30 +17,37 @@
 //erise only flags
 //not ready
 void erise_mem(){
+	//entire mem - 26624 words (32 bit)
 	int num_of_tracks = 2;
-	uint32_t entire_size_in_words = 26624;//word 32bit
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint32_t i = 0;
 	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
-
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	//EEPROM_EraseAllPages(BankSelector);
+	//erase track 1 (13 pages)
+	for (i = 0; i < 13; i++) {
+		EEPROM_ErasePage(Address + i*EEPROM_PAGE_SIZE, BankSelector);
+	}
+	//erase track 2 (13 pages)
+	for (i = 0; i < 13; i++){
+		EEPROM_ErasePage(Address + 13*EEPROM_PAGE_SIZE + i*EEPROM_PAGE_SIZE, BankSelector);
+	}
+
 }
 
 //num should be  > 0
 void write_track(int num){
 //Write to EEPROM
-	uint32_t size_in_words = 13312;//word 32bit
 	uint32_t Address = 0;
+	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
 	uint32_t BankSelector = 0;
 	uint32_t Data = num; //16 bit na odnu zipis'
 	uint32_t i = 0;
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1)*size_in_words*4 ; // Address = 0x08012000 dlya treka 2
+	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1)*EEPROM_PAGE_SIZE*13 ; // Address = 0x08012000 dlya treka 2
 	BankSelector = EEPROM_Main_Bank_Select;																				//Address = 0x08005000 dlya traka 1
 
-	for (i = 1; i < (size_in_words - 1); i++)
+	for (i = 1; i < size_in_words; i++)
 	{
 	  EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
 	}
@@ -49,18 +56,17 @@ void write_track(int num){
 	EEPROM_ProgramWord (Address, BankSelector, 0xABCDEFAB );
 }
 
-
 void read_track(int num){
-  //Read from EEPROM 
- 	uint32_t size_in_words = 13312;//word 32bit
+  	//Read from EEPROM 
+	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint32_t Data = 0;
 	uint32_t i = 0;
 	char stroka[33];
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1)*size_in_words*4;
+	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1)*EEPROM_PAGE_SIZE*13;
 	BankSelector = EEPROM_Main_Bank_Select;
-	for (i = 1; i < (size_in_words - 1); i++)
+	for (i = 1; i < size_in_words; i++)
 	{
 		// Data = EEPROM_ReadWord(Address + i*4, BankSelector);
 		// sprintf(stroka, "%d", Data);
@@ -70,9 +76,7 @@ void read_track(int num){
 }
 
 // arguments = 1,2... (>0)
-//not ready
 int track_is_empty(int num){
-	uint32_t size_in_words = 13312;//word 32bit
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint32_t Data = 0;
@@ -80,7 +84,7 @@ int track_is_empty(int num){
 	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	if (EEPROM_ReadWord(Address + (num - 1)*size_in_words*4, BankSelector) == 0xABCDEFAB){
+	if (EEPROM_ReadWord(Address + (num - 1)*EEPROM_PAGE_SIZE*13, BankSelector) == 0xABCDEFAB){
 		return 0;
 	} else {
 		return 1;
@@ -141,19 +145,6 @@ int current_btn_status(int btn_name) {
 	
 }
 
-void PORTC_Init(void) {
-	PORT_InitTypeDef Nastroyka_c_diodes;
-	PORT_StructInit(&Nastroyka_c_diodes);
-  	/* Enables the clock on PORTC */
-  	RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTC, ENABLE);
-	//init port C like out	
-	Nastroyka_c_diodes.PORT_OE = PORT_OE_OUT; // out
-	Nastroyka_c_diodes.PORT_MODE = PORT_MODE_DIGITAL; // digital port mode
-	Nastroyka_c_diodes.PORT_SPEED = PORT_SPEED_SLOW;  // choose slow mode for front
-	Nastroyka_c_diodes.PORT_Pin = PORT_Pin_1; // pin number 1 (PC1) 
-	
-	PORT_Init(MDR_PORTB, &Nastroyka_c_diodes); // init port
-}
 
 void BUTTONS_Init(void) {
 
@@ -214,76 +205,81 @@ int32_t main (void)
 	
 	U_MLT_Init();
 	BUTTONS_Init();
-	PORTC_Init();
-	
 	
 	int current_status_up = 0;		//button to select track above
 	int current_status_down = 0;	//butotn to select tarck below
 	int current_status_select = 0;  //button to erase memory
+	int current_status_right = 0;   //button to record track
+	int current_status_left = 0;    //button to play track
 	
 
 	while (1) { 
 		
 		//proverka knopok i vivod spiska na ekran
 
-		//UP
+		//UP -> SELECT TRACK ABOVE
 		if (current_btn_status(1) == 1 && current_status_up == 0){
+			//begin action
 			current_status_up = 1;
 			current_track += 1;
 			if (current_track == num_of_tracks) current_track = 0;
+			//end action
 		}
 		current_status_up = current_btn_status(1);
 		
-		//DOWN
+		//DOWN -> SELECT TRACK BELOW
 		if (current_btn_status(4) == 1 && current_status_down == 0){
+			//begin action
 			current_status_down = 1;
 			current_track -= 1; 
 			if (current_track == -1) current_track = num_of_tracks-1;
+			//end action
 		}
 		current_status_down = current_btn_status(4);
 
 		//SELECT -> ERASE MEMROY
 		if (current_btn_status(0) == 1 && current_status_select == 0){
-			Delay(1000);
-
+			//begin action
 			current_status_select = 1;
-			U_MLT_Put_String("Erase doesn't", 3);
-			U_MLT_Put_String("work", 4);
-			//erise_mem();
+			U_MLT_Put_String("Erase", 3);
+			U_MLT_Put_String("memory...", 4);
+			erise_mem();
 
 			Delay(500000);
+			//end action
 		}
 		current_status_select = current_btn_status(0);
 
+		//RIGHT -> RECORD TRACK
+		if (current_btn_status(2) == 1 && current_status_right == 0){
+			//begin action
+			U_MLT_Put_String("Record...", 3);
+			write_track(current_track + 1);
+			Delay(500000);
+			//end action
+		}
+		current_status_right = current_btn_status(2);
 
-		//RIGHT and LEFT  -- RECORD and PLAY
-		if (current_btn_status(2) == 1 || current_btn_status(3) == 1) {
-			//RIGHT -> RECORD SOUND
-			if (current_btn_status(2) == 1){
-				U_MLT_Put_String("Record...", 3);
-				write_track(current_track + 1);
-				Delay(300000);
-			} 
-			//LEFT -> PLAY SOUND
-			if (current_btn_status(3) == 1){
-				if (track_is_empty(current_track + 1) == 1){
+
+		//LEFT -> PLAY TRACK 
+		if (current_btn_status(3) == 1 && current_status_left == 0) {
+			//begin action
+			if (track_is_empty(current_track + 1) == 1){
 					U_MLT_Put_String("Empty!", 3);
 				} else {
 					U_MLT_Put_String("Play...", 3);
 					read_track(current_track + 1);
 				}
-
+				Delay(500000);
+			//end action
 			}
-			Delay(500000);
+		current_status_left = current_btn_status(3);
 
-		} else {
-			U_MLT_Put_String(track_array[current_track], 3);
-			U_MLT_Put_String("", 4);
-			Delay(100);
-		}
-
-
+		//print select-list on LCD
+		U_MLT_Put_String(track_array[current_track], 3);
+		U_MLT_Put_String("", 4);
 	}
-	
+
 }
+	
 

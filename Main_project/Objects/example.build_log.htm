@@ -21,59 +21,52 @@ Target DLL:      Segger\JL2CM3.dll V2.99.36.0
 Dialog DLL:      TCM.DLL V1.36.2.0
  
 <h2>Project:</h2>
-C:\mps2019_smirnov\In process\8_MODULE_EEPROM\example.uvprojx
+C:\mps2019_smirnov\Main_project\example.uvprojx
 Project File Date:  11/17/2019
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
 compiling main.c...
-user\main.c(20): warning:  #177-D: variable "num_of_tracks"  was declared but never referenced
+user\main.c(21): warning:  #177-D: variable "num_of_tracks"  was declared but never referenced
   	int num_of_tracks = 2;
-user\main.c(21): warning:  #177-D: variable "entire_size_in_words"  was declared but never referenced
-  	uint32_t entire_size_in_words = 26624;//word 32bit
-user\main.c(22): warning:  #550-D: variable "Address"  was set but never used
+user\main.c(62): warning:  #550-D: variable "Address"  was set but never used
   	uint32_t Address = 0;
-user\main.c(23): warning:  #550-D: variable "BankSelector"  was set but never used
+user\main.c(63): warning:  #550-D: variable "BankSelector"  was set but never used
   	uint32_t BankSelector = 0;
-user\main.c(24): warning:  #177-D: variable "i"  was declared but never referenced
-  	uint32_t i = 0;
-user\main.c(56): warning:  #550-D: variable "Address"  was set but never used
-  	uint32_t Address = 0;
-user\main.c(57): warning:  #550-D: variable "BankSelector"  was set but never used
-  	uint32_t BankSelector = 0;
-user\main.c(58): warning:  #177-D: variable "Data"  was declared but never referenced
+user\main.c(64): warning:  #177-D: variable "Data"  was declared but never referenced
   	uint32_t Data = 0;
-user\main.c(60): warning:  #177-D: variable "stroka"  was declared but never referenced
+user\main.c(66): warning:  #177-D: variable "stroka"  was declared but never referenced
   	char stroka[33];
-user\main.c(78): warning:  #177-D: variable "Data"  was declared but never referenced
+user\main.c(82): warning:  #177-D: variable "Data"  was declared but never referenced
   	uint32_t Data = 0;
-user\main.c(79): warning:  #177-D: variable "i"  was declared but never referenced
+user\main.c(83): warning:  #177-D: variable "i"  was declared but never referenced
   	uint32_t i = 0;
-user\main.c(96): warning:  #223-D: function "sprintf" declared implicitly
+user\main.c(100): warning:  #223-D: function "sprintf" declared implicitly
   	sprintf(stroka, "%d", num);
-user\main.c(97): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+user\main.c(101): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
   	U_MLT_Put_String(stroka, position);
-user\main.c(142): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
+user\main.c(146): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
   }
-user\main.c(215): warning:  #223-D: function "U_MLT_Init" declared implicitly
+user\main.c(206): warning:  #223-D: function "U_MLT_Init" declared implicitly
   	U_MLT_Init();
-user\main.c(250): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  			U_MLT_Put_String("Erase doesn't", 3);
-user\main.c(263): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  				U_MLT_Put_String("Record...", 3);
-user\main.c(270): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+user\main.c(244): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  			U_MLT_Put_String("Erase", 3);
+user\main.c(256): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  			U_MLT_Put_String("Record...", 3);
+user\main.c(268): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
   					U_MLT_Put_String("Empty!", 3);
-user\main.c(272): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+user\main.c(270): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
   					U_MLT_Put_String("Play...", 3);
-user\main.c(280): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  			U_MLT_Put_String(track_array[current_track], 3);
-user\main.c(208): warning:  #177-D: variable "stroka"  was declared but never referenced
+user\main.c(279): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  		U_MLT_Put_String(track_array[current_track], 3);
+user\main.c(199): warning:  #177-D: variable "stroka"  was declared but never referenced
   	char stroka[40]; //stroka dlya vivoda resultata
-user\main.c: 21 warnings, 0 errors
+user\main.c: 17 warnings, 0 errors
 linking...
-Program Size: Code=4796 RO-data=2400 RW-data=8 ZI-data=1636  
-".\Objects\example.axf" - 0 Error(s), 21 Warning(s).
+Program Size: Code=4816 RO-data=2400 RW-data=8 ZI-data=1636  
+FromELF: creating hex file...
+".\Objects\example.axf" - 0 Error(s), 17 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -100,15 +93,15 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: Keil::Device:Startup:1.5
-      Include file:  Config\MDR32F9Qx_config.h
+      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c
       Include file:  Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.h
       Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\startup_MDR32F9Qx.s
-      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c
       Include file:  Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
+      Include file:  Config\MDR32F9Qx_config.h
 
    * Component: Keil::Drivers:EEPROM:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_eeprom.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c
 
    * Component: Keil::Drivers:LIB:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_lib.h
@@ -118,12 +111,12 @@ Package Vendor: Keil
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c
 
    * Component: Keil::Drivers:POWER:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_power.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c
 
    * Component: Keil::Drivers:RST_CLK:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_rst_clk.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c
 
    * Component: Keil::Drivers:TIMER:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_timer.h
@@ -132,7 +125,7 @@ Package Vendor: Keil
    * Component: Keil::Drivers:WWDG:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_wwdg.h
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
