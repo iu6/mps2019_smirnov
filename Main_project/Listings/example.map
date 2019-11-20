@@ -18,8 +18,8 @@ Section Cross References
     main.o(i.main) refers to mdr32f9qx_rst_clk.o(i.RST_CLK_PCLKcmd) for RST_CLK_PCLKcmd
     main.o(i.main) refers to mlt_lcd.o(i.U_MLT_Init) for U_MLT_Init
     main.o(i.main) refers to main.o(i.BUTTONS_Init) for BUTTONS_Init
-    main.o(i.main) refers to main.o(i.current_btn_status) for current_btn_status
     main.o(i.main) refers to mlt_lcd.o(i.U_MLT_Put_String) for U_MLT_Put_String
+    main.o(i.main) refers to main.o(i.current_btn_status) for current_btn_status
     main.o(i.main) refers to main.o(i.erise_mem) for erise_mem
     main.o(i.main) refers to main.o(i.Delay) for Delay
     main.o(i.main) refers to main.o(i.write_track) for write_track
@@ -643,14 +643,14 @@ Image Symbol Table
     i.current_btn_status                     0x08000d9c   Section        0  main.o(i.current_btn_status)
     i.erise_mem                              0x08000e10   Section        0  main.o(i.erise_mem)
     i.main                                   0x08000e54   Section        0  main.o(i.main)
-    i.read_track                             0x08000fb0   Section        0  main.o(i.read_track)
-    i.track_is_empty                         0x08000fe0   Section        0  main.o(i.track_is_empty)
-    i.write_track                            0x08001020   Section        0  main.o(i.write_track)
-    .constdata                               0x08001074   Section      320  main.o(.constdata)
-    .constdata                               0x080011b4   Section     1824  mlt_lcd.o(.constdata)
-    MLT_Font                                 0x080011b4   Data        1792  mlt_lcd.o(.constdata)
-    init_image                               0x080018b4   Data          32  mlt_lcd.o(.constdata)
-    .conststring                             0x080018d4   Section       16  mlt_lcd.o(.conststring)
+    i.read_track                             0x08001048   Section        0  main.o(i.read_track)
+    i.track_is_empty                         0x08001078   Section        0  main.o(i.track_is_empty)
+    i.write_track                            0x080010b8   Section        0  main.o(i.write_track)
+    .constdata                               0x0800110c   Section      320  main.o(.constdata)
+    .constdata                               0x0800124c   Section     1824  mlt_lcd.o(.constdata)
+    MLT_Font                                 0x0800124c   Data        1792  mlt_lcd.o(.constdata)
+    init_image                               0x0800194c   Data          32  mlt_lcd.o(.constdata)
+    .conststring                             0x0800196c   Section       16  mlt_lcd.o(.conststring)
     EXECUTABLE_MEMORY_SECTION                0x20000000   Section        0  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
     ProgramDelay                             0x20000001   Thumb Code    20  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
     .data                                    0x2000031c   Section        4  mlt_lcd.o(.data)
@@ -831,12 +831,12 @@ Image Symbol Table
     U_MLT_Write_Data                         0x08000ccd   Thumb Code   190  mlt_lcd.o(i.U_MLT_Write_Data)
     current_btn_status                       0x08000d9d   Thumb Code   104  main.o(i.current_btn_status)
     erise_mem                                0x08000e11   Thumb Code    64  main.o(i.erise_mem)
-    main                                     0x08000e55   Thumb Code   288  main.o(i.main)
-    read_track                               0x08000fb1   Thumb Code    44  main.o(i.read_track)
-    track_is_empty                           0x08000fe1   Thumb Code    54  main.o(i.track_is_empty)
-    write_track                              0x08001021   Thumb Code    74  main.o(i.write_track)
-    Region$$Table$$Base                      0x080018e4   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08001914   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x08000e55   Thumb Code   408  main.o(i.main)
+    read_track                               0x08001049   Thumb Code    44  main.o(i.read_track)
+    track_is_empty                           0x08001079   Thumb Code    54  main.o(i.track_is_empty)
+    write_track                              0x080010b9   Thumb Code    74  main.o(i.write_track)
+    Region$$Table$$Base                      0x0800197c   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x080019ac   Number         0  anon$$obj.o(Region$$Table)
     EEPROM_ReadByte                          0x20000015   Thumb Code    84  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
     EEPROM_ReadHalfWord                      0x20000069   Thumb Code    86  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
     EEPROM_ReadWord                          0x200000bf   Thumb Code    76  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
@@ -857,9 +857,9 @@ Memory Map of the image
 
   Image Entry point : 0x080000c1
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00001c38, Max: 0x00020000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00001cd0, Max: 0x00020000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00001914, Max: 0x00020000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000019ac, Max: 0x00020000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -952,25 +952,25 @@ Memory Map of the image
     0x08000ccc   0x08000ccc   0x000000d0   Code   RO          127    i.U_MLT_Write_Data  mlt_lcd.o
     0x08000d9c   0x08000d9c   0x00000074   Code   RO            6    i.current_btn_status  main.o
     0x08000e10   0x08000e10   0x00000044   Code   RO            7    i.erise_mem         main.o
-    0x08000e54   0x08000e54   0x0000015c   Code   RO            8    i.main              main.o
-    0x08000fb0   0x08000fb0   0x00000030   Code   RO            9    i.read_track        main.o
-    0x08000fe0   0x08000fe0   0x00000040   Code   RO           10    i.track_is_empty    main.o
-    0x08001020   0x08001020   0x00000054   Code   RO           11    i.write_track       main.o
-    0x08001074   0x08001074   0x00000140   Data   RO           12    .constdata          main.o
-    0x080011b4   0x080011b4   0x00000720   Data   RO          128    .constdata          mlt_lcd.o
-    0x080018d4   0x080018d4   0x00000010   Data   RO          129    .conststring        mlt_lcd.o
-    0x080018e4   0x080018e4   0x00000030   Data   RO         1422    Region$$Table       anon$$obj.o
+    0x08000e54   0x08000e54   0x000001f4   Code   RO            8    i.main              main.o
+    0x08001048   0x08001048   0x00000030   Code   RO            9    i.read_track        main.o
+    0x08001078   0x08001078   0x00000040   Code   RO           10    i.track_is_empty    main.o
+    0x080010b8   0x080010b8   0x00000054   Code   RO           11    i.write_track       main.o
+    0x0800110c   0x0800110c   0x00000140   Data   RO           12    .constdata          main.o
+    0x0800124c   0x0800124c   0x00000720   Data   RO          128    .constdata          mlt_lcd.o
+    0x0800196c   0x0800196c   0x00000010   Data   RO          129    .conststring        mlt_lcd.o
+    0x0800197c   0x0800197c   0x00000030   Data   RO         1422    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08001914, Size: 0x00000988, Max: 0x00008000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080019ac, Size: 0x00000988, Max: 0x00008000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x08001914   0x0000031c   Code   RO          357    EXECUTABLE_MEMORY_SECTION  mdr32f9qx_eeprom.o
-    0x2000031c   0x08001c30   0x00000004   Data   RW          130    .data               mlt_lcd.o
-    0x20000320   0x08001c34   0x00000004   Data   RW          324    .data               system_mdr32f9qx.o
+    0x20000000   0x080019ac   0x0000031c   Code   RO          357    EXECUTABLE_MEMORY_SECTION  mdr32f9qx_eeprom.o
+    0x2000031c   0x08001cc8   0x00000004   Data   RW          130    .data               mlt_lcd.o
+    0x20000320   0x08001ccc   0x00000004   Data   RW          324    .data               system_mdr32f9qx.o
     0x20000324        -       0x00000060   Zero   RW         1296    .bss                c_w.l(libspace.o)
-    0x20000384   0x08001c38   0x00000004   PAD
+    0x20000384   0x08001cd0   0x00000004   PAD
     0x20000388        -       0x00000200   Zero   RW          314    HEAP                startup_mdr32f9qx.o
     0x20000588        -       0x00000400   Zero   RW          313    STACK               startup_mdr32f9qx.o
 
@@ -982,7 +982,7 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       916        114        320          0          0      59203   main.o
+      1068        146        320          0          0      59471   main.o
        796          8          0          0          0       4361   mdr32f9qx_eeprom.o
        556         18          0          0          0       4034   mdr32f9qx_port.o
         32          6          0          0          0        598   mdr32f9qx_rst_clk.o
@@ -991,7 +991,7 @@ Image component sizes
        208         24          0          4          0       1327   system_mdr32f9qx.o
 
     ----------------------------------------------------------------------
-      4438        326       2400          8       1536      79677   Object Totals
+      4590        358       2400          8       1536      79945   Object Totals
         30          0         48          0          0          0   (incl. Generated)
          2          0          0          0          0          0   (incl. Padding)
 
@@ -1041,15 +1041,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      4816        342       2400          8       1636      78673   Grand Totals
-      4816        342       2400          8       1636      78673   ELF Image Totals
-      4816        342       2400          8          0          0   ROM Totals
+      4968        374       2400          8       1636      78941   Grand Totals
+      4968        374       2400          8       1636      78941   ELF Image Totals
+      4968        374       2400          8          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 7216 (   7.05kB)
+    Total RO  Size (Code + RO Data)                 7368 (   7.20kB)
     Total RW  Size (RW Data + ZI Data)              1644 (   1.61kB)
-    Total ROM Size (Code + RO Data + RW Data)       7224 (   7.05kB)
+    Total ROM Size (Code + RO Data + RW Data)       7376 (   7.20kB)
 
 ==============================================================================
 

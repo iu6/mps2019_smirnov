@@ -197,14 +197,26 @@ int32_t main (void)
 	int current_track = 0;  //current_track = 0,1,...
 	int num_of_tracks = 2;
 	char stroka[40]; //stroka dlya vivoda resultata
-	char track_array[10][32] = {"track_1" , "track_2", "track_3","track_4" , "track_5", "track_6", "track_7" , "track_8", "track_9", "track_10" };	
-
+	char track_array[10][32] = {"\xD2\xF0\xE5\xEA 1" , "\xD2\xF0\xE5\xEA 2", "\xD2\xF0\xE5\xEA 3","\xD2\xF0\xE5\xEA 4" , "\xD2\xF0\xE5\xEA 5", "\xD2\xF0\xE5\xEA 6", "\xD2\xF0\xE5\xEA 7" , "\xD2\xF0\xE5\xEA 8", "\xD2\xF0\xE5\xEA 9", "\xD2\xF0\xE5\xEA 10" };	
+	/* opredelenie strok */
+	char ochistka[] = "\xCE\xF7\xE8\xF1\xF2\xEA\xE0";
+	char pamyati[] = "\xEF\xE0\xEC\xFF\xF2\xE8...";
+	char zapis[] = "\xC7\xE0\xEF\xF1\xFC...";
+	char vosproiz[] = "\xC2\xEE\xF1\xEF\xF0\xE8\xE7";
+	char vedenie[] = "\xE2\xE5\xE4\xE5\xED\xE8\xE5...";
+	char pusto[] = "\xCF\xF3\xF1\xF2\xEE!";
+	char smirnov[] = "\xD1\xEC\xE8\xF0\xED\xEE\xE2 \xC0.\xC0.";
+	char iu673[] = "\xC8\xD36-73";
 
   /* Enables the clock on EEPROM */
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
 	
 	U_MLT_Init();
 	BUTTONS_Init();
+	/* Init surname and group */ 
+	U_MLT_Put_String("", 0);
+	U_MLT_Put_String(smirnov, 1);
+	U_MLT_Put_String(iu673, 2);
 	
 	int current_status_up = 0;		//button to select track above
 	int current_status_down = 0;	//butotn to select tarck below
@@ -241,8 +253,8 @@ int32_t main (void)
 		if (current_btn_status(0) == 1 && current_status_select == 0){
 			//begin action
 			current_status_select = 1;
-			U_MLT_Put_String("Erase", 3);
-			U_MLT_Put_String("memory...", 4);
+			U_MLT_Put_String(ochistka, 4);
+			U_MLT_Put_String(pamyati, 5);
 			erise_mem();
 
 			Delay(500000);
@@ -253,7 +265,7 @@ int32_t main (void)
 		//RIGHT -> RECORD TRACK
 		if (current_btn_status(2) == 1 && current_status_right == 0){
 			//begin action
-			U_MLT_Put_String("Record...", 3);
+			U_MLT_Put_String(zapis, 4);
 			write_track(current_track + 1);
 			Delay(500000);
 			//end action
@@ -265,9 +277,10 @@ int32_t main (void)
 		if (current_btn_status(3) == 1 && current_status_left == 0) {
 			//begin action
 			if (track_is_empty(current_track + 1) == 1){
-					U_MLT_Put_String("Empty!", 3);
+					U_MLT_Put_String(pusto, 4);
 				} else {
-					U_MLT_Put_String("Play...", 3);
+					U_MLT_Put_String(vosproiz, 4);
+					U_MLT_Put_String(vedenie, 5);
 					read_track(current_track + 1);
 				}
 				Delay(500000);
@@ -276,8 +289,9 @@ int32_t main (void)
 		current_status_left = current_btn_status(3);
 
 		//print select-list on LCD
-		U_MLT_Put_String(track_array[current_track], 3);
-		U_MLT_Put_String("", 4);
+		U_MLT_Put_String(track_array[current_track], 4);
+		U_MLT_Put_String("", 5);
+		Delay(500);
 	}
 
 }

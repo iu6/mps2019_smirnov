@@ -48,25 +48,19 @@ user\main.c(101): warning:  #223-D: function "U_MLT_Put_String" declared implici
   	U_MLT_Put_String(stroka, position);
 user\main.c(146): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
   }
-user\main.c(206): warning:  #223-D: function "U_MLT_Init" declared implicitly
+user\main.c(208): warning:  #27-D: character value is out of range
+  	char iu673[] = "\xC8\xD36-73";
+user\main.c(213): warning:  #223-D: function "U_MLT_Init" declared implicitly
   	U_MLT_Init();
-user\main.c(244): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  			U_MLT_Put_String("Erase", 3);
-user\main.c(256): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  			U_MLT_Put_String("Record...", 3);
-user\main.c(268): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  					U_MLT_Put_String("Empty!", 3);
-user\main.c(270): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  					U_MLT_Put_String("Play...", 3);
-user\main.c(279): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  		U_MLT_Put_String(track_array[current_track], 3);
+user\main.c(216): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  	U_MLT_Put_String("", 0);
 user\main.c(199): warning:  #177-D: variable "stroka"  was declared but never referenced
   	char stroka[40]; //stroka dlya vivoda resultata
-user\main.c: 17 warnings, 0 errors
+user\main.c: 14 warnings, 0 errors
 linking...
-Program Size: Code=4816 RO-data=2400 RW-data=8 ZI-data=1636  
+Program Size: Code=4968 RO-data=2400 RW-data=8 ZI-data=1636  
 FromELF: creating hex file...
-".\Objects\example.axf" - 0 Error(s), 17 Warning(s).
+".\Objects\example.axf" - 0 Error(s), 14 Warning(s).
 
 <h2>Software Packages used:</h2>
 
