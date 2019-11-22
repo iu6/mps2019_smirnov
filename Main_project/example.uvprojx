@@ -423,6 +423,18 @@
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
+      <component Cclass="Drivers" Cgroup="ADC" Cvendor="Keil" Cversion="1.5" condition="CON_MDR1986BXX">
+        <package name="MDR1986BExx" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="Keil" version="1.5.2"/>
+        <targetInfos>
+          <targetInfo name="Target 1"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Drivers" Cgroup="DAC" Cvendor="Keil" Cversion="1.5" condition="CON_MDR1986BXX">
+        <package name="MDR1986BExx" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="Keil" version="1.5.2"/>
+        <targetInfos>
+          <targetInfo name="Target 1"/>
+        </targetInfos>
+      </component>
       <component Cclass="Drivers" Cgroup="EEPROM" Cvendor="Keil" Cversion="1.5" condition="CON_MDR1986BXX">
         <package name="MDR1986BExx" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="Keil" version="1.5.2"/>
         <targetInfos>
