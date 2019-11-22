@@ -1,0 +1,23 @@
+Dependencies for Project 'example', Target 'Target 1': (DO NOT MODIFY !)
+F (.\user\main.c)(0x5DD6F2AF)(--c99 --gnu -c --cpu Cortex-M3 -D__RTX -D__EVAL -g -O0 --apcs=interwork --split_sections -I .\user -I .\MLT -I \Generic-IC:\Keil_v5\ARM\RV31\Inc-I.\RTE\Device\MDR1986BE92-I.\RTE\_Target_1-IC:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\CMSIS\CM3\CoreSupport-IC:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\inc-IC:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\inc-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="528" -D_RTE_ -DUSE_MDR32F9Q2_Rev1-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+I (.\RTE\Device\MDR1986BE92\MDR32F9Qx_config.h)(0x5DB6C0EE)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5CEBC032)
+F (.\user\mlt_lcd.c)(0x5DD1274D)()
+F (.\user\lcd.c)(0x5DD1274D)()
+F (.\user\rst.c)(0x5DD1274D)()
+F (RTE\Device\MDR1986BE92\MDR32F9Qx_config.h)(0x5DD1274D)()
+F (RTE\Device\MDR1986BE92\startup_MDR32F9Qx.s)(0x5DD1274D)()
+F (RTE\Device\MDR1986BE92\system_MDR32F9Qx.c)(0x5DD1274D)()
+F (RTE\Device\MDR1986BE92\system_MDR32F9Qx.h)(0x5DD1274D)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_adc.c)(0x5C540C9C)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_bkp.c)(0x5C540CA2)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_can.c)(0x5C540CA6)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_comp.c)(0x5C540CAA)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dac.c)(0x5C540CAE)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dma.c)(0x5C540CB4)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_ebc.c)(0x5C540CB8)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c)(0x5C540CCC)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c)(0x5C540CD2)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c)(0x5C540CD8)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_timer.c)(0x5DA4112A)()
+F (C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_uart.c)(0x5D47CA14)()

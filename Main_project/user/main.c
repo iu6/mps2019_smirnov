@@ -3,6 +3,8 @@
 #include "MDR32F9Qx_eeprom.h"
 #include "MDR32F9Qx_port.h"
 #include "MDR32F9Qx_rst_clk.h"
+#include "MDR32F9Qx_adc.h"              // Keil::Drivers:ADC
+
 
 #define EEPROM_PAGE_SIZE				(4*1024)
 #define MAIN_EEPAGE							5
@@ -14,7 +16,7 @@
 //=========    FUNCTIONS FOR WORK WITH MEMORY    ================================
 //===============================================================================
 
-//erise only flags
+//erise entire main bank
 //not ready
 void erise_mem(){
 	//entire mem - 26624 words (32 bit)
@@ -49,7 +51,8 @@ void write_track(int num){
 
 	for (i = 1; i < size_in_words; i++)
 	{
-	  EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
+		Data = ADC_Receive_Word();
+		EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
 	}
 
 	//sozdanie metki
@@ -145,6 +148,23 @@ int current_btn_status(int btn_name) {
 	
 }
 
+//init ADC
+void MY_ADC_Init(void){
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_ADC, ENABLE);
+	ADC_InitTypeDef ADC_Nastroyka;
+	ADC_StructInit(&ADC_Nastroyka);
+	ADC_Init(&ADC_Nastroyka);
+}
+
+//init ADC1
+void MY_ADC_1_Init(void){
+	ADCx_InitTypeDef ADC_1_Nastroyka;
+	ADCx_StructInit(&ADC_1_Nastroyka);
+	ADC_1_Nastroyka.ADC_ChannelNumber = ADC_CH_ADC7; //channel 7 connected to BNC
+	ADC1_Init(&ADC_1_Nastroyka);
+	ADC1_Cmd(ENABLE);
+}
+
 
 void BUTTONS_Init(void) {
 
@@ -192,6 +212,15 @@ void Delay(int num)
   }
 }
 
+/* функция считывания результата преобразования. 
+После считывания флаг будет сброшен и может быть произведено
+следующее преобразование */
+uint32_t ADC_Receive_Word(){
+	ADC1_Start();
+	while (ADC1_GetFlagStatus(ADC1_FLAG_END_OF_CONVERSION) == 0); 
+	return ADC1_GetResult() & 0x00000FFF; //получение 12-разрядного результата
+}
+
 int32_t main (void)
 {
 	int current_track = 0;  //current_track = 0,1,...
@@ -201,18 +230,22 @@ int32_t main (void)
 	/* opredelenie strok */
 	char ochistka[] = "\xCE\xF7\xE8\xF1\xF2\xEA\xE0";
 	char pamyati[] = "\xEF\xE0\xEC\xFF\xF2\xE8...";
-	char zapis[] = "\xC7\xE0\xEF\xF1\xFC...";
+	char zapis[] = "\xC7\xE0\xEF\xE8\xF1\xFC...";
 	char vosproiz[] = "\xC2\xEE\xF1\xEF\xF0\xE8\xE7";
 	char vedenie[] = "\xE2\xE5\xE4\xE5\xED\xE8\xE5...";
+	char vosproizvedenie[] = "\xC2\xEE\xF1\xEF\xF0\xE8\xE7\xE2\xE5\xE4\xE5\xED\xE8\xE5...";
 	char pusto[] = "\xCF\xF3\xF1\xF2\xEE!";
 	char smirnov[] = "\xD1\xEC\xE8\xF0\xED\xEE\xE2 \xC0.\xC0.";
-	char iu673[] = "\xC8\xD36-73";
+	char iu673[] = "\xC8\xD3\x36-73";
 
   /* Enables the clock on EEPROM */
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
 	
 	U_MLT_Init();
 	BUTTONS_Init();
+	MY_ADC_Init();
+	MY_ADC_1_Init();
+	
 	/* Init surname and group */ 
 	U_MLT_Put_String("", 0);
 	U_MLT_Put_String(smirnov, 1);
@@ -279,8 +312,7 @@ int32_t main (void)
 			if (track_is_empty(current_track + 1) == 1){
 					U_MLT_Put_String(pusto, 4);
 				} else {
-					U_MLT_Put_String(vosproiz, 4);
-					U_MLT_Put_String(vedenie, 5);
+					U_MLT_Put_String(vosproizvedenie, 4);
 					read_track(current_track + 1);
 				}
 				Delay(500000);

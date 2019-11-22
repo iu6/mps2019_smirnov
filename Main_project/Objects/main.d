@@ -10,3 +10,4 @@
 .\objects\main.o: C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_lib.h
 .\objects\main.o: C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_port.h
 .\objects\main.o: C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_rst_clk.h
+.\objects\main.o: C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_adc.h

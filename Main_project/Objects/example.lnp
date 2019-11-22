@@ -11,6 +11,7 @@
 ".\objects\mdr32f9qx_rst_clk.o"
 ".\objects\mdr32f9qx_timer.o"
 ".\objects\mdr32f9qx_wwdg.o"
+".\objects\mdr32f9qx_adc.o"
 --strict --scatter ".\Objects\example.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
