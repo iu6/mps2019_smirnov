@@ -1,25 +1,24 @@
 /* Includes ------------------------------------------------------------------*/
 #include "MDR32Fx.h"
-#include "MDR32F9Qx_eeprom.h"
-#include "MDR32F9Qx_port.h"
-#include "MDR32F9Qx_rst_clk.h"
-#include "MDR32F9Qx_adc.h"              // Keil::Drivers:ADC
+#include "MDR32F9Qx_eeprom.h" 	//библиотека для работы с EEPROM
+#include "MDR32F9Qx_port.h" 	//библиотека для работы с портами
+#include "MDR32F9Qx_rst_clk.h"  //библиотека для тактирования
+#include "MDR32F9Qx_adc.h" 		//библиотека для работы с АЦП
+#include "MDR32F9Qx_dac.h"    //библиотека для работы с ЦАП
+#include <cmath>
 
-
-#define EEPROM_PAGE_SIZE				(4*1024)
-#define MAIN_EEPAGE							5
-#define UP											PORT_Pin_5//define pin 5  to UP butto
+#define EEPROM_PAGE_SIZE				(4*1024)  //1 страница памяти - 4К
+#define MAIN_EEPAGE							5     
 /* Private variables ---------------------------------------------------------*/
 
 
 //===============================================================================
-//=========    FUNCTIONS FOR WORK WITH MEMORY    ================================
+//=========    ОПИСАНИЕ ФУНКЦИЙ ДЛЯ РАБОТЫ С ПАМЯТЬЮ    =========================
 //===============================================================================
 
-//erise entire main bank
-//not ready
+//Функция очистки областей памяти, куда были записаны треки
 void erise_mem(){
-	//entire mem - 26624 words (32 bit)
+	//всего 26624 слова по 32 бита памяти доступно
 	int num_of_tracks = 2;
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
@@ -27,18 +26,19 @@ void erise_mem(){
 	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	//erase track 1 (13 pages)
+	//очистка первого трека (13 страниц)
 	for (i = 0; i < 13; i++) {
 		EEPROM_ErasePage(Address + i*EEPROM_PAGE_SIZE, BankSelector);
 	}
-	//erase track 2 (13 pages)
+	//очистка второго трека (13 страниц)
 	for (i = 0; i < 13; i++){
 		EEPROM_ErasePage(Address + 13*EEPROM_PAGE_SIZE + i*EEPROM_PAGE_SIZE, BankSelector);
 	}
 
 }
 
-//num should be  > 0
+/*Функция считывания значения напряжения на АЦП и записи в память EEPROM
+num >= 0 (1,2..) */
 void write_track(int num){
 //Write to EEPROM
 	uint32_t Address = 0;
@@ -51,14 +51,16 @@ void write_track(int num){
 
 	for (i = 1; i < size_in_words; i++)
 	{
-		Data = ADC_Receive_Word();
-		EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
+		//Data = ADC_Receive_Word();
+		Data = 2000;
+		//EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
 	}
 
 	//sozdanie metki
 	EEPROM_ProgramWord (Address, BankSelector, 0xABCDEFAB );
 }
 
+/* Функция считывания памяти и вывода на ЦАП (AUDIO)  */
 void read_track(int num){
   	//Read from EEPROM 
 	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
@@ -66,19 +68,41 @@ void read_track(int num){
 	uint32_t BankSelector = 0;
 	uint32_t Data = 0;
 	uint32_t i = 0;
+	int j = 0;
+	
+	//формирование синусоиды =======================================================<
+	int freq_des = 200;
+	int amplitude = 20;
+	int d[200];  // freq_des = 200
+	int freq_des = 200;
+
+	for (i = 0; i < freq_des; i++){
+		d[i] = (int)(10 + 10 * sin((double)(((double)i/(double)freq_des))*2*3.1415));
+	}
+	//конец формирования синусоиды ================================================>
+
 	char stroka[33];
 	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1)*EEPROM_PAGE_SIZE*13;
 	BankSelector = EEPROM_Main_Bank_Select;
 	for (i = 1; i < size_in_words; i++)
 	{
-		// Data = EEPROM_ReadWord(Address + i*4, BankSelector);
-		// sprintf(stroka, "%d", Data);
-		// U_MLT_Put_String(stroka, 3);
-		// Delay(1000);
+		// Data = (EEPROM_ReadWord(Address + i*4, BankSelector) + j) & 0x00000FFF;
+		// DAC2_SetData(Data);
+		// Delay(200);
+		
+		//вывод синусоиды ==========================================================<
+		for (j = 0; j < freq_des ;j++) {
+			DAC2_SetData(d[j]);
+			Delay(10); //настройка частоты
+		}
+		//конец вывода синусоиды ===================================================>
 	}
+		
+	//DAC2_SetData(0);
 }
 
-// arguments = 1,2... (>0)
+/* Функция проверки, записан ли трек под номером num или пуст 
+num = 1,2... (>0)*/
 int track_is_empty(int num){
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
@@ -95,7 +119,7 @@ int track_is_empty(int num){
 }
 
 //===============================================================================
-//=========  END  FUNCTIONS FOR WORK WITH MEMORY    =============================
+//=========  КОНЕЦ ОПИСАНИЯ ФУНКЦИЙ ДЛЯ РАБОТЫ С ПАМЯТЬЮ   ======================
 //===============================================================================
 
 void Screen_put_number(int num, int position) {
@@ -214,12 +238,29 @@ void Delay(int num)
 
 /* функция считывания результата преобразования. 
 После считывания флаг будет сброшен и может быть произведено
-следующее преобразование */
+следующее преобразование командой ADC1_Start()*/
 uint32_t ADC_Receive_Word(){
 	ADC1_Start();
 	while (ADC1_GetFlagStatus(ADC1_FLAG_END_OF_CONVERSION) == 0); 
 	return ADC1_GetResult() & 0x00000FFF; //получение 12-разрядного результата
 }
+
+/* Функция настройки ЦАП  */
+void MY_DAC2_Init(void){
+	//Настройка порта для вывода аналогового сигнала на AUDIO выход
+
+	//Тактирование порта вывода - PORTE и ЦАП
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTE | RST_CLK_PCLK_DAC, ENABLE);
+	PORT_InitTypeDef PORT_InitStructure;
+	PORT_InitStructure.PORT_Pin = PORT_Pin_0; //PE0
+	PORT_InitStructure.PORT_OE = PORT_OE_OUT;
+	PORT_InitStructure.PORT_MODE = PORT_MODE_ANALOG;
+	PORT_Init(MDR_PORTE, &PORT_InitStructure); 
+	
+	DAC2_Init(DAC2_AVCC); //выбор опорного напряжения (3.3V)
+	DAC2_Cmd(ENABLE);
+}
+
 
 int32_t main (void)
 {
@@ -237,7 +278,6 @@ int32_t main (void)
 	char pusto[] = "\xCF\xF3\xF1\xF2\xEE!";
 	char smirnov[] = "\xD1\xEC\xE8\xF0\xED\xEE\xE2 \xC0.\xC0.";
 	char iu673[] = "\xC8\xD3\x36-73";
-
   /* Enables the clock on EEPROM */
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
 	
@@ -245,6 +285,7 @@ int32_t main (void)
 	BUTTONS_Init();
 	MY_ADC_Init();
 	MY_ADC_1_Init();
+	MY_DAC2_Init();
 	
 	/* Init surname and group */ 
 	U_MLT_Put_String("", 0);

@@ -65,7 +65,7 @@ int main(void)
 	{
 		for (i = 0; i < freq_des ;i++) {
 			DAC2_SetData(d[i]);
-			DELAY(2); //nastroyka chastoti
+			DELAY(20); //nastroyka chastoti
 		}
 		
 	}
