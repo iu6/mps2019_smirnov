@@ -16,19 +16,21 @@
  */
 #define CMSIS_device_header "MDR32Fx.h"
 
-/*  ARM::CMSIS:RTOS:Keil RTX:4.81.1 */
-#define RTE_CMSIS_RTOS                  /* CMSIS-RTOS */
-        #define RTE_CMSIS_RTOS_RTX              /* CMSIS-RTOS Keil RTX */
+/*  ARM::CMSIS:RTOS2:Keil RTX5:Library:5.5.0 */
+#define RTE_CMSIS_RTOS2                 /* CMSIS-RTOS2 */
+        #define RTE_CMSIS_RTOS2_RTX5            /* CMSIS-RTOS2 Keil RTX5 */
 /*  Keil.ARM Compiler::Compiler:I/O:File:File System:1.2.0 */
 #define RTE_Compiler_IO_File            /* Compiler I/O: File */
           #define RTE_Compiler_IO_File_FS         /* Compiler I/O: File (File System) */
-/*  Keil.MDK-Pro::File System:CORE:LFN:6.11.0 */
+/*  Keil.MDK-Plus::File System:CORE:LFN:6.11.0 */
 #define RTE_FileSystem_Core             /* File System Core */
           #define RTE_FileSystem_LFN              /* File System with Long Filename support */
           #define RTE_FileSystem_Release          /* File System Release Version */
-/*  Keil.MDK-Pro::File System:Drive:Memory Card:6.11.0 */
+/*  Keil.MDK-Plus::File System:Drive:Memory Card:6.11.0 */
 #define RTE_FileSystem_Drive_MC_0       /* File System Memory Card Drive 0 */
 
+/*  Keil::CMSIS Driver:SPI:Multi-Slave:1.0.1 */
+#define RTE_Drivers_SPI_MultiSlave      /* Driver SPI Multi-Slave */
 
 
 #endif /* RTE_COMPONENTS_H */

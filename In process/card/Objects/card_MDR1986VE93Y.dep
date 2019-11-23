@@ -1,13 +1,23 @@
 Dependencies for Project 'card', Target 'MDR1986VE93Y': (DO NOT MODIFY !)
-F (.\Source\main.c)(0x55EC8046)(--c99 -c --cpu Cortex-M3 -D__RTX -g -O0 --apcs=interwork --split_sections --signed_chars --asm --interleave --asm_dir ".\\Listings\\"-I D:\Keil555\1986VE9X\card\RTE-I D:\Keil555\1986VE9X\card\RTE\Device\MDR1986BE93-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\Driver\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\RTOS\RTX\INC-I C:\Keil_v5\ARM\PACK\Keil\MDK-Middleware\6.5.0\FileSystem\Include-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\CMSIS_Driver\MDR1986VE9X-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Config-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Libraries\CMSIS\CM3\CoreSupport-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\inc-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Libraries\MDR32F9Qx_StdPeriph_Driver\inc-D__UVISION_VERSION="516" -D_RTE_ -DUSE_MDR32F9Q3_Rev1-o .\objects\main.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\Source\main.c)(0x5DD94BBD)(--c99 -c --cpu Cortex-M3 -D__RTX -g -O0 --apcs=interwork --split_sections --signed_chars --asm --interleave --asm_dir ".\\Listings\\"-I D:\Keil555\1986VE9X\card\RTE-I D:\Keil555\1986VE9X\card\RTE\Device\MDR1986BE93-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\Driver\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\RTOS\RTX\INC-I C:\Keil_v5\ARM\PACK\Keil\MDK-Middleware\6.5.0\FileSystem\Include-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\CMSIS_Driver\MDR1986VE9X-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Config-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Libraries\CMSIS\CM3\CoreSupport-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\inc-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Libraries\MDR32F9Qx_StdPeriph_Driver\inc-D__UVISION_VERSION="516" -D_RTE_ -DUSE_MDR32F9Q3_Rev1-o .\objects\main.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (Source\main.h)(0x55EC7390)
-F (C:\Packs\ARM\CMSIS\5.5.1\CMSIS\RTOS\RTX\LIB\ARM\RTX_CM3.lib)(0x5C8BA64A)()
-F (RTE\CMSIS\RTX_Conf_CM.c)(0x55EC81FA)()
-F (C:\Packs\Keil\ARM_Compiler\1.6.1\Source\retarget_io.c)(0x584E700E)()
-F (RTE\Device\MDR1986BE93\MDR32F9Qx_config.h)(0x5C540D10)()
-F (RTE\Device\MDR1986BE93\startup_MDR32F9Qx.s)(0x55EC2CBE)()
-F (RTE\Device\MDR1986BE93\system_MDR32F9Qx.c)(0x542BE8B4)()
-F (RTE\Device\MDR1986BE93\system_MDR32F9Qx.h)(0x542BE8B4)()
-F (C:\Packs\Keil\MDK-Middleware\7.8.0\FileSystem\Lib\ARM\FS_LFN_CM3_L.lib)(0x5BE2A0FE)()
-F (RTE\File_System\FS_Config.c)(0x557AC28E)()
-F (RTE\File_System\FS_Config_MC_0.h)(0x55EC827C)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\ARM\CMSIS\5.5.1\CMSIS\RTOS2\RTX\Library\ARM\RTX_CM3.lib)(0x5C8BA64A)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\ARM\CMSIS\5.5.1\CMSIS\RTOS2\RTX\Source\rtx_lib.c)(0x5C8F9424)()
+F (RTE\CMSIS\RTX_Config.c)(0x5C8F5E24)()
+F (RTE\CMSIS\RTX_Config.h)(0x5C8F9424)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\ARM\CMSIS-Driver\2.4.0\SPI\SPI_MultiSlave.c)(0x5C8BBB9C)()
+F (RTE\CMSIS_Driver\SPI_MultiSlave_Config.h)(0x5C8BBB9C)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\ARM_Compiler\1.6.1\Source\retarget_io.c)(0x584E700E)()
+F (RTE\Device\MDR1986BE92\MDR32F9Qx_config.h)(0x5C540D10)()
+F (RTE\Device\MDR1986BE92\startup_MDR32F9Qx.s)(0x5B0677DA)()
+F (RTE\Device\MDR1986BE92\system_MDR32F9Qx.c)(0x5B0677EA)()
+F (RTE\Device\MDR1986BE92\system_MDR32F9Qx.h)(0x5B0677F6)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_bkp.c)(0x5C540CA2)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dma.c)(0x5C540CB4)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c)(0x5C540CCC)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c)(0x5C540CD8)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_timer.c)(0x5C540CE0)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_uart.c)(0x5D47CA14)()
+F (RTE\File_System\FS_Config.c)(0x5DD91B57)()
+F (RTE\File_System\FS_Config_MC_0.h)(0x5DD91B57)()
+F (C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.8.0\FileSystem\Lib\ARM\FS_LFN_CM3_L.lib)(0x5BE2A0FE)()

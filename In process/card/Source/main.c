@@ -1,4 +1,16 @@
-#include "main.h"
+#include <MDR32Fx.h>
+
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "MDR32F9Qx_rst_clk.h"          // Keil::Drivers:RST_CLK
+
+#include <rl_fs.h>
+
+//  варц 8 ћ√ц * (9+1) = 80 ћ√ц
+#define RST_CLK_PLL_CONTROL_PLL_CPU_MUL 9
+
+extern const unsigned char Ver[2];
 
 /*
 	»спользована среда проектировани€ Keil uVision ver. 5.16.
