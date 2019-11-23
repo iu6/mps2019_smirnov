@@ -52,9 +52,8 @@ void write_track(int num)
 
 	for (i = 1; i < size_in_words; i++)
 	{
-		//Data = ADC_Receive_Word();
-		Data = 2000;
-		//EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
+		Data = ADC_Receive_Word();
+		EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
 	}
 
 	//sozdanie metki
@@ -73,15 +72,15 @@ void read_track(int num)
 	int j = 0;
 
 	//формирование синусоиды =======================================================<
-	int freq_des = 200;
-	int amplitude = 20;
-	int d[200]; // freq_des = 200
-	int freq_des = 200;
+	// int freq_des = 200;
+	// int amplitude = 20;
+	// int d[200]; // freq_des = 200
+	// int freq_des = 200;
 
-	for (i = 0; i < freq_des; i++)
-	{
-		d[i] = (int)(10 + 10 * sin((double)(((double)i / (double)freq_des)) * 2 * 3.1415));
-	}
+	// for (i = 0; i < freq_des; i++)
+	// {
+	// 	d[i] = (int)(10 + 10 * sin((double)(((double)i / (double)freq_des)) * 2 * 3.1415));
+	// }
 	//конец формирования синусоиды ================================================>
 
 	char stroka[33];
@@ -89,16 +88,30 @@ void read_track(int num)
 	BankSelector = EEPROM_Main_Bank_Select;
 	for (i = 1; i < size_in_words; i++)
 	{
-		// Data = (EEPROM_ReadWord(Address + i*4, BankSelector) + j) & 0x00000FFF;
+		//программный ШИМ
+		DAC2_SetData(2000);
+		Data = (EEPROM_ReadWord(Address + i*4, BankSelector)) & 0x000000FF; // 0 - 256 
+		for (j = 0; j < Data; j ++)
+		{
+			
+		}
+
+		DAC2_SetData(0);
+		for (j = 0; j < (256 - Data); j++)
+		{
+			
+		}
+
+		// Data = (EEPROM_ReadWord(Address + i*4, BankSelector)) & 0x000000FF;
 		// DAC2_SetData(Data);
-		// Delay(200);
+		// Delay(100);
 
 		//вывод синусоиды ==========================================================<
-		for (j = 0; j < freq_des; j++)
-		{
-			DAC2_SetData(d[j]);
-			Delay(10); //настройка частоты
-		}
+		// for (j = 0; j < freq_des; j++)
+		// {
+		// 	DAC2_SetData(d[j]);
+		// 	Delay(10); //настройка частоты
+		// }
 		//конец вывода синусоиды ===================================================>
 	}
 
@@ -255,8 +268,7 @@ void Delay(int num)
 uint32_t ADC_Receive_Word()
 {
 	ADC1_Start();
-	while (ADC1_GetFlagStatus(ADC1_FLAG_END_OF_CONVERSION) == 0)
-		;
+	while (ADC1_GetFlagStatus(ADC1_FLAG_END_OF_CONVERSION) == 0);
 	return ADC1_GetResult() & 0x00000FFF; //получение 12-разрядного результата
 }
 

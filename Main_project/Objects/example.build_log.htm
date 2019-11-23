@@ -28,48 +28,34 @@ Project File Date:  11/22/2019
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
 compiling main.c...
-user\main.c(22): warning:  #177-D: variable "num_of_tracks"  was declared but never referenced
+user\main.c(21): warning:  #177-D: variable "num_of_tracks"  was declared but never referenced
   	int num_of_tracks = 2;
-user\main.c(47): warning:  #550-D: variable "Data"  was set but never used
-  	uint32_t Data = num; //16 bit na odnu zipis'
-user\main.c(91): warning:  #223-D: function "Delay" declared implicitly
-  			Delay(1); //nastroyka chastoti
-user\main.c(66): warning:  #550-D: variable "Address"  was set but never used
-  	uint32_t Address = 0;
-user\main.c(67): warning:  #550-D: variable "BankSelector"  was set but never used
-  	uint32_t BankSelector = 0;
-user\main.c(68): warning:  #177-D: variable "Data"  was declared but never referenced
-  	uint32_t Data = 0;
-user\main.c(73): warning:  #177-D: variable "amplitude"  was declared but never referenced
-  	int amplitude = 20;
-user\main.c(81): warning:  #177-D: variable "stroka"  was declared but never referenced
+user\main.c(55): warning:  #223-D: function "ADC_Receive_Word" declared implicitly
+  		Data = ADC_Receive_Word();
+user\main.c(86): warning:  #177-D: variable "stroka"  was declared but never referenced
   	char stroka[33];
-user\main.c(102): warning:  #177-D: variable "Data"  was declared but never referenced
+user\main.c(127): warning:  #177-D: variable "Data"  was declared but never referenced
   	uint32_t Data = 0;
-user\main.c(103): warning:  #177-D: variable "i"  was declared but never referenced
+user\main.c(128): warning:  #177-D: variable "i"  was declared but never referenced
   	uint32_t i = 0;
-user\main.c(120): warning:  #223-D: function "sprintf" declared implicitly
-  	sprintf(stroka, "%d", num);
-user\main.c(121): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
-  	U_MLT_Put_String(stroka, position);
-user\main.c(166): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
+user\main.c(198): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
   }
-user\main.c(224): warning:  #159-D: declaration is incompatible with previous "Delay"  (declared at line 91)
-  void Delay(int num)
-user\main.c(277): warning:  #223-D: function "U_MLT_Init" declared implicitly
+user\main.c(268): warning:  #159-D: declaration is incompatible with previous "ADC_Receive_Word"  (declared at line 55)
+  uint32_t ADC_Receive_Word()
+user\main.c(311): warning:  #223-D: function "U_MLT_Init" declared implicitly
   	U_MLT_Init();
-user\main.c(284): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+user\main.c(318): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
   	U_MLT_Put_String("", 0);
-user\main.c(262): warning:  #177-D: variable "stroka"  was declared but never referenced
-  	char stroka[40]; //stroka dlya vivoda resultata
-user\main.c(268): warning:  #177-D: variable "vosproiz"  was declared but never referenced
+user\main.c(296): warning:  #177-D: variable "stroka"  was declared but never referenced
+  	char stroka[40]; //строка для хранения и вывода результата вычислений
+user\main.c(302): warning:  #177-D: variable "vosproiz"  was declared but never referenced
   	char vosproiz[] = "\xC2\xEE\xF1\xEF\xF0\xE8\xE7";
-user\main.c(269): warning:  #177-D: variable "vedenie"  was declared but never referenced
+user\main.c(303): warning:  #177-D: variable "vedenie"  was declared but never referenced
   	char vedenie[] = "\xE2\xE5\xE4\xE5\xED\xE8\xE5...";
-user\main.c: 19 warnings, 0 errors
+user\main.c: 12 warnings, 0 errors
 linking...
-Program Size: Code=9876 RO-data=2688 RW-data=8 ZI-data=1636  
-".\Objects\example.axf" - 0 Error(s), 19 Warning(s).
+Program Size: Code=5564 RO-data=2400 RW-data=8 ZI-data=1636  
+".\Objects\example.axf" - 0 Error(s), 12 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -98,11 +84,11 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: Keil::Device:Startup:1.5
+      Include file:  Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.h
       Include file:  Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
       Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c
-      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\startup_MDR32F9Qx.s
-      Include file:  Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.h
       Include file:  Config\MDR32F9Qx_config.h
+      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\startup_MDR32F9Qx.s
 
    * Component: Keil::Drivers:ADC:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_adc.h
@@ -113,8 +99,8 @@ Package Vendor: Keil
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dac.c
 
    * Component: Keil::Drivers:EEPROM:1.5
-      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_eeprom.h
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_eeprom.h
 
    * Component: Keil::Drivers:LIB:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_lib.h
@@ -136,9 +122,9 @@ Package Vendor: Keil
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_timer.h
 
    * Component: Keil::Drivers:WWDG:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_wwdg.h
-Build Time Elapsed:  00:00:00
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
