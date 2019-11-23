@@ -1,0 +1,1898 @@
+L 1 "RTE\CMSIS\RTX_Conf_CM.c"
+N/*----------------------------------------------------------------------------
+N *      CMSIS-RTOS  -  RTX
+N *----------------------------------------------------------------------------
+N *      Name:    RTX_Conf_CM.C
+N *      Purpose: Configuration of CMSIS RTX Kernel for Cortex-M
+N *      Rev.:    V4.70.1
+N *----------------------------------------------------------------------------
+N *
+N * Copyright (c) 1999-2009 KEIL, 2009-2015 ARM Germany GmbH
+N * All rights reserved.
+N * Redistribution and use in source and binary forms, with or without
+N * modification, are permitted provided that the following conditions are met:
+N *  - Redistributions of source code must retain the above copyright
+N *    notice, this list of conditions and the following disclaimer.
+N *  - Redistributions in binary form must reproduce the above copyright
+N *    notice, this list of conditions and the following disclaimer in the
+N *    documentation and/or other materials provided with the distribution.
+N *  - Neither the name of ARM  nor the names of its contributors may be used 
+N *    to endorse or promote products derived from this software without 
+N *    specific prior written permission.
+N *
+N * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+N * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+N * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+N * ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
+N * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+N * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+N * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+N * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+N * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+N * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+N * POSSIBILITY OF SUCH DAMAGE.
+N *---------------------------------------------------------------------------*/
+N 
+N#include "cmsis_os.h"
+L 1 "C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\RTOS\RTX\INC\cmsis_os.h" 1
+N/* ----------------------------------------------------------------------
+N * $Date:        5. February 2013
+N * $Revision:    V1.02
+N *
+N * Project:      CMSIS-RTOS API
+N * Title:        cmsis_os.h RTX header file
+N *
+N * Version 0.02
+N *    Initial Proposal Phase
+N * Version 0.03
+N *    osKernelStart added, optional feature: main started as thread
+N *    osSemaphores have standard behavior
+N *    osTimerCreate does not start the timer, added osTimerStart
+N *    osThreadPass is renamed to osThreadYield
+N * Version 1.01
+N *    Support for C++ interface
+N *     - const attribute removed from the osXxxxDef_t typedef's
+N *     - const attribute added to the osXxxxDef macros
+N *    Added: osTimerDelete, osMutexDelete, osSemaphoreDelete
+N *    Added: osKernelInitialize
+N * Version 1.02
+N *    Control functions for short timeouts in microsecond resolution:
+N *    Added: osKernelSysTick, osKernelSysTickFrequency, osKernelSysTickMicroSec
+N *    Removed: osSignalGet 
+N *----------------------------------------------------------------------------
+N *
+N * Copyright (c) 2013 ARM LIMITED
+N * All rights reserved.
+N * Redistribution and use in source and binary forms, with or without
+N * modification, are permitted provided that the following conditions are met:
+N *  - Redistributions of source code must retain the above copyright
+N *    notice, this list of conditions and the following disclaimer.
+N *  - Redistributions in binary form must reproduce the above copyright
+N *    notice, this list of conditions and the following disclaimer in the
+N *    documentation and/or other materials provided with the distribution.
+N *  - Neither the name of ARM  nor the names of its contributors may be used
+N *    to endorse or promote products derived from this software without
+N *    specific prior written permission.
+N *
+N * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+N * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+N * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+N * ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
+N * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+N * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+N * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+N * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+N * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+N * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+N * POSSIBILITY OF SUCH DAMAGE.
+N *---------------------------------------------------------------------------*/
+N
+N
+N#ifndef _CMSIS_OS_H
+N#define _CMSIS_OS_H
+N
+N#define osCMSIS           0x10002      ///< CMSIS-RTOS API version (main [31:16] .sub [15:0])
+N
+N#define osCMSIS_RTX     ((4<<16)|78)   ///< RTOS identification and version (main [31:16] .sub [15:0])
+N
+N#define osKernelSystemId "RTX V4.78"   ///< RTOS identification string
+N
+N
+N#define osFeature_MainThread   1       ///< main can be thread
+N#define osFeature_Pool         1       ///< Memory Pools available
+N#define osFeature_MailQ        1       ///< Mail Queues available
+N#define osFeature_MessageQ     1       ///< Message Queues available
+N#define osFeature_Signals      16      ///< 16 Signal Flags available per thread
+N#define osFeature_Semaphore    65535   ///< Maximum count for \ref osSemaphoreCreate function
+N#define osFeature_Wait         0       ///< osWait not available
+N#define osFeature_SysTick      1       ///< osKernelSysTick functions available
+N
+N#if defined (__CC_ARM)
+X#if 1L
+N#define os_InRegs __value_in_regs      // Compiler specific: force struct in registers
+N#else
+S#define os_InRegs
+N#endif
+N
+N#include <stdint.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h" 1
+N/* Copyright (C) ARM Ltd., 1999,2014 */
+N/* All rights reserved */
+N
+N/*
+N * RCS $Revision: 185525 $
+N * Checkin $Date: 2014-05-29 12:44:48 +0100 (Thu, 29 May 2014) $
+N * Revising $Author: agrant $
+N */
+N
+N#ifndef __stdint_h
+N#define __stdint_h
+N#define __ARMCLIB_VERSION 5060001
+N
+N  #ifdef __INT64_TYPE__
+S    /* armclang predefines '__INT64_TYPE__' and '__INT64_C_SUFFIX__' */
+S    #define __INT64 __INT64_TYPE__
+N  #else
+N    /* armcc has builtin '__int64' which can be used in --strict mode */
+N    #define __INT64 __int64
+N    #define __INT64_C_SUFFIX__ ll
+N  #endif
+N  #define __PASTE2(x, y) x ## y
+N  #define __PASTE(x, y) __PASTE2(x, y)
+N  #define __INT64_C(x)  __ESCAPE__(__PASTE(x, __INT64_C_SUFFIX__))
+N  #define __UINT64_C(x)  __ESCAPE__(__PASTE(x ## u, __INT64_C_SUFFIX__))
+N  #if defined(__clang__) || (defined(__ARMCC_VERSION) && !defined(__STRICT_ANSI__))
+X  #if 0L || (1L && !0L)
+N    /* armclang and non-strict armcc allow 'long long' in system headers */
+N    #define __LONGLONG long long
+N  #else
+S    /* strict armcc has '__int64' */
+S    #define __LONGLONG __int64
+N  #endif
+N
+N  #ifndef __STDINT_DECLS
+N  #define __STDINT_DECLS
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+S      namespace std {
+S          #define __CLIBNS std::
+S          extern "C" {
+N    #else
+N      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N
+N/*
+N * 'signed' is redundant below, except for 'signed char' and if
+N * the typedef is used to declare a bitfield.
+N */
+N
+N    /* 7.18.1.1 */
+N
+N    /* exact-width signed integer types */
+Ntypedef   signed          char int8_t;
+Ntypedef   signed short     int int16_t;
+Ntypedef   signed           int int32_t;
+Ntypedef   signed       __INT64 int64_t;
+Xtypedef   signed       __int64 int64_t;
+N
+N    /* exact-width unsigned integer types */
+Ntypedef unsigned          char uint8_t;
+Ntypedef unsigned short     int uint16_t;
+Ntypedef unsigned           int uint32_t;
+Ntypedef unsigned       __INT64 uint64_t;
+Xtypedef unsigned       __int64 uint64_t;
+N
+N    /* 7.18.1.2 */
+N
+N    /* smallest type of at least n bits */
+N    /* minimum-width signed integer types */
+Ntypedef   signed          char int_least8_t;
+Ntypedef   signed short     int int_least16_t;
+Ntypedef   signed           int int_least32_t;
+Ntypedef   signed       __INT64 int_least64_t;
+Xtypedef   signed       __int64 int_least64_t;
+N
+N    /* minimum-width unsigned integer types */
+Ntypedef unsigned          char uint_least8_t;
+Ntypedef unsigned short     int uint_least16_t;
+Ntypedef unsigned           int uint_least32_t;
+Ntypedef unsigned       __INT64 uint_least64_t;
+Xtypedef unsigned       __int64 uint_least64_t;
+N
+N    /* 7.18.1.3 */
+N
+N    /* fastest minimum-width signed integer types */
+Ntypedef   signed           int int_fast8_t;
+Ntypedef   signed           int int_fast16_t;
+Ntypedef   signed           int int_fast32_t;
+Ntypedef   signed       __INT64 int_fast64_t;
+Xtypedef   signed       __int64 int_fast64_t;
+N
+N    /* fastest minimum-width unsigned integer types */
+Ntypedef unsigned           int uint_fast8_t;
+Ntypedef unsigned           int uint_fast16_t;
+Ntypedef unsigned           int uint_fast32_t;
+Ntypedef unsigned       __INT64 uint_fast64_t;
+Xtypedef unsigned       __int64 uint_fast64_t;
+N
+N    /* 7.18.1.4 integer types capable of holding object pointers */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+Stypedef   signed       __INT64 intptr_t;
+Stypedef unsigned       __INT64 uintptr_t;
+N#else
+Ntypedef   signed           int intptr_t;
+Ntypedef unsigned           int uintptr_t;
+N#endif
+N
+N    /* 7.18.1.5 greatest-width integer types */
+Ntypedef   signed     __LONGLONG intmax_t;
+Xtypedef   signed     long long intmax_t;
+Ntypedef unsigned     __LONGLONG uintmax_t;
+Xtypedef unsigned     long long uintmax_t;
+N
+N
+N#if !defined(__cplusplus) || defined(__STDC_LIMIT_MACROS)
+X#if !0L || 0L
+N
+N    /* 7.18.2.1 */
+N
+N    /* minimum values of exact-width signed integer types */
+N#define INT8_MIN                   -128
+N#define INT16_MIN                -32768
+N#define INT32_MIN          (~0x7fffffff)   /* -2147483648 is unsigned */
+N#define INT64_MIN  __INT64_C(~0x7fffffffffffffff) /* -9223372036854775808 is unsigned */
+N
+N    /* maximum values of exact-width signed integer types */
+N#define INT8_MAX                    127
+N#define INT16_MAX                 32767
+N#define INT32_MAX            2147483647
+N#define INT64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of exact-width unsigned integer types */
+N#define UINT8_MAX                   255
+N#define UINT16_MAX                65535
+N#define UINT32_MAX           4294967295u
+N#define UINT64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.2 */
+N
+N    /* minimum values of minimum-width signed integer types */
+N#define INT_LEAST8_MIN                   -128
+N#define INT_LEAST16_MIN                -32768
+N#define INT_LEAST32_MIN          (~0x7fffffff)
+N#define INT_LEAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+N
+N    /* maximum values of minimum-width signed integer types */
+N#define INT_LEAST8_MAX                    127
+N#define INT_LEAST16_MAX                 32767
+N#define INT_LEAST32_MAX            2147483647
+N#define INT_LEAST64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of minimum-width unsigned integer types */
+N#define UINT_LEAST8_MAX                   255
+N#define UINT_LEAST16_MAX                65535
+N#define UINT_LEAST32_MAX           4294967295u
+N#define UINT_LEAST64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.3 */
+N
+N    /* minimum values of fastest minimum-width signed integer types */
+N#define INT_FAST8_MIN           (~0x7fffffff)
+N#define INT_FAST16_MIN          (~0x7fffffff)
+N#define INT_FAST32_MIN          (~0x7fffffff)
+N#define INT_FAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+N
+N    /* maximum values of fastest minimum-width signed integer types */
+N#define INT_FAST8_MAX             2147483647
+N#define INT_FAST16_MAX            2147483647
+N#define INT_FAST32_MAX            2147483647
+N#define INT_FAST64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of fastest minimum-width unsigned integer types */
+N#define UINT_FAST8_MAX            4294967295u
+N#define UINT_FAST16_MAX           4294967295u
+N#define UINT_FAST32_MAX           4294967295u
+N#define UINT_FAST64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.4 */
+N
+N    /* minimum value of pointer-holding signed integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define INTPTR_MIN INT64_MIN
+N#else
+N#define INTPTR_MIN INT32_MIN
+N#endif
+N
+N    /* maximum value of pointer-holding signed integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define INTPTR_MAX INT64_MAX
+N#else
+N#define INTPTR_MAX INT32_MAX
+N#endif
+N
+N    /* maximum value of pointer-holding unsigned integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define UINTPTR_MAX INT64_MAX
+N#else
+N#define UINTPTR_MAX INT32_MAX
+N#endif
+N
+N    /* 7.18.2.5 */
+N
+N    /* minimum value of greatest-width signed integer type */
+N#define INTMAX_MIN  __ESCAPE__(~0x7fffffffffffffffll)
+N
+N    /* maximum value of greatest-width signed integer type */
+N#define INTMAX_MAX  __ESCAPE__(9223372036854775807ll)
+N
+N    /* maximum value of greatest-width unsigned integer type */
+N#define UINTMAX_MAX __ESCAPE__(18446744073709551615ull)
+N
+N    /* 7.18.3 */
+N
+N    /* limits of ptrdiff_t */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define PTRDIFF_MIN INT64_MIN
+S#define PTRDIFF_MAX INT64_MAX
+N#else
+N#define PTRDIFF_MIN INT32_MIN
+N#define PTRDIFF_MAX INT32_MAX
+N#endif
+N
+N    /* limits of sig_atomic_t */
+N#define SIG_ATOMIC_MIN (~0x7fffffff)
+N#define SIG_ATOMIC_MAX   2147483647
+N
+N    /* limit of size_t */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define SIZE_MAX UINT64_MAX
+N#else
+N#define SIZE_MAX UINT32_MAX
+N#endif
+N
+N    /* limits of wchar_t */
+N    /* NB we have to undef and redef because they're defined in both
+N     * stdint.h and wchar.h */
+N#undef WCHAR_MIN
+N#undef WCHAR_MAX
+N
+N#if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+X#if 0L || (0L && __ARM_SIZEOF_WCHAR_T == 4)
+S  #define WCHAR_MIN   0
+S  #define WCHAR_MAX   0xffffffffU
+N#else
+N  #define WCHAR_MIN   0
+N  #define WCHAR_MAX   65535
+N#endif
+N
+N    /* limits of wint_t */
+N#define WINT_MIN (~0x7fffffff)
+N#define WINT_MAX 2147483647
+N
+N#endif /* __STDC_LIMIT_MACROS */
+N
+N#if !defined(__cplusplus) || defined(__STDC_CONSTANT_MACROS)
+X#if !0L || 0L
+N
+N    /* 7.18.4.1 macros for minimum-width integer constants */
+N#define INT8_C(x)   (x)
+N#define INT16_C(x)  (x)
+N#define INT32_C(x)  (x)
+N#define INT64_C(x)  __INT64_C(x)
+N
+N#define UINT8_C(x)  (x ## u)
+N#define UINT16_C(x) (x ## u)
+N#define UINT32_C(x) (x ## u)
+N#define UINT64_C(x) __UINT64_C(x)
+N
+N    /* 7.18.4.2 macros for greatest-width integer constants */
+N#define INTMAX_C(x)  __ESCAPE__(x ## ll)
+N#define UINTMAX_C(x) __ESCAPE__(x ## ull)
+N
+N#endif /* __STDC_CONSTANT_MACROS */
+N
+N    #ifdef __cplusplus
+S         }  /* extern "C" */
+S      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDINT_DECLS */
+N
+N  #ifdef __cplusplus
+S    #ifndef __STDINT_NO_EXPORTS
+S      using ::std::int8_t;
+S      using ::std::int16_t;
+S      using ::std::int32_t;
+S      using ::std::int64_t;
+S      using ::std::uint8_t;
+S      using ::std::uint16_t;
+S      using ::std::uint32_t;
+S      using ::std::uint64_t;
+S      using ::std::int_least8_t;
+S      using ::std::int_least16_t;
+S      using ::std::int_least32_t;
+S      using ::std::int_least64_t;
+S      using ::std::uint_least8_t;
+S      using ::std::uint_least16_t;
+S      using ::std::uint_least32_t;
+S      using ::std::uint_least64_t;
+S      using ::std::int_fast8_t;
+S      using ::std::int_fast16_t;
+S      using ::std::int_fast32_t;
+S      using ::std::int_fast64_t;
+S      using ::std::uint_fast8_t;
+S      using ::std::uint_fast16_t;
+S      using ::std::uint_fast32_t;
+S      using ::std::uint_fast64_t;
+S      using ::std::intptr_t;
+S      using ::std::uintptr_t;
+S      using ::std::intmax_t;
+S      using ::std::uintmax_t;
+S    #endif
+N  #endif /* __cplusplus */
+N
+N#undef __INT64
+N#undef __LONGLONG
+N
+N#endif /* __stdint_h */
+N
+N/* end of stdint.h */
+L 80 "C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\RTOS\RTX\INC\cmsis_os.h" 2
+N#include <stddef.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h" 1
+N/* stddef.h: ANSI 'C' (X3J11 Oct 88) library header, section 4.1.4 */
+N
+N/* Copyright (C) ARM Ltd., 1999
+N * All rights reserved
+N * RCS $Revision: 190986 $
+N * Checkin $Date: 2015-02-04 14:26:49 +0000 (Wed, 04 Feb 2015) $
+N * Revising $Author: agrant $
+N */
+N
+N/* Copyright (C) Codemist Ltd., 1988                            */
+N/* Copyright 1991 ARM Limited. All rights reserved.             */
+N/* version 0.05 */
+N
+N/*
+N * The following types and macros are defined in several headers referred to in
+N * the descriptions of the functions declared in that header. They are also
+N * defined in this header file.
+N */
+N
+N#ifndef __stddef_h
+N#define __stddef_h
+N#define __ARMCLIB_VERSION 5060001
+N
+N  #ifndef __STDDEF_DECLS
+N  #define __STDDEF_DECLS
+N    #undef __CLIBNS
+N    #ifdef __cplusplus
+S        namespace std {
+S        #define __CLIBNS ::std::
+S        extern "C" {
+N    #else
+N      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S  typedef signed long ptrdiff_t;
+N#else
+N  typedef signed int ptrdiff_t;
+N#endif
+N
+N#if defined(__cplusplus) || !defined(__STRICT_ANSI__)
+X#if 0L || !0L
+N /* unconditional in C++ and non-strict C for consistency of debug info */
+N  #if __sizeof_ptr == 8
+X  #if 4 == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+N  #else
+N    typedef unsigned int size_t;   /* see <stddef.h> */
+N  #endif
+N#elif !defined(__size_t)
+S  #define __size_t 1
+S  #if __sizeof_ptr == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+S  #else
+S    typedef unsigned int size_t;   /* see <stddef.h> */
+S  #endif
+S   /* the unsigned integral type of the result of the sizeof operator. */
+N#endif
+N
+N#ifndef __cplusplus  /* wchar_t is a builtin type for C++ */
+N  #if !defined(__STRICT_ANSI__)
+X  #if !0L
+N  /* unconditional in non-strict C for consistency of debug info */
+N    #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+X    #if 0L || (0L && __ARM_SIZEOF_WCHAR_T == 4)
+S      typedef unsigned int wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+N    #else
+N      typedef unsigned short wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+N    #endif
+N  #elif !defined(__wchar_t)
+S    #define __wchar_t 1
+S    #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+S      typedef unsigned int wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+S    #else
+S      typedef unsigned short wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+S    #endif
+S   /*
+S    * An integral type whose range of values can represent distinct codes for
+S    * all members of the largest extended character set specified among the
+S    * supported locales; the null character shall have the code value zero and
+S    * each member of the basic character set shall have a code value when used
+S    * as the lone character in an integer character constant.
+S    */
+N  #endif
+N#endif
+N
+N#undef NULL  /* others (e.g. <stdio.h>) also define */
+N#define NULL 0
+N   /* null pointer constant. */
+N
+N#ifdef __clang__
+S  #define offsetof(t, d) __builtin_offsetof(t, d)
+N#else
+N  /* EDG uses __INTADDR__ to avoid errors when strict */
+N  #define offsetof(t, memb) ((__CLIBNS size_t)__INTADDR__(&(((t *)0)->memb)))
+N#endif
+N
+N#if !defined(__STRICT_ANSI__) || (defined(__STDC_VERSION__) && 201112L <= __STDC_VERSION__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+X#if !0L || (1L && 201112L <= 199901L) || (0L && 201103L <= __cplusplus)
+N  typedef long double max_align_t;
+N#endif
+N
+N    #ifdef __cplusplus
+S         }  /* extern "C" */
+S      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDDEF_DECLS */
+N
+N
+N  #ifdef __cplusplus
+S    #ifndef __STDDEF_NO_EXPORTS
+S      using ::std::size_t;
+S      using ::std::ptrdiff_t;
+S      #if !defined(__STRICT_ANSI__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+S        using ::std::max_align_t;
+S      #endif
+S    #endif 
+N  #endif /* __cplusplus */
+N
+N#endif
+N
+N/* end of stddef.h */
+N
+L 81 "C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\RTOS\RTX\INC\cmsis_os.h" 2
+N
+N#ifdef  __cplusplus
+Sextern "C"
+S{
+N#endif
+N
+N
+N// ==== Enumeration, structures, defines ====
+N
+N/// Priority used for thread control.
+Ntypedef enum  {
+N  osPriorityIdle          = -3,          ///< priority: idle (lowest)
+N  osPriorityLow           = -2,          ///< priority: low
+N  osPriorityBelowNormal   = -1,          ///< priority: below normal
+N  osPriorityNormal        =  0,          ///< priority: normal (default)
+N  osPriorityAboveNormal   = +1,          ///< priority: above normal
+N  osPriorityHigh          = +2,          ///< priority: high
+N  osPriorityRealtime      = +3,          ///< priority: realtime (highest)
+N  osPriorityError         =  0x84        ///< system cannot determine priority or thread has illegal priority
+N} osPriority;
+N
+N/// Timeout value.
+N#define osWaitForever     0xFFFFFFFF     ///< wait forever timeout value
+N
+N/// Status code values returned by CMSIS-RTOS functions.
+Ntypedef enum  {
+N  osOK                    =     0,       ///< function completed; no error or event occurred.
+N  osEventSignal           =  0x08,       ///< function completed; signal event occurred.
+N  osEventMessage          =  0x10,       ///< function completed; message event occurred.
+N  osEventMail             =  0x20,       ///< function completed; mail event occurred.
+N  osEventTimeout          =  0x40,       ///< function completed; timeout occurred.
+N  osErrorParameter        =  0x80,       ///< parameter error: a mandatory parameter was missing or specified an incorrect object.
+N  osErrorResource         =  0x81,       ///< resource not available: a specified resource was not available.
+N  osErrorTimeoutResource  =  0xC1,       ///< resource not available within given time: a specified resource was not available within the timeout period.
+N  osErrorISR              =  0x82,       ///< not allowed in ISR context: the function cannot be called from interrupt service routines.
+N  osErrorISRRecursive     =  0x83,       ///< function called multiple times from ISR with same object.
+N  osErrorPriority         =  0x84,       ///< system cannot determine priority or thread has illegal priority.
+N  osErrorNoMemory         =  0x85,       ///< system is out of memory: it was impossible to allocate or reserve memory for the operation.
+N  osErrorValue            =  0x86,       ///< value of a parameter is out of range.
+N  osErrorOS               =  0xFF,       ///< unspecified RTOS error: run-time error but no other error message fits.
+N  os_status_reserved      =  0x7FFFFFFF  ///< prevent from enum down-size compiler optimization.
+N} osStatus;
+N
+N
+N/// Timer type value for the timer definition.
+Ntypedef enum  {
+N  osTimerOnce             =     0,       ///< one-shot timer
+N  osTimerPeriodic         =     1        ///< repeating timer
+N} os_timer_type;
+N
+N/// Entry point of a thread.
+Ntypedef void (*os_pthread) (void const *argument);
+N
+N/// Entry point of a timer call back function.
+Ntypedef void (*os_ptimer) (void const *argument);
+N
+N// >>> the following data type definitions may shall adapted towards a specific RTOS
+N
+N/// Thread ID identifies the thread (pointer to a thread control block).
+Ntypedef struct os_thread_cb *osThreadId;
+N
+N/// Timer ID identifies the timer (pointer to a timer control block).
+Ntypedef struct os_timer_cb *osTimerId;
+N
+N/// Mutex ID identifies the mutex (pointer to a mutex control block).
+Ntypedef struct os_mutex_cb *osMutexId;
+N
+N/// Semaphore ID identifies the semaphore (pointer to a semaphore control block).
+Ntypedef struct os_semaphore_cb *osSemaphoreId;
+N
+N/// Pool ID identifies the memory pool (pointer to a memory pool control block).
+Ntypedef struct os_pool_cb *osPoolId;
+N
+N/// Message ID identifies the message queue (pointer to a message queue control block).
+Ntypedef struct os_messageQ_cb *osMessageQId;
+N
+N/// Mail ID identifies the mail queue (pointer to a mail queue control block).
+Ntypedef struct os_mailQ_cb *osMailQId;
+N
+N
+N/// Thread Definition structure contains startup information of a thread.
+Ntypedef struct os_thread_def  {
+N  os_pthread               pthread;    ///< start address of thread function
+N  osPriority             tpriority;    ///< initial thread priority
+N  uint32_t               instances;    ///< maximum number of instances of that thread function
+N  uint32_t               stacksize;    ///< stack size requirements in bytes; 0 is default stack size
+N} osThreadDef_t;
+N
+N/// Timer Definition structure contains timer parameters.
+Ntypedef struct os_timer_def  {
+N  os_ptimer                 ptimer;    ///< start address of a timer function
+N  void                      *timer;    ///< pointer to internal data
+N} osTimerDef_t;
+N
+N/// Mutex Definition structure contains setup information for a mutex.
+Ntypedef struct os_mutex_def  {
+N  void                      *mutex;    ///< pointer to internal data
+N} osMutexDef_t;
+N
+N/// Semaphore Definition structure contains setup information for a semaphore.
+Ntypedef struct os_semaphore_def  {
+N  void                  *semaphore;    ///< pointer to internal data
+N} osSemaphoreDef_t;
+N
+N/// Definition structure for memory block allocation.
+Ntypedef struct os_pool_def  {
+N  uint32_t                 pool_sz;    ///< number of items (elements) in the pool
+N  uint32_t                 item_sz;    ///< size of an item
+N  void                       *pool;    ///< pointer to memory for pool
+N} osPoolDef_t;
+N
+N/// Definition structure for message queue.
+Ntypedef struct os_messageQ_def  {
+N  uint32_t                queue_sz;    ///< number of elements in the queue
+N  void                       *pool;    ///< memory array for messages
+N} osMessageQDef_t;
+N
+N/// Definition structure for mail queue.
+Ntypedef struct os_mailQ_def  {
+N  uint32_t                queue_sz;    ///< number of elements in the queue
+N  uint32_t                 item_sz;    ///< size of an item
+N  void                       *pool;    ///< memory array for mail
+N} osMailQDef_t;
+N
+N/// Event structure contains detailed information about an event.
+Ntypedef struct  {
+N  osStatus                 status;     ///< status code: event or error information
+N  union  {
+N    uint32_t                    v;     ///< message as 32-bit value
+N    void                       *p;     ///< message or mail as void pointer
+N    int32_t               signals;     ///< signal flags
+N  } value;                             ///< event value
+N  union  {
+N    osMailQId             mail_id;     ///< mail id obtained by \ref osMailCreate
+N    osMessageQId       message_id;     ///< message id obtained by \ref osMessageCreate
+N  } def;                               ///< event definition
+N} osEvent;
+N
+N
+N//  ==== Kernel Control Functions ====
+N
+N/// Initialize the RTOS Kernel for creating objects.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osKernelInitialize (void);
+N
+N/// Start the RTOS Kernel.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osKernelStart (void);
+N
+N/// Check if the RTOS kernel is already started.
+N/// \return 0 RTOS is not started, 1 RTOS is started.
+Nint32_t osKernelRunning(void);
+N
+N#if (defined (osFeature_SysTick)  &&  (osFeature_SysTick != 0))     // System Timer available
+X#if (1L  &&  (1 != 0))     
+N
+N/// \cond INTERNAL_VARIABLES
+Nextern uint32_t const os_tickfreq;
+Nextern uint16_t const os_tickus_i;
+Nextern uint16_t const os_tickus_f;
+N/// \endcond
+N
+N/// Get the RTOS kernel system timer counter.
+N/// \return RTOS kernel system timer as 32-bit value 
+Nuint32_t osKernelSysTick (void);
+N
+N/// The RTOS kernel system timer frequency in Hz.
+N/// \note Reflects the system timer setting and is typically defined in a configuration file.
+N#define osKernelSysTickFrequency os_tickfreq
+N
+N/// Convert a microseconds value to a RTOS kernel system timer value.
+N/// \param         microsec     time value in microseconds.
+N/// \return time value normalized to the \ref osKernelSysTickFrequency
+N/*
+N#define osKernelSysTickMicroSec(microsec) (((uint64_t)microsec * (osKernelSysTickFrequency)) / 1000000)
+N*/
+N#define osKernelSysTickMicroSec(microsec) ((microsec * os_tickus_i) + ((microsec * os_tickus_f) >> 16))
+N
+N#endif    // System Timer available
+N
+N//  ==== Thread Management ====
+N
+N/// Create a Thread Definition with function, priority, and stack requirements.
+N/// \param         name         name of the thread function.
+N/// \param         priority     initial priority of the thread function.
+N/// \param         instances    number of possible thread instances.
+N/// \param         stacksz      stack size (in bytes) requirements for the thread function.
+N///       macro body is implementation specific in every CMSIS-RTOS.
+N#if defined (osObjectsExternal)  // object is external
+X#if 0L  
+S#define osThreadDef(name, priority, instances, stacksz)  \
+Sextern const osThreadDef_t os_thread_def_##name
+X#define osThreadDef(name, priority, instances, stacksz)  extern const osThreadDef_t os_thread_def_##name
+N#else                            // define the object
+N#define osThreadDef(name, priority, instances, stacksz)  \
+Nconst osThreadDef_t os_thread_def_##name = \
+N{ (name), (priority), (instances), (stacksz)  }
+X#define osThreadDef(name, priority, instances, stacksz)  const osThreadDef_t os_thread_def_##name = { (name), (priority), (instances), (stacksz)  }
+N#endif
+N
+N/// Access a Thread definition.
+N/// \param         name          name of the thread definition object.
+N///       macro body is implementation specific in every CMSIS-RTOS.
+N#define osThread(name)  \
+N&os_thread_def_##name
+X#define osThread(name)  &os_thread_def_##name
+N
+N/// Create a thread and add it to Active Threads and set it to state READY.
+N/// \param[in]     thread_def    thread definition referenced with \ref osThread.
+N/// \param[in]     argument      pointer that is passed to the thread function as start argument.
+N/// \return thread ID for reference by other functions or NULL in case of error.
+NosThreadId osThreadCreate (const osThreadDef_t *thread_def, void *argument);
+N
+N/// Return the thread ID of the current running thread.
+N/// \return thread ID for reference by other functions or NULL in case of error.
+NosThreadId osThreadGetId (void);
+N
+N/// Terminate execution of a thread and remove it from Active Threads.
+N/// \param[in]     thread_id   thread ID obtained by \ref osThreadCreate or \ref osThreadGetId.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osThreadTerminate (osThreadId thread_id);
+N
+N/// Pass control to next thread that is in state \b READY.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osThreadYield (void);
+N
+N/// Change priority of an active thread.
+N/// \param[in]     thread_id     thread ID obtained by \ref osThreadCreate or \ref osThreadGetId.
+N/// \param[in]     priority      new priority value for the thread function.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osThreadSetPriority (osThreadId thread_id, osPriority priority);
+N
+N/// Get current priority of an active thread.
+N/// \param[in]     thread_id     thread ID obtained by \ref osThreadCreate or \ref osThreadGetId.
+N/// \return current priority value of the thread function.
+NosPriority osThreadGetPriority (osThreadId thread_id);
+N
+N
+N//  ==== Generic Wait Functions ====
+N
+N/// Wait for Timeout (Time Delay).
+N/// \param[in]     millisec      time delay value
+N/// \return status code that indicates the execution status of the function.
+NosStatus osDelay (uint32_t millisec);
+N
+N#if (defined (osFeature_Wait)  &&  (osFeature_Wait != 0))     // Generic Wait available
+X#if (1L  &&  (0 != 0))     
+S
+S/// Wait for Signal, Message, Mail, or Timeout.
+S/// \param[in] millisec          timeout value or 0 in case of no time-out
+S/// \return event that contains signal, message, or mail information or error code.
+Sos_InRegs osEvent osWait (uint32_t millisec);
+S
+N#endif  // Generic Wait available
+N
+N
+N//  ==== Timer Management Functions ====
+N/// Define a Timer object.
+N/// \param         name          name of the timer object.
+N/// \param         function      name of the timer call back function.
+N#if defined (osObjectsExternal)  // object is external
+X#if 0L  
+S#define osTimerDef(name, function)  \
+Sextern const osTimerDef_t os_timer_def_##name
+X#define osTimerDef(name, function)  extern const osTimerDef_t os_timer_def_##name
+N#else                            // define the object
+N#define osTimerDef(name, function)  \
+Nuint32_t os_timer_cb_##name[6]; \
+Nconst osTimerDef_t os_timer_def_##name = \
+N{ (function), (os_timer_cb_##name) }
+X#define osTimerDef(name, function)  uint32_t os_timer_cb_##name[6]; const osTimerDef_t os_timer_def_##name = { (function), (os_timer_cb_##name) }
+N#endif
+N
+N/// Access a Timer definition.
+N/// \param         name          name of the timer object.
+N#define osTimer(name) \
+N&os_timer_def_##name
+X#define osTimer(name) &os_timer_def_##name
+N
+N/// Create a timer.
+N/// \param[in]     timer_def     timer object referenced with \ref osTimer.
+N/// \param[in]     type          osTimerOnce for one-shot or osTimerPeriodic for periodic behavior.
+N/// \param[in]     argument      argument to the timer call back function.
+N/// \return timer ID for reference by other functions or NULL in case of error.
+NosTimerId osTimerCreate (const osTimerDef_t *timer_def, os_timer_type type, void *argument);
+N
+N/// Start or restart a timer.
+N/// \param[in]     timer_id      timer ID obtained by \ref osTimerCreate.
+N/// \param[in]     millisec      time delay value of the timer.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osTimerStart (osTimerId timer_id, uint32_t millisec);
+N
+N/// Stop the timer.
+N/// \param[in]     timer_id      timer ID obtained by \ref osTimerCreate.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osTimerStop (osTimerId timer_id);
+N
+N/// Delete a timer that was created by \ref osTimerCreate.
+N/// \param[in]     timer_id      timer ID obtained by \ref osTimerCreate.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osTimerDelete (osTimerId timer_id);
+N
+N
+N//  ==== Signal Management ====
+N
+N/// Set the specified Signal Flags of an active thread.
+N/// \param[in]     thread_id     thread ID obtained by \ref osThreadCreate or \ref osThreadGetId.
+N/// \param[in]     signals       specifies the signal flags of the thread that should be set.
+N/// \return previous signal flags of the specified thread or 0x80000000 in case of incorrect parameters.
+Nint32_t osSignalSet (osThreadId thread_id, int32_t signals);
+N
+N/// Clear the specified Signal Flags of an active thread.
+N/// \param[in]     thread_id     thread ID obtained by \ref osThreadCreate or \ref osThreadGetId.
+N/// \param[in]     signals       specifies the signal flags of the thread that shall be cleared.
+N/// \return previous signal flags of the specified thread or 0x80000000 in case of incorrect parameters or call from ISR.
+Nint32_t osSignalClear (osThreadId thread_id, int32_t signals);
+N
+N/// Wait for one or more Signal Flags to become signaled for the current \b RUNNING thread.
+N/// \param[in]     signals       wait until all specified signal flags set or 0 for any single signal flag.
+N/// \param[in]     millisec      timeout value or 0 in case of no time-out.
+N/// \return event flag information or error code.
+Nos_InRegs osEvent osSignalWait (int32_t signals, uint32_t millisec);
+X__value_in_regs osEvent osSignalWait (int32_t signals, uint32_t millisec);
+N
+N
+N//  ==== Mutex Management ====
+N
+N/// Define a Mutex.
+N/// \param         name          name of the mutex object.
+N#if defined (osObjectsExternal)  // object is external
+X#if 0L  
+S#define osMutexDef(name)  \
+Sextern const osMutexDef_t os_mutex_def_##name
+X#define osMutexDef(name)  extern const osMutexDef_t os_mutex_def_##name
+N#else                            // define the object
+N#define osMutexDef(name)  \
+Nuint32_t os_mutex_cb_##name[4] = { 0 }; \
+Nconst osMutexDef_t os_mutex_def_##name = { (os_mutex_cb_##name) }
+X#define osMutexDef(name)  uint32_t os_mutex_cb_##name[4] = { 0 }; const osMutexDef_t os_mutex_def_##name = { (os_mutex_cb_##name) }
+N#endif
+N
+N/// Access a Mutex definition.
+N/// \param         name          name of the mutex object.
+N#define osMutex(name)  \
+N&os_mutex_def_##name
+X#define osMutex(name)  &os_mutex_def_##name
+N
+N/// Create and Initialize a Mutex object.
+N/// \param[in]     mutex_def     mutex definition referenced with \ref osMutex.
+N/// \return mutex ID for reference by other functions or NULL in case of error.
+NosMutexId osMutexCreate (const osMutexDef_t *mutex_def);
+N
+N/// Wait until a Mutex becomes available.
+N/// \param[in]     mutex_id      mutex ID obtained by \ref osMutexCreate.
+N/// \param[in]     millisec      timeout value or 0 in case of no time-out.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osMutexWait (osMutexId mutex_id, uint32_t millisec);
+N
+N/// Release a Mutex that was obtained by \ref osMutexWait.
+N/// \param[in]     mutex_id      mutex ID obtained by \ref osMutexCreate.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osMutexRelease (osMutexId mutex_id);
+N
+N/// Delete a Mutex that was created by \ref osMutexCreate.
+N/// \param[in]     mutex_id      mutex ID obtained by \ref osMutexCreate.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osMutexDelete (osMutexId mutex_id);
+N
+N
+N//  ==== Semaphore Management Functions ====
+N
+N#if (defined (osFeature_Semaphore)  &&  (osFeature_Semaphore != 0))     // Semaphore available
+X#if (1L  &&  (65535 != 0))     
+N
+N/// Define a Semaphore object.
+N/// \param         name          name of the semaphore object.
+N#if defined (osObjectsExternal)  // object is external
+X#if 0L  
+S#define osSemaphoreDef(name)  \
+Sextern const osSemaphoreDef_t os_semaphore_def_##name
+X#define osSemaphoreDef(name)  extern const osSemaphoreDef_t os_semaphore_def_##name
+N#else                            // define the object
+N#define osSemaphoreDef(name)  \
+Nuint32_t os_semaphore_cb_##name[2] = { 0 }; \
+Nconst osSemaphoreDef_t os_semaphore_def_##name = { (os_semaphore_cb_##name) }
+X#define osSemaphoreDef(name)  uint32_t os_semaphore_cb_##name[2] = { 0 }; const osSemaphoreDef_t os_semaphore_def_##name = { (os_semaphore_cb_##name) }
+N#endif
+N
+N/// Access a Semaphore definition.
+N/// \param         name          name of the semaphore object.
+N#define osSemaphore(name)  \
+N&os_semaphore_def_##name
+X#define osSemaphore(name)  &os_semaphore_def_##name
+N
+N/// Create and Initialize a Semaphore object used for managing resources.
+N/// \param[in]     semaphore_def semaphore definition referenced with \ref osSemaphore.
+N/// \param[in]     count         number of available resources.
+N/// \return semaphore ID for reference by other functions or NULL in case of error.
+NosSemaphoreId osSemaphoreCreate (const osSemaphoreDef_t *semaphore_def, int32_t count);
+N
+N/// Wait until a Semaphore token becomes available.
+N/// \param[in]     semaphore_id  semaphore object referenced with \ref osSemaphoreCreate.
+N/// \param[in]     millisec      timeout value or 0 in case of no time-out.
+N/// \return number of available tokens, or -1 in case of incorrect parameters.
+Nint32_t osSemaphoreWait (osSemaphoreId semaphore_id, uint32_t millisec);
+N
+N/// Release a Semaphore token.
+N/// \param[in]     semaphore_id  semaphore object referenced with \ref osSemaphoreCreate.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osSemaphoreRelease (osSemaphoreId semaphore_id);
+N
+N/// Delete a Semaphore that was created by \ref osSemaphoreCreate.
+N/// \param[in]     semaphore_id  semaphore object referenced with \ref osSemaphoreCreate.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osSemaphoreDelete (osSemaphoreId semaphore_id);
+N
+N#endif     // Semaphore available
+N
+N
+N//  ==== Memory Pool Management Functions ====
+N
+N#if (defined (osFeature_Pool)  &&  (osFeature_Pool != 0))  // Memory Pool Management available
+X#if (1L  &&  (1 != 0))  
+N
+N/// \brief Define a Memory Pool.
+N/// \param         name          name of the memory pool.
+N/// \param         no            maximum number of blocks (objects) in the memory pool.
+N/// \param         type          data type of a single block (object).
+N#if defined (osObjectsExternal)  // object is external
+X#if 0L  
+S#define osPoolDef(name, no, type)   \
+Sextern const osPoolDef_t os_pool_def_##name
+X#define osPoolDef(name, no, type)   extern const osPoolDef_t os_pool_def_##name
+N#else                            // define the object
+N#define osPoolDef(name, no, type)   \
+Nuint32_t os_pool_m_##name[3+((sizeof(type)+3)/4)*(no)]; \
+Nconst osPoolDef_t os_pool_def_##name = \
+N{ (no), sizeof(type), (os_pool_m_##name) }
+X#define osPoolDef(name, no, type)   uint32_t os_pool_m_##name[3+((sizeof(type)+3)/4)*(no)]; const osPoolDef_t os_pool_def_##name = { (no), sizeof(type), (os_pool_m_##name) }
+N#endif
+N
+N/// \brief Access a Memory Pool definition.
+N/// \param         name          name of the memory pool
+N#define osPool(name) \
+N&os_pool_def_##name
+X#define osPool(name) &os_pool_def_##name
+N
+N/// Create and Initialize a memory pool.
+N/// \param[in]     pool_def      memory pool definition referenced with \ref osPool.
+N/// \return memory pool ID for reference by other functions or NULL in case of error.
+NosPoolId osPoolCreate (const osPoolDef_t *pool_def);
+N
+N/// Allocate a memory block from a memory pool.
+N/// \param[in]     pool_id       memory pool ID obtain referenced with \ref osPoolCreate.
+N/// \return address of the allocated memory block or NULL in case of no memory available.
+Nvoid *osPoolAlloc (osPoolId pool_id);
+N
+N/// Allocate a memory block from a memory pool and set memory block to zero.
+N/// \param[in]     pool_id       memory pool ID obtain referenced with \ref osPoolCreate.
+N/// \return address of the allocated memory block or NULL in case of no memory available.
+Nvoid *osPoolCAlloc (osPoolId pool_id);
+N
+N/// Return an allocated memory block back to a specific memory pool.
+N/// \param[in]     pool_id       memory pool ID obtain referenced with \ref osPoolCreate.
+N/// \param[in]     block         address of the allocated memory block that is returned to the memory pool.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osPoolFree (osPoolId pool_id, void *block);
+N
+N#endif   // Memory Pool Management available
+N
+N
+N//  ==== Message Queue Management Functions ====
+N
+N#if (defined (osFeature_MessageQ)  &&  (osFeature_MessageQ != 0))     // Message Queues available
+X#if (1L  &&  (1 != 0))     
+N
+N/// \brief Create a Message Queue Definition.
+N/// \param         name          name of the queue.
+N/// \param         queue_sz      maximum number of messages in the queue.
+N/// \param         type          data type of a single message element (for debugger).
+N#if defined (osObjectsExternal)  // object is external
+X#if 0L  
+S#define osMessageQDef(name, queue_sz, type)   \
+Sextern const osMessageQDef_t os_messageQ_def_##name
+X#define osMessageQDef(name, queue_sz, type)   extern const osMessageQDef_t os_messageQ_def_##name
+N#else                            // define the object
+N#define osMessageQDef(name, queue_sz, type)   \
+Nuint32_t os_messageQ_q_##name[4+(queue_sz)] = { 0 }; \
+Nconst osMessageQDef_t os_messageQ_def_##name = \
+N{ (queue_sz), (os_messageQ_q_##name) }
+X#define osMessageQDef(name, queue_sz, type)   uint32_t os_messageQ_q_##name[4+(queue_sz)] = { 0 }; const osMessageQDef_t os_messageQ_def_##name = { (queue_sz), (os_messageQ_q_##name) }
+N#endif
+N
+N/// \brief Access a Message Queue Definition.
+N/// \param         name          name of the queue
+N#define osMessageQ(name) \
+N&os_messageQ_def_##name
+X#define osMessageQ(name) &os_messageQ_def_##name
+N
+N/// Create and Initialize a Message Queue.
+N/// \param[in]     queue_def     queue definition referenced with \ref osMessageQ.
+N/// \param[in]     thread_id     thread ID (obtained by \ref osThreadCreate or \ref osThreadGetId) or NULL.
+N/// \return message queue ID for reference by other functions or NULL in case of error.
+NosMessageQId osMessageCreate (const osMessageQDef_t *queue_def, osThreadId thread_id);
+N
+N/// Put a Message to a Queue.
+N/// \param[in]     queue_id      message queue ID obtained with \ref osMessageCreate.
+N/// \param[in]     info          message information.
+N/// \param[in]     millisec      timeout value or 0 in case of no time-out.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osMessagePut (osMessageQId queue_id, uint32_t info, uint32_t millisec);
+N
+N/// Get a Message or Wait for a Message from a Queue.
+N/// \param[in]     queue_id      message queue ID obtained with \ref osMessageCreate.
+N/// \param[in]     millisec      timeout value or 0 in case of no time-out.
+N/// \return event information that includes status code.
+Nos_InRegs osEvent osMessageGet (osMessageQId queue_id, uint32_t millisec);
+X__value_in_regs osEvent osMessageGet (osMessageQId queue_id, uint32_t millisec);
+N
+N#endif     // Message Queues available
+N
+N
+N//  ==== Mail Queue Management Functions ====
+N
+N#if (defined (osFeature_MailQ)  &&  (osFeature_MailQ != 0))     // Mail Queues available
+X#if (1L  &&  (1 != 0))     
+N
+N/// \brief Create a Mail Queue Definition.
+N/// \param         name          name of the queue
+N/// \param         queue_sz      maximum number of messages in queue
+N/// \param         type          data type of a single message element
+N#if defined (osObjectsExternal)  // object is external
+X#if 0L  
+S#define osMailQDef(name, queue_sz, type) \
+Sextern const osMailQDef_t os_mailQ_def_##name
+X#define osMailQDef(name, queue_sz, type) extern const osMailQDef_t os_mailQ_def_##name
+N#else                            // define the object
+N#define osMailQDef(name, queue_sz, type) \
+Nuint32_t os_mailQ_q_##name[4+(queue_sz)] = { 0 }; \
+Nuint32_t os_mailQ_m_##name[3+((sizeof(type)+3)/4)*(queue_sz)]; \
+Nvoid *   os_mailQ_p_##name[2] = { (os_mailQ_q_##name), os_mailQ_m_##name }; \
+Nconst osMailQDef_t os_mailQ_def_##name =  \
+N{ (queue_sz), sizeof(type), (os_mailQ_p_##name) }
+X#define osMailQDef(name, queue_sz, type) uint32_t os_mailQ_q_##name[4+(queue_sz)] = { 0 }; uint32_t os_mailQ_m_##name[3+((sizeof(type)+3)/4)*(queue_sz)]; void *   os_mailQ_p_##name[2] = { (os_mailQ_q_##name), os_mailQ_m_##name }; const osMailQDef_t os_mailQ_def_##name =  { (queue_sz), sizeof(type), (os_mailQ_p_##name) }
+N#endif
+N
+N/// \brief Access a Mail Queue Definition.
+N/// \param         name          name of the queue
+N#define osMailQ(name)  \
+N&os_mailQ_def_##name
+X#define osMailQ(name)  &os_mailQ_def_##name
+N
+N/// Create and Initialize mail queue.
+N/// \param[in]     queue_def     reference to the mail queue definition obtain with \ref osMailQ
+N/// \param[in]     thread_id     thread ID (obtained by \ref osThreadCreate or \ref osThreadGetId) or NULL.
+N/// \return mail queue ID for reference by other functions or NULL in case of error.
+NosMailQId osMailCreate (const osMailQDef_t *queue_def, osThreadId thread_id);
+N
+N/// Allocate a memory block from a mail.
+N/// \param[in]     queue_id      mail queue ID obtained with \ref osMailCreate.
+N/// \param[in]     millisec      timeout value or 0 in case of no time-out
+N/// \return pointer to memory block that can be filled with mail or NULL in case of error.
+Nvoid *osMailAlloc (osMailQId queue_id, uint32_t millisec);
+N
+N/// Allocate a memory block from a mail and set memory block to zero.
+N/// \param[in]     queue_id      mail queue ID obtained with \ref osMailCreate.
+N/// \param[in]     millisec      timeout value or 0 in case of no time-out
+N/// \return pointer to memory block that can be filled with mail or NULL in case of error.
+Nvoid *osMailCAlloc (osMailQId queue_id, uint32_t millisec);
+N
+N/// Put a mail to a queue.
+N/// \param[in]     queue_id      mail queue ID obtained with \ref osMailCreate.
+N/// \param[in]     mail          memory block previously allocated with \ref osMailAlloc or \ref osMailCAlloc.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osMailPut (osMailQId queue_id, void *mail);
+N
+N/// Get a mail from a queue.
+N/// \param[in]     queue_id      mail queue ID obtained with \ref osMailCreate.
+N/// \param[in]     millisec      timeout value or 0 in case of no time-out
+N/// \return event that contains mail information or error code.
+Nos_InRegs osEvent osMailGet (osMailQId queue_id, uint32_t millisec);
+X__value_in_regs osEvent osMailGet (osMailQId queue_id, uint32_t millisec);
+N
+N/// Free a memory block from a mail.
+N/// \param[in]     queue_id      mail queue ID obtained with \ref osMailCreate.
+N/// \param[in]     mail          pointer to the memory block that was obtained with \ref osMailGet.
+N/// \return status code that indicates the execution status of the function.
+NosStatus osMailFree (osMailQId queue_id, void *mail);
+N
+N#endif  // Mail Queues available
+N
+N
+N//  ==== RTX Extensions ====
+N
+N/// Suspend the RTX task scheduler.
+N/// \return number of ticks, for how long the system can sleep or power-down.
+Nuint32_t os_suspend (void);
+N
+N/// Resume the RTX task scheduler
+N/// \param[in]     sleep_time    specifies how long the system was in sleep or power-down mode.
+Nvoid os_resume (uint32_t sleep_time);
+N
+N
+N#ifdef  __cplusplus
+S}
+N#endif
+N
+N#endif  // _CMSIS_OS_H
+L 36 "RTE\CMSIS\RTX_Conf_CM.c" 2
+N 
+N
+N/*----------------------------------------------------------------------------
+N *      RTX User configuration part BEGIN
+N *---------------------------------------------------------------------------*/
+N 
+N//-------- <<< Use Configuration Wizard in Context Menu >>> -----------------
+N//
+N// <h>Thread Configuration
+N// =======================
+N//
+N//   <o>Number of concurrent running user threads <1-250>
+N//   <i> Defines max. number of user threads that will run at the same time.
+N//   <i> Default: 6
+N#ifndef OS_TASKCNT
+N #define OS_TASKCNT     6
+N#endif
+N 
+N//   <o>Default Thread stack size [bytes] <64-4096:8><#/4>
+N//   <i> Defines default stack size for threads with osThreadDef stacksz = 0
+N//   <i> Default: 200
+N#ifndef OS_STKSIZE
+N #define OS_STKSIZE     64      // this stack size value is in words
+N#endif
+N 
+N//   <o>Main Thread stack size [bytes] <64-32768:8><#/4>
+N//   <i> Defines stack size for main thread.
+N//   <i> Default: 200
+N#ifndef OS_MAINSTKSIZE
+N #define OS_MAINSTKSIZE 256      // this stack size value is in words
+N#endif
+N 
+N//   <o>Number of threads with user-provided stack size <0-250>
+N//   <i> Defines the number of threads with user-provided stack size.
+N//   <i> Default: 0
+N#ifndef OS_PRIVCNT
+N #define OS_PRIVCNT     0
+N#endif
+N 
+N//   <o>Total stack size [bytes] for threads with user-provided stack size <0-1048576:8><#/4>
+N//   <i> Defines the combined stack size for threads with user-provided stack size.
+N//   <i> Default: 0
+N#ifndef OS_PRIVSTKSIZE
+N #define OS_PRIVSTKSIZE 0       // this stack size value is in words
+N#endif
+N 
+N//   <q>Stack overflow checking
+N//   <i> Enable stack overflow checks at thread switch.
+N//   <i> Enabling this option increases slightly the execution time of a thread switch.
+N#ifndef OS_STKCHECK
+N #define OS_STKCHECK    1
+N#endif
+N 
+N//   <q>Stack usage watermark
+N//   <i> Initialize thread stack with watermark pattern for analyzing stack usage (current/maximum) in System and Thread Viewer.
+N//   <i> Enabling this option increases significantly the execution time of osThreadCreate.
+N#ifndef OS_STKINIT
+N#define OS_STKINIT      0
+N#endif
+N 
+N//   <o>Processor mode for thread execution 
+N//     <0=> Unprivileged mode 
+N//     <1=> Privileged mode
+N//   <i> Default: Privileged mode
+N#ifndef OS_RUNPRIV
+N #define OS_RUNPRIV     1
+N#endif
+N 
+N// </h>
+N 
+N// <h>RTX Kernel Timer Tick Configuration
+N// ======================================
+N//   <q> Use Cortex-M SysTick timer as RTX Kernel Timer
+N//   <i> Cortex-M processors provide in most cases a SysTick timer that can be used as 
+N//   <i> as time-base for RTX.
+N#ifndef OS_SYSTICK
+N #define OS_SYSTICK     1
+N#endif
+N//
+N//   <o>RTOS Kernel Timer input clock frequency [Hz] <1-1000000000>
+N//   <i> Defines the input frequency of the RTOS Kernel Timer.  
+N//   <i> When the Cortex-M SysTick timer is used, the input clock 
+N//   <i> is on most systems identical with the core clock.
+N#ifndef OS_CLOCK
+N #define OS_CLOCK       80000000
+N#endif
+N 
+N//   <o>RTX Timer tick interval value [us] <1-1000000>
+N//   <i> The RTX Timer tick interval value is used to calculate timeout values.
+N//   <i> When the Cortex-M SysTick timer is enabled, the value also configures the SysTick timer.
+N//   <i> Default: 1000  (1ms)
+N#ifndef OS_TICK
+N #define OS_TICK        1000
+N#endif
+N 
+N// </h>
+N 
+N// <h>System Configuration
+N// =======================
+N//
+N// <e>Round-Robin Thread switching
+N// ===============================
+N//
+N// <i> Enables Round-Robin Thread switching.
+N#ifndef OS_ROBIN
+N #define OS_ROBIN       1
+N#endif
+N 
+N//   <o>Round-Robin Timeout [ticks] <1-1000>
+N//   <i> Defines how long a thread will execute before a thread switch.
+N//   <i> Default: 5
+N#ifndef OS_ROBINTOUT
+N #define OS_ROBINTOUT   5
+N#endif
+N 
+N// </e>
+N 
+N// <e>User Timers
+N// ==============
+N//   <i> Enables user Timers
+N#ifndef OS_TIMERS
+N #define OS_TIMERS      1
+N#endif
+N 
+N//   <o>Timer Thread Priority
+N//                        <1=> Low
+N//     <2=> Below Normal  <3=> Normal  <4=> Above Normal
+N//                        <5=> High
+N//                        <6=> Realtime (highest)
+N//   <i> Defines priority for Timer Thread
+N//   <i> Default: High
+N#ifndef OS_TIMERPRIO
+N #define OS_TIMERPRIO   5
+N#endif
+N 
+N//   <o>Timer Thread stack size [bytes] <64-4096:8><#/4>
+N//   <i> Defines stack size for Timer thread.
+N//   <i> Default: 200
+N#ifndef OS_TIMERSTKSZ
+N #define OS_TIMERSTKSZ  64     // this stack size value is in words
+N#endif
+N 
+N//   <o>Timer Callback Queue size <1-32>
+N//   <i> Number of concurrent active timer callback functions.
+N//   <i> Default: 4
+N#ifndef OS_TIMERCBQS
+N #define OS_TIMERCBQS   4
+N#endif
+N 
+N// </e>
+N 
+N//   <o>ISR FIFO Queue size<4=>   4 entries  <8=>   8 entries
+N//                         <12=> 12 entries  <16=> 16 entries
+N//                         <24=> 24 entries  <32=> 32 entries
+N//                         <48=> 48 entries  <64=> 64 entries
+N//                         <96=> 96 entries
+N//   <i> ISR functions store requests to this buffer,
+N//   <i> when they are called from the interrupt handler.
+N//   <i> Default: 16 entries
+N#ifndef OS_FIFOSZ
+N #define OS_FIFOSZ      16
+N#endif
+N 
+N// </h>
+N 
+N//------------- <<< end of configuration section >>> -----------------------
+N 
+N// Standard library system mutexes
+N// ===============================
+N//  Define max. number system mutexes that are used to protect 
+N//  the arm standard runtime library. For microlib they are not used.
+N#ifndef OS_MUTEXCNT
+N #define OS_MUTEXCNT    8
+N#endif
+N 
+N/*----------------------------------------------------------------------------
+N *      RTX User configuration part END
+N *---------------------------------------------------------------------------*/
+N 
+N#define OS_TRV          ((uint32_t)(((double)OS_CLOCK*(double)OS_TICK)/1E6)-1)
+N 
+N
+N/*----------------------------------------------------------------------------
+N *      Global Functions
+N *---------------------------------------------------------------------------*/
+N 
+N/*--------------------------- os_idle_demon ---------------------------------*/
+N
+N/// \brief The idle demon is running when no other thread is ready to run
+Nvoid os_idle_demon (void) {
+N 
+N  for (;;) {
+N    /* HERE: include optional user code to be executed when no thread runs.*/
+N  }
+N}
+N 
+N#if (OS_SYSTICK == 0)   // Functions for alternative timer as RTX kernel timer
+X#if (1 == 0)   
+S 
+S/*--------------------------- os_tick_init ----------------------------------*/
+S 
+S/// \brief Initializes an alternative hardware timer as RTX kernel timer
+S/// \return                             IRQ number of the alternative hardware timer
+Sint os_tick_init (void) {
+S  return (-1);  /* Return IRQ number of timer (0..239) */
+S}
+S 
+S/*--------------------------- os_tick_val -----------------------------------*/
+S 
+S/// \brief Get alternative hardware timer's current value (0 .. OS_TRV)
+S/// \return                             Current value of the alternative hardware timer
+Suint32_t os_tick_val (void) {
+S  return (0);
+S}
+S 
+S/*--------------------------- os_tick_ovf -----------------------------------*/
+S 
+S/// \brief Get alternative hardware timer's  overflow flag
+S/// \return                             Overflow flag\n
+S///                                     - 1 : overflow
+S///                                     - 0 : no overflow
+Suint32_t os_tick_ovf (void) {
+S  return (0);
+S}
+S 
+S/*--------------------------- os_tick_irqack --------------------------------*/
+S 
+S/// \brief Acknowledge alternative hardware timer interrupt
+Svoid os_tick_irqack (void) {
+S  /* ... */
+S}
+S 
+N#endif   // (OS_SYSTICK == 0)
+N 
+N/*--------------------------- os_error --------------------------------------*/
+N 
+N/* OS Error Codes */
+N#define OS_ERROR_STACK_OVF      1
+N#define OS_ERROR_FIFO_OVF       2
+N#define OS_ERROR_MBX_OVF        3
+N#define OS_ERROR_TIMER_OVF      4
+N 
+Nextern osThreadId svcThreadGetId (void);
+N 
+N/// \brief Called when a runtime error is detected
+N/// \param[in]   error_code   actual error code that has been detected
+Nvoid os_error (uint32_t error_code) {
+N 
+N  /* HERE: include optional code to be executed on runtime error. */
+N  switch (error_code) {
+N    case OS_ERROR_STACK_OVF:
+X    case 1:
+N      /* Stack overflow detected for the currently running task. */
+N      /* Thread can be identified by calling svcThreadGetId().   */
+N      break;
+N    case OS_ERROR_FIFO_OVF:
+X    case 2:
+N      /* ISR FIFO Queue buffer overflow detected. */
+N      break;
+N    case OS_ERROR_MBX_OVF:
+X    case 3:
+N      /* Mailbox overflow detected. */
+N      break;
+N    case OS_ERROR_TIMER_OVF:
+X    case 4:
+N      /* User Timer Callback Queue overflow detected. */
+N      break;
+N  }
+N  for (;;);
+N}
+N 
+N
+N/*----------------------------------------------------------------------------
+N *      RTX Configuration Functions
+N *---------------------------------------------------------------------------*/
+N 
+N#include "RTX_CM_lib.h"
+L 1 "C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\RTOS\RTX\INC\RTX_CM_lib.h" 1
+N/*----------------------------------------------------------------------------
+N *      CMSIS-RTOS  -  RTX
+N *----------------------------------------------------------------------------
+N *      Name:    RTX_CM_LIB.H
+N *      Purpose: RTX Kernel System Configuration
+N *      Rev.:    V4.77
+N *----------------------------------------------------------------------------
+N *
+N * Copyright (c) 1999-2009 KEIL, 2009-2015 ARM Germany GmbH
+N * All rights reserved.
+N * Redistribution and use in source and binary forms, with or without
+N * modification, are permitted provided that the following conditions are met:
+N *  - Redistributions of source code must retain the above copyright
+N *    notice, this list of conditions and the following disclaimer.
+N *  - Redistributions in binary form must reproduce the above copyright
+N *    notice, this list of conditions and the following disclaimer in the
+N *    documentation and/or other materials provided with the distribution.
+N *  - Neither the name of ARM  nor the names of its contributors may be used 
+N *    to endorse or promote products derived from this software without 
+N *    specific prior written permission.
+N *
+N * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+N * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+N * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+N * ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
+N * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+N * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+N * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+N * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+N * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+N * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+N * POSSIBILITY OF SUCH DAMAGE.
+N *---------------------------------------------------------------------------*/
+N
+N#if   defined (__CC_ARM)
+X#if   1L
+N#pragma O3
+N#define __USED __attribute__((used))
+N#elif defined (__GNUC__)
+S#pragma GCC optimize ("O3")
+S#define __USED __attribute__((used))
+S#elif defined (__ICCARM__)
+S#define __USED __root
+N#endif
+N
+N
+N/*----------------------------------------------------------------------------
+N *      Definitions
+N *---------------------------------------------------------------------------*/
+N
+N#define _declare_box(pool,size,cnt)  uint32_t pool[(((size)+3)/4)*(cnt) + 3]
+N#define _declare_box8(pool,size,cnt) uint64_t pool[(((size)+7)/8)*(cnt) + 2]
+N
+N#define OS_TCB_SIZE     52
+N#define OS_TMR_SIZE     8
+N
+N#if defined (__CC_ARM) && !defined (__MICROLIB)
+X#if 1L && !0L
+N
+Ntypedef void    *OS_ID;
+Ntypedef uint32_t OS_TID;
+Ntypedef uint32_t OS_MUT[4];
+Ntypedef uint32_t OS_RESULT;
+N
+N#define runtask_id()    rt_tsk_self()
+N#define mutex_init(m)   rt_mut_init(m)
+N#define mutex_wait(m)   os_mut_wait(m,0xFFFF)
+N#define mutex_rel(m)    os_mut_release(m)
+N
+Nextern uint8_t   os_running;
+Nextern OS_TID    rt_tsk_self    (void);
+Nextern void      rt_mut_init    (OS_ID mutex);
+Nextern OS_RESULT rt_mut_release (OS_ID mutex);
+Nextern OS_RESULT rt_mut_wait    (OS_ID mutex, uint16_t timeout);
+N
+N#define os_mut_wait(mutex,timeout) _os_mut_wait((uint32_t)rt_mut_wait,mutex,timeout)
+N#define os_mut_release(mutex)      _os_mut_release((uint32_t)rt_mut_release,mutex)
+N
+NOS_RESULT _os_mut_release (uint32_t p, OS_ID mutex)                   __svc_indirect(0);
+NOS_RESULT _os_mut_wait    (uint32_t p, OS_ID mutex, uint16_t timeout) __svc_indirect(0);
+N
+N#endif
+N
+N
+N/*----------------------------------------------------------------------------
+N *      Global Variables
+N *---------------------------------------------------------------------------*/
+N
+N#if (OS_TASKCNT == 0)
+X#if (6 == 0)
+S#error "Invalid number of concurrent running threads!"
+N#endif
+N
+N#if (OS_PRIVCNT >= OS_TASKCNT)
+X#if (0 >= 6)
+S#error "Too many threads with user-provided stack size!"
+N#endif
+N
+N#if (OS_TIMERS != 0)
+X#if (1 != 0)
+N#define OS_TASK_CNT (OS_TASKCNT + 1)
+N#define OS_PRIV_CNT (OS_PRIVCNT + 2)
+N#define OS_STACK_SZ (4*(OS_PRIVSTKSIZE+OS_MAINSTKSIZE+OS_TIMERSTKSZ))
+N#else
+S#define OS_TASK_CNT  OS_TASKCNT
+S#define OS_PRIV_CNT (OS_PRIVCNT + 1)
+S#define OS_STACK_SZ (4*(OS_PRIVSTKSIZE+OS_MAINSTKSIZE))
+N#endif
+N
+N#ifndef OS_STKINIT
+S#define OS_STKINIT  0
+N#endif
+N
+Nuint16_t const os_maxtaskrun = OS_TASK_CNT;
+Xuint16_t const os_maxtaskrun = (6 + 1);
+Nuint32_t const os_stackinfo  = (OS_STKINIT<<28) | (OS_STKCHECK<<24) | (OS_PRIV_CNT<<16) | (OS_STKSIZE*4);
+Xuint32_t const os_stackinfo  = (0<<28) | (1<<24) | ((0 + 2)<<16) | (64*4);
+Nuint32_t const os_rrobin     = (OS_ROBIN << 16) | OS_ROBINTOUT;
+Xuint32_t const os_rrobin     = (1 << 16) | 5;
+Nuint32_t const os_tickfreq   = OS_CLOCK;
+Xuint32_t const os_tickfreq   = 80000000;
+Nuint16_t const os_tickus_i   = OS_CLOCK/1000000;
+Xuint16_t const os_tickus_i   = 80000000/1000000;
+Nuint16_t const os_tickus_f   = (((uint64_t)(OS_CLOCK-1000000*(OS_CLOCK/1000000)))<<16)/1000000;
+Xuint16_t const os_tickus_f   = (((uint64_t)(80000000-1000000*(80000000/1000000)))<<16)/1000000;
+Nuint32_t const os_trv        = OS_TRV;
+Xuint32_t const os_trv        = ((uint32_t)(((double)80000000*(double)1000)/1E6)-1);
+Nuint8_t  const os_flags      = OS_RUNPRIV;
+Xuint8_t  const os_flags      = 1;
+N
+N/* Export following defines to uVision debugger. */
+N__USED uint32_t const CMSIS_RTOS_API_Version = osCMSIS;
+X__attribute__((used)) uint32_t const CMSIS_RTOS_API_Version = 0x10002;
+N__USED uint32_t const CMSIS_RTOS_RTX_Version = osCMSIS_RTX;
+X__attribute__((used)) uint32_t const CMSIS_RTOS_RTX_Version = ((4<<16)|78);
+N__USED uint32_t const os_clockrate = OS_TICK;
+X__attribute__((used)) uint32_t const os_clockrate = 1000;
+N__USED uint32_t const os_timernum  = 0;
+X__attribute__((used)) uint32_t const os_timernum  = 0;
+N
+N/* Memory pool for TCB allocation    */
+N_declare_box  (mp_tcb, OS_TCB_SIZE, OS_TASK_CNT);
+Xuint32_t mp_tcb[(((52)+3)/4)*((6 + 1)) + 3];
+Nuint16_t const mp_tcb_size = sizeof(mp_tcb);
+N
+N/* Memory pool for System stack allocation (+os_idle_demon). */
+N_declare_box8 (mp_stk, OS_STKSIZE*4, OS_TASK_CNT-OS_PRIV_CNT+1);
+Xuint64_t mp_stk[(((64*4)+7)/8)*((6 + 1)-(0 + 2)+1) + 2];
+Nuint32_t const mp_stk_size = sizeof(mp_stk);
+N
+N/* Memory pool for user specified stack allocation (+main, +timer) */
+Nuint64_t       os_stack_mem[2+OS_PRIV_CNT+(OS_STACK_SZ/8)];
+Xuint64_t       os_stack_mem[2+(0 + 2)+((4*(0+256+64))/8)];
+Nuint32_t const os_stack_sz = sizeof(os_stack_mem);
+N
+N#ifndef OS_FIFOSZ
+S #define OS_FIFOSZ      16
+N#endif
+N
+N/* Fifo Queue buffer for ISR requests.*/
+Nuint32_t       os_fifo[OS_FIFOSZ*2+1];
+Xuint32_t       os_fifo[16*2+1];
+Nuint8_t  const os_fifo_size = OS_FIFOSZ;
+Xuint8_t  const os_fifo_size = 16;
+N
+N/* An array of Active task pointers. */
+Nvoid *os_active_TCB[OS_TASK_CNT];
+Xvoid *os_active_TCB[(6 + 1)];
+N
+N/* User Timers Resources */
+N#if (OS_TIMERS != 0)
+X#if (1 != 0)
+Nextern void osTimerThread (void const *argument);
+NosThreadDef(osTimerThread, (osPriority)(OS_TIMERPRIO-3), 1, 4*OS_TIMERSTKSZ);
+Xconst osThreadDef_t os_thread_def_osTimerThread = { (osTimerThread), ((osPriority)(5-3)), (1), (4*64) };
+NosThreadId osThreadId_osTimerThread;
+NosMessageQDef(osTimerMessageQ, OS_TIMERCBQS, void *);
+Xuint32_t os_messageQ_q_osTimerMessageQ[4+(4)] = { 0 }; const osMessageQDef_t os_messageQ_def_osTimerMessageQ = { (4), (os_messageQ_q_osTimerMessageQ) };
+NosMessageQId osMessageQId_osTimerMessageQ;
+N#else
+SosThreadDef_t os_thread_def_osTimerThread = { NULL };
+SosThreadId osThreadId_osTimerThread;
+SosMessageQDef(osTimerMessageQ, 0, void *);
+SosMessageQId osMessageQId_osTimerMessageQ;
+N#endif
+N
+N/* Legacy RTX User Timers not used */
+Nuint32_t       os_tmr = 0; 
+Nuint32_t const *m_tmr = NULL;
+Xuint32_t const *m_tmr = 0;
+Nuint16_t const mp_tmr_size = 0;
+N
+N#if defined (__CC_ARM) && !defined (__MICROLIB)
+X#if 1L && !0L
+N /* A memory space for arm standard library. */
+N static uint32_t std_libspace[OS_TASK_CNT][96/4];
+X static uint32_t std_libspace[(6 + 1)][96/4];
+N static OS_MUT   std_libmutex[OS_MUTEXCNT];
+X static OS_MUT   std_libmutex[8];
+N static uint32_t nr_mutex;
+N extern void  *__libspace_start;
+N#endif
+N
+N
+N/*----------------------------------------------------------------------------
+N *      RTX Optimizations (empty functions)
+N *---------------------------------------------------------------------------*/
+N
+N#if OS_ROBIN == 0
+X#if 1 == 0
+S void rt_init_robin (void) {;}
+S void rt_chk_robin  (void) {;}
+N#endif
+N
+N#if OS_STKCHECK == 0
+X#if 1 == 0
+S void rt_stk_check  (void) {;}
+N#endif
+N
+N
+N/*----------------------------------------------------------------------------
+N *      Standard Library multithreading interface
+N *---------------------------------------------------------------------------*/
+N
+N#if defined (__CC_ARM) && !defined (__MICROLIB)
+X#if 1L && !0L
+N
+N/*--------------------------- __user_perthread_libspace ---------------------*/
+N
+Nvoid *__user_perthread_libspace (void) {
+N  /* Provide a separate libspace for each task. */
+N  uint32_t idx;
+N
+N  idx = os_running ? runtask_id () : 0;
+X  idx = os_running ? rt_tsk_self() : 0;
+N  if (idx == 0) {
+N    /* RTX not running yet. */
+N    return (&__libspace_start);
+N  }
+N  return ((void *)&std_libspace[idx-1]);
+N}
+N
+N/*--------------------------- _mutex_initialize -----------------------------*/
+N
+Nint _mutex_initialize (OS_ID *mutex) {
+N  /* Allocate and initialize a system mutex. */
+N
+N  if (nr_mutex >= OS_MUTEXCNT) {
+X  if (nr_mutex >= 8) {
+N    /* If you are here, you need to increase the number OS_MUTEXCNT. */
+N    for (;;);
+N  }
+N  *mutex = &std_libmutex[nr_mutex++];
+N  mutex_init (*mutex);
+X  rt_mut_init(*mutex);
+N  return (1);
+N}
+N
+N
+N/*--------------------------- _mutex_acquire --------------------------------*/
+N
+N__attribute__((used)) void _mutex_acquire (OS_ID *mutex) {
+N  /* Acquire a system mutex, lock stdlib resources. */
+N  if (os_running) {
+N    /* RTX running, acquire a mutex. */
+N    mutex_wait (*mutex);
+X    _os_mut_wait((uint32_t)rt_mut_wait,*mutex,0xFFFF);
+N  }
+N}
+N
+N
+N/*--------------------------- _mutex_release --------------------------------*/
+N
+N__attribute__((used)) void _mutex_release (OS_ID *mutex) {
+N  /* Release a system mutex, unlock stdlib resources. */
+N  if (os_running) {
+N    /* RTX running, release a mutex. */
+N    mutex_rel (*mutex);
+X    _os_mut_release((uint32_t)rt_mut_release,*mutex);
+N  }
+N}
+N
+N#endif
+N
+N
+N/*----------------------------------------------------------------------------
+N *      RTX Startup
+N *---------------------------------------------------------------------------*/
+N
+N/* Main Thread definition */
+Nextern int main (void);
+NosThreadDef_t os_thread_def_main = {(os_pthread)main, osPriorityNormal, 1, 4*OS_MAINSTKSIZE };
+XosThreadDef_t os_thread_def_main = {(os_pthread)main, osPriorityNormal, 1, 4*256 };
+N
+N
+N#if defined (__CC_ARM)
+X#if 1L
+N
+N#ifdef __MICROLIB
+Svoid _main_init (void) __attribute__((section(".ARM.Collect$$$$000000FF")));
+Svoid _main_init (void) {
+S  osKernelInitialize();
+S  osThreadCreate(&os_thread_def_main, NULL);
+S  osKernelStart();
+S  for (;;);
+S}
+N#else
+N__asm void _platform_post_lib_init (void) {
+N
+N  IMPORT  os_thread_def_main
+N  IMPORT  osKernelInitialize
+N  IMPORT  osKernelStart
+N  IMPORT  osThreadCreate
+N  IMPORT  exit
+N
+N  ADD     SP,#0x10
+N  BL      osKernelInitialize
+N  LDR     R0,=os_thread_def_main
+N  MOVS    R1,#0
+N  BL      osThreadCreate
+N  BL      osKernelStart
+N  BL      exit
+N
+N  ALIGN
+N}
+N#endif
+N
+N#elif defined (__GNUC__)
+S
+S#ifdef __CS3__
+S
+S/* CS3 start_c routine.
+S *
+S * Copyright (c) 2006, 2007 CodeSourcery Inc
+S *
+S * The authors hereby grant permission to use, copy, modify, distribute,
+S * and license this software and its documentation for any purpose, provided
+S * that existing copyright notices are retained in all copies and that this
+S * notice is included verbatim in any distributions. No written agreement,
+S * license, or royalty fee is required for any of the authorized uses.
+S * Modifications to this software may be copyrighted by their authors
+S * and need not follow the licensing terms described here, provided that
+S * the new terms are clearly indicated on the first page of each file where
+S * they apply.
+S */
+S
+S#include "cs3.h"
+S
+Sextern void __libc_init_array (void);
+S
+S__attribute ((noreturn)) void __cs3_start_c (void){
+S  unsigned regions = __cs3_region_num;
+S  const struct __cs3_region *rptr = __cs3_regions;
+S
+S  /* Initialize memory */
+S  for (regions = __cs3_region_num, rptr = __cs3_regions; regions--; rptr++) {
+S    long long *src = (long long *)rptr->init;
+S    long long *dst = (long long *)rptr->data;
+S    unsigned limit = rptr->init_size;
+S    unsigned count;
+S
+S    if (src != dst)
+S      for (count = 0; count != limit; count += sizeof (long long))
+S        *dst++ = *src++;
+S    else 
+S      dst = (long long *)((char *)dst + limit);
+S    limit = rptr->zero_size;
+S    for (count = 0; count != limit; count += sizeof (long long))
+S      *dst++ = 0;
+S  }
+S
+S  /* Run initializers.  */
+S  __libc_init_array ();
+S
+S  osKernelInitialize();
+S  osThreadCreate(&os_thread_def_main, NULL);
+S  osKernelStart();
+S  for (;;);
+S}
+S
+S#else
+S
+S__attribute__((naked)) void software_init_hook (void) {
+S  __asm (
+S    ".syntax unified\n"
+S    ".thumb\n"
+S    "movs r0,#0\n"
+S    "movs r1,#0\n"
+S    "mov  r4,r0\n"
+S    "mov  r5,r1\n"
+S    "ldr  r0,= __libc_fini_array\n"
+S    "bl   atexit\n"
+S    "bl   __libc_init_array\n"
+S    "mov  r0,r4\n"
+S    "mov  r1,r5\n"
+S    "bl   osKernelInitialize\n"
+S    "ldr  r0,=os_thread_def_main\n"
+S    "movs r1,#0\n"
+S    "bl   osThreadCreate\n"
+S    "bl   osKernelStart\n"
+S    "bl   exit\n"
+S  );
+S}
+S
+S#endif
+S
+S#elif defined (__ICCARM__)
+S
+Sextern int  __low_level_init(void);
+Sextern void __iar_data_init3(void);
+Sextern void exit(int arg);
+S
+S__noreturn __stackless void __cmain(void) {
+S  int a;
+S  
+S  if (__low_level_init() != 0) {
+S    __iar_data_init3();
+S  }
+S  osKernelInitialize();
+S  osThreadCreate(&os_thread_def_main, NULL);
+S  a = osKernelStart();
+S  exit(a);
+S}
+S
+N#endif
+N
+N
+N/*----------------------------------------------------------------------------
+N * end of file
+N *---------------------------------------------------------------------------*/
+N
+L 308 "RTE\CMSIS\RTX_Conf_CM.c" 2
+N 
+N/*----------------------------------------------------------------------------
+N * end of file
+N *---------------------------------------------------------------------------*/

@@ -1,0 +1,13 @@
+Dependencies for Project 'card', Target 'MDR1986VE93Y': (DO NOT MODIFY !)
+F (.\Source\main.c)(0x55EC8046)(--c99 -c --cpu Cortex-M3 -D__RTX -g -O0 --apcs=interwork --split_sections --signed_chars --asm --interleave --asm_dir ".\\Listings\\"-I D:\Keil555\1986VE9X\card\RTE-I D:\Keil555\1986VE9X\card\RTE\Device\MDR1986BE93-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\Driver\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\RTOS\RTX\INC-I C:\Keil_v5\ARM\PACK\Keil\MDK-Middleware\6.5.0\FileSystem\Include-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\CMSIS_Driver\MDR1986VE9X-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Config-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Libraries\CMSIS\CM3\CoreSupport-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\inc-I C:\Keil_v5\ARM\PACK\Keil\MDR1986BExx\1.4\Libraries\MDR32F9Qx_StdPeriph_Driver\inc-D__UVISION_VERSION="516" -D_RTE_ -DUSE_MDR32F9Q3_Rev1-o .\objects\main.o --list_dir ".\\Listings\\" --list --omf_browse .\objects\main.crf --depend .\objects\main.d)
+I (Source\main.h)(0x55EC7390)
+F (C:\Packs\ARM\CMSIS\5.5.1\CMSIS\RTOS\RTX\LIB\ARM\RTX_CM3.lib)(0x5C8BA64A)()
+F (RTE\CMSIS\RTX_Conf_CM.c)(0x55EC81FA)()
+F (C:\Packs\Keil\ARM_Compiler\1.6.1\Source\retarget_io.c)(0x584E700E)()
+F (RTE\Device\MDR1986BE93\MDR32F9Qx_config.h)(0x5C540D10)()
+F (RTE\Device\MDR1986BE93\startup_MDR32F9Qx.s)(0x55EC2CBE)()
+F (RTE\Device\MDR1986BE93\system_MDR32F9Qx.c)(0x542BE8B4)()
+F (RTE\Device\MDR1986BE93\system_MDR32F9Qx.h)(0x542BE8B4)()
+F (C:\Packs\Keil\MDK-Middleware\7.8.0\FileSystem\Lib\ARM\FS_LFN_CM3_L.lib)(0x5BE2A0FE)()
+F (RTE\File_System\FS_Config.c)(0x557AC28E)()
+F (RTE\File_System\FS_Config_MC_0.h)(0x55EC827C)()

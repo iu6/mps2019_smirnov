@@ -1,0 +1,15 @@
+--cpu Cortex-M3
+".\objects\main.o"
+"C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.3.0\CMSIS\RTOS\RTX\LIB\ARM\RTX_CM3.lib"
+".\objects\rtx_conf_cm.o"
+".\objects\mdr1986ve9x_port.o"
+".\objects\mdr1986ve9x_spi.o"
+".\objects\retarget_io.o"
+".\objects\startup_mdr32f9qx.o"
+".\objects\system_mdr32f9qx.o"
+"C:\Keil_v5\ARM\PACK\Keil\MDK-Middleware\6.5.0\FileSystem\Lib\ARM\FS_LFN_CM3_L.lib"
+".\objects\fs_config.o"
+--strict --scatter ".\Objects\card.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Listings\card.map" -o .\Objects\card.axf
