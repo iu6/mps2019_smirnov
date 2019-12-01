@@ -6,9 +6,53 @@
 #include "MDR32F9Qx_adc.h"	 //библиотека для работы с АЦП
 #include "MDR32F9Qx_dac.h"	 //библиотека для работы с ЦАП
 #include <cmath>			   // библиотека для отладки вывода звука (sin...)
-
+#include "MDR32F9Qx_timer.h"            // Keil::Drivers:TIMER
 #define EEPROM_PAGE_SIZE (4 * 1024) //1 страница памяти - 4К
 #define MAIN_EEPAGE 5
+int timer_count = 0;
+
+void Timer_init(int period) {
+	
+	//Тактирование таймера
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_TIMER1, ENABLE);
+	TIMER_CntInitTypeDef timerCnt;
+	TIMER_ChnInitTypeDef timerChn;
+	TIMER_ChnOutInitTypeDef timerChnOut;
+	
+	//настройки по умолчанию
+	TIMER_CntStructInit(&timerCnt);
+	TIMER_ChnStructInit(&timerChn);
+	TIMER_ChnOutStructInit(&timerChnOut);
+	
+	//установка предделителя 80МГц/8 = 1МГц
+	timerCnt.TIMER_Prescaler = 8;
+	//установка периода
+	timerCnt.TIMER_Period = period; //schet do 1 i virobotka signala
+	
+	//установка делителя на входе таймера (80MHz / 1 = 80МHz)
+	TIMER_BRGInit(MDR_TIMER1, TIMER_HCLKdiv1);
+	
+	//инициализация
+	TIMER_CntInit(MDR_TIMER1, &timerCnt);
+	//разрешения прерывания и установка приоритета
+	NVIC_EnableIRQ (Timer1_IRQn);
+	NVIC_SetPriority (Timer1_IRQn, 0);
+	//конфигурация срабатывания прерывания по установке 0	
+	TIMER_ITConfig(MDR_TIMER1, TIMER_STATUS_CNT_ZERO, ENABLE);
+}
+
+/*Обработчик прерывания от таймера*/
+void Timer1_IRQHandler(){
+	
+	if (TIMER_GetITStatus(MDR_TIMER1, TIMER_STATUS_CNT_ZERO)){
+		/*выполняемые действия */
+		if (timer_count == 0) {
+			timer_count = 1;
+		} else {
+			timer_count = 0;
+		}
+	}
+}
 
 //===============================================================================
 //=========    ОПИСАНИЕ ФУНКЦИЙ ДЛЯ РАБОТЫ С ПАМЯТЬЮ    =========================
@@ -53,6 +97,7 @@ void write_track(int num)
 	for (i = 1; i < size_in_words; i++)
 	{
 		Data = ADC_Receive_Word();
+		Delay(100);
 		EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
 	}
 
@@ -89,22 +134,22 @@ void read_track(int num)
 	for (i = 1; i < size_in_words; i++)
 	{
 		//программный ШИМ
-		DAC2_SetData(2000);
-		Data = (EEPROM_ReadWord(Address + i*4, BankSelector)) & 0x000000FF; // 0 - 256 
-		for (j = 0; j < Data; j ++)
-		{
+		// DAC2_SetData(2000);
+		// Data = (EEPROM_ReadWord(Address + i*4, BankSelector)) & 0x000000FF; // 0 - 256 
+		// for (j = 0; j < Data; j ++)
+		// {
 			
-		}
+		// }
 
-		DAC2_SetData(0);
-		for (j = 0; j < (256 - Data); j++)
-		{
+		// DAC2_SetData(0);
+		// for (j = 0; j < (256 - Data); j++)
+		// {
 			
-		}
+		// }
 
-		// Data = (EEPROM_ReadWord(Address + i*4, BankSelector)) & 0x000000FF;
-		// DAC2_SetData(Data);
-		// Delay(100);
+		Data = (EEPROM_ReadWord(Address + i*4, BankSelector)) & 0x00000FFF;
+		Delay(100);
+		DAC2_SetData(Data);
 
 		//вывод синусоиды ==========================================================<
 		// for (j = 0; j < freq_des; j++)
@@ -313,6 +358,7 @@ int32_t main(void)
 	MY_ADC_Init();
 	MY_ADC_1_Init();
 	MY_DAC2_Init();
+	Timer_init(375);
 
 	/* Вывод имени, фамилии и группы*/
 	U_MLT_Put_String("", 0);
