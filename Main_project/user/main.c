@@ -11,6 +11,27 @@
 #define MAIN_EEPAGE 5
 int timer_count = 0;
 
+//Настройка частоты работы
+void MY_U_RST_Init(void)
+{
+	RST_CLK_PCLKcmd (RST_CLK_PCLK_BKP, ENABLE);
+	RST_CLK_HSEconfig (RST_CLK_HSE_ON);
+	while (RST_CLK_HSEstatus () != SUCCESS);
+	// (CPU_C1_SEL = HSE / 1 * 10 = 8 ??? / 1 * 10 = 80 ???)
+	//8MHZ/2*3 = 12MHZ
+	// 8/1*10 = 4 MHz
+	RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSEdiv2,
+	RST_CLK_CPU_PLLmul1);
+	
+	RST_CLK_CPU_PLLcmd (ENABLE);
+
+	while (RST_CLK_CPU_PLLstatus () != SUCCESS);
+
+	RST_CLK_CPUclkPrescaler (RST_CLK_CPUclkDIV1);
+	RST_CLK_CPU_PLLuse (ENABLE);
+	RST_CLK_CPUclkSelection (RST_CLK_CPUclkCPU_C3);
+}
+
 void Timer_init(int period) {
 	
 	//Тактирование таймера
@@ -97,7 +118,7 @@ void write_track(int num)
 	for (i = 1; i < size_in_words; i++)
 	{
 		Data = ADC_Receive_Word();
-		Delay(100);
+		Delay(150);
 		EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
 	}
 
@@ -148,7 +169,7 @@ void read_track(int num)
 		// }
 
 		Data = (EEPROM_ReadWord(Address + i*4, BankSelector)) & 0x00000FFF;
-		Delay(100);
+		Delay(250);
 		DAC2_SetData(Data);
 
 		//вывод синусоиды ==========================================================<
@@ -359,6 +380,8 @@ int32_t main(void)
 	MY_ADC_1_Init();
 	MY_DAC2_Init();
 	Timer_init(375);
+	//Установка частоты тактирования 80МГц
+	MY_U_RST_Init();
 
 	/* Вывод имени, фамилии и группы*/
 	U_MLT_Put_String("", 0);

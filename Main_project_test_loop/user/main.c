@@ -93,22 +93,9 @@ void write_track(int num)
 	uint32_t i = 0;
 	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1) * EEPROM_PAGE_SIZE * 13; // Address = 0x08012000 dlya treka 2
 	BankSelector = EEPROM_Main_Bank_Select;													   //Address = 0x08005000 dlya traka 1
-	//формирование синусоиды =======================================================<
-	int freq_des = 200;
-	int amplitude = 20;
-	int d[200]; // freq_des = 200
-	int freq_des = 200;
 
-	for (i = 0; i < freq_des; i++)
+	for (i = 1; i < size_in_words; i++)
 	{
-		d[i] = (int)(10 + 10 * sin((double)(((double)i / (double)freq_des)) * 2 * 3.1415));
-	}
-	//конец формирования синусоиды ================================================>
-
-	for (i = 1; i < freq_des; i++)
-	{
-		Data = d[i];
-		Delay(10); //настройка частоты
 		EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
 	}
 
@@ -125,15 +112,93 @@ void write_track(int num)
 }
 
 /* Функция считывания памяти и вывода на ЦАП (AUDIO)  */
-void read_track_from_eeprom(int num)
+void read_track(int num)
 {
+	//Read from EEPROM
+	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
+	uint32_t Address = 0;
+	uint32_t BankSelector = 0;
+	uint32_t Data = 0;
+	uint32_t i = 0;
+	int j = 0;
+	int k = 0;
+	int d[200];
+	char stroka[33];
+	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1) * EEPROM_PAGE_SIZE * 13;
+	BankSelector = EEPROM_Main_Bank_Select;
+
+	while(1){
+		for (i = 1; i < 200; i++)
+		{
+				Data = (EEPROM_ReadWord(Address + i*4, BankSelector)) & 0x00000FFF;
+				Delay(10);
+				DAC2_SetData(Data);
+		}
+	}
 
 }
 
 /*вывод синусоиды бесконечный*/
-void generate_track_from_sin(void){
+void test_loop(int num){
+	int j = 0;
+	uint32_t Address = 0;
+	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
+	uint32_t BankSelector = 0;
+	uint32_t Data = num; //16 bit na odnu zipis'
+	uint32_t i = 0;
+	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1) * EEPROM_PAGE_SIZE * 13; // Address = 0x08012000 dlya treka 2
+	BankSelector = EEPROM_Main_Bank_Select;				
+
+	int freq_des = 200;
+	int amplitude = 20;
+	int d[200]; // freq_des = 200
+
+	for (i = 0; i < freq_des; i++)
+	{
+		d[i] = (int)(300 + 300 * sin((double)(((double)i / (double)freq_des)) * 2 * 3.1415));
+	}
+
+
+	//вывод синусоиды ==========================================================<
+	for(i = 0; i < 66; i++){
+		for (j = 0; j < freq_des; j++)
+		{
+			if (i == 0 && j == 0){
+				DAC2_SetData(d[0]);
+				Data = ADC_Receive_Word();
+				EEPROM_ProgramWord (Address + (i*200+1)*4, BankSelector, Data);
+			} else {
+				DAC2_SetData(d[j]);
+				Data = ADC_Receive_Word();
+				EEPROM_ProgramWord (Address + (i*200+j)*4, BankSelector, Data);
+			}
+
+		}
+	}
+	//пометить как записанное
+	EEPROM_ProgramWord(Address, BankSelector, 0xABCDEFAB);
 
 }
+
+test_loop2(){
+	int freq_des = 200;
+	int amplitude = 20;
+	int d[200]; // freq_des = 200
+	int i = 0;
+
+	for (i = 0; i < freq_des; i++)
+	{
+		d[i] = (int)(300 + 300 * sin((double)(((double)i / (double)freq_des)) * 2 * 3.1415));
+	}
+
+	while(1){
+		for (i = 0; i < 200; i++){
+			DAC2_SetData(d[i]);
+			Delay(1);
+		}
+	}
+}
+
 
 
 /* Функция проверки, записан ли трек под номером num или пуст 
@@ -345,6 +410,8 @@ int32_t main(void)
 	int current_status_right = 0;  //кнопка записи трека
 	int current_status_left = 0;   //кнопка воспроизведения трека
 
+	//test_loop(1);
+	test_loop2();
 	/* Основной цикл */
 	while (1)
 	{

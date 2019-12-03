@@ -21,7 +21,7 @@ Target DLL:      Segger\JL2CM3.dll V2.99.36.0
 Dialog DLL:      TCM.DLL V1.36.2.0
  
 <h2>Project:</h2>
-C:\mps2019_smirnov\Main_project\example.uvprojx
+C:\mps2019_smirnov\Main_project_test_loop\example.uvprojx
 Project File Date:  12/01/2019
 
 <h2>Output:</h2>
@@ -30,34 +30,58 @@ Build target 'Target 1'
 compiling main.c...
 user\main.c(65): warning:  #177-D: variable "num_of_tracks"  was declared but never referenced
   	int num_of_tracks = 2;
-user\main.c(99): warning:  #223-D: function "ADC_Receive_Word" declared implicitly
-  		Data = ADC_Receive_Word();
+user\main.c(134): warning:  #223-D: function "Delay" declared implicitly
+  				Delay(10);
+user\main.c(118): warning:  #177-D: variable "size_in_words"  was declared but never referenced
+  	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
 user\main.c(123): warning:  #177-D: variable "j"  was declared but never referenced
   	int j = 0;
-user\main.c(137): warning:  #177-D: variable "stroka"  was declared but never referenced
+user\main.c(124): warning:  #177-D: variable "k"  was declared but never referenced
+  	int k = 0;
+user\main.c(125): warning:  #177-D: variable "d"  was declared but never referenced
+  	int d[200];
+user\main.c(126): warning:  #177-D: variable "stroka"  was declared but never referenced
   	char stroka[33];
-user\main.c(177): warning:  #177-D: variable "Data"  was declared but never referenced
+user\main.c(168): warning:  #223-D: function "ADC_Receive_Word" declared implicitly
+  				Data = ADC_Receive_Word();
+user\main.c(172): warning:  #223-D: function "ADC_Receive_Word" declared implicitly
+  				Data = ADC_Receive_Word();
+user\main.c(145): warning:  #177-D: variable "size_in_words"  was declared but never referenced
+  	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
+user\main.c(153): warning:  #177-D: variable "amplitude"  was declared but never referenced
+  	int amplitude = 20;
+user\main.c(183): warning:  #260-D: explicit type is missing ("int" assumed)
+  test_loop2(){
+user\main.c(197): warning:  #223-D: function "Delay" declared implicitly
+  			Delay(1);
+user\main.c(185): warning:  #177-D: variable "amplitude"  was declared but never referenced
+  	int amplitude = 20;
+user\main.c(210): warning:  #177-D: variable "Data"  was declared but never referenced
   	uint32_t Data = 0;
-user\main.c(178): warning:  #177-D: variable "i"  was declared but never referenced
+user\main.c(211): warning:  #177-D: variable "i"  was declared but never referenced
   	uint32_t i = 0;
-user\main.c(248): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
+user\main.c(281): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
   }
-user\main.c(318): warning:  #159-D: declaration is incompatible with previous "ADC_Receive_Word"  (declared at line 99)
+user\main.c(340): warning:  #159-D: declaration is incompatible with previous "Delay"  (declared at line 134)
+  void Delay(int num)
+user\main.c(351): warning:  #159-D: declaration is incompatible with previous "ADC_Receive_Word"  (declared at line 168)
   uint32_t ADC_Receive_Word()
-user\main.c(361): warning:  #223-D: function "U_MLT_Init" declared implicitly
+user\main.c(394): warning:  #223-D: function "U_MLT_Init" declared implicitly
   	U_MLT_Init();
-user\main.c(369): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+user\main.c(402): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
   	U_MLT_Put_String("", 0);
-user\main.c(346): warning:  #177-D: variable "stroka"  was declared but never referenced
+user\main.c(379): warning:  #177-D: variable "stroka"  was declared but never referenced
   	char stroka[40]; //������������ ������ ���������������� �� ������������ �������������������� ��������������������
-user\main.c(352): warning:  #177-D: variable "vosproiz"  was declared but never referenced
+user\main.c(385): warning:  #177-D: variable "vosproiz"  was declared but never referenced
   	char vosproiz[] = "\xC2\xEE\xF1\xEF\xF0\xE8\xE7";
-user\main.c(353): warning:  #177-D: variable "vedenie"  was declared but never referenced
+user\main.c(386): warning:  #177-D: variable "vedenie"  was declared but never referenced
   	char vedenie[] = "\xE2\xE5\xE4\xE5\xED\xE8\xE5...";
-user\main.c: 13 warnings, 0 errors
+user\main.c: 24 warnings, 0 errors
 linking...
-Program Size: Code=6060 RO-data=2400 RW-data=12 ZI-data=1632  
-".\Objects\example.axf" - 0 Error(s), 13 Warning(s).
+.\Objects\example.sct(13): warning: L6329W: Pattern MDR32F9Qx_eeprom.o(RO) only matches removed unused sections.
+Program Size: Code=8852 RO-data=2676 RW-data=12 ZI-data=1636  
+Finished: 0 information, 1 warning and 0 error messages.
+".\Objects\example.axf" - 0 Error(s), 25 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -86,47 +110,47 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: Keil::Device:Startup:1.5
-      Include file:  Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
-      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c
-      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\startup_MDR32F9Qx.s
-      Include file:  Config\MDR32F9Qx_config.h
       Include file:  Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.h
+      Include file:  Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
+      Include file:  Config\MDR32F9Qx_config.h
+      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\startup_MDR32F9Qx.s
+      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c
 
    * Component: Keil::Drivers:ADC:1.5
-      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_adc.h
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_adc.c
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_adc.h
 
    * Component: Keil::Drivers:DAC:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_dac.h
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dac.c
 
    * Component: Keil::Drivers:EEPROM:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_eeprom.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c
 
    * Component: Keil::Drivers:LIB:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_lib.h
 
    * Component: Keil::Drivers:PORT:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_port.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c
 
    * Component: Keil::Drivers:POWER:1.5
-      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_power.h
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_power.h
 
    * Component: Keil::Drivers:RST_CLK:1.5
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_rst_clk.h
 
    * Component: Keil::Drivers:TIMER:1.5
-      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_timer.h
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_timer.c
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_timer.h
 
    * Component: Keil::Drivers:WWDG:1.5
-      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_wwdg.h
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c
-Build Time Elapsed:  00:00:01
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_wwdg.h
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>
