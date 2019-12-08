@@ -5917,3 +5917,6 @@ T3D40 3286:730 JLINK_ReadMemEx(0x080059F0, 0x0A80 Bytes, ..., Flags = 0x02000000
   ***** Error: Connection to emulator lost! (167152ms, 216635ms total)
 T400C 4108:024 
   ***** Error: Connection to emulator lost! (1137678ms, 1187161ms total)
+T3D40 5554:504 JLINK_Close() (0009ms, 49492ms total)
+T3D40 5554:504  (0009ms, 49492ms total)
+T3D40 5554:504 Closed (0009ms, 49492ms total)

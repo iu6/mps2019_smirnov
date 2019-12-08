@@ -1,0 +1,136 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ÂµVision V5.28.0.0
+Copyright (C) 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Alexandr Smirnov, BMSTU, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.28.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
+CPU DLL:         SARMCM3.DLL V5.28.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      Segger\JL2CM3.dll V2.99.36.0
+Dialog DLL:      TCM.DLL V1.36.2.0
+ 
+<h2>Project:</h2>
+C:\mps2019_smirnov\Main_project_one_track\example.uvprojx
+Project File Date:  12/01/2019
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'Target 1'
+compiling main.c...
+user\main.c(72): warning:  #223-D: function "ADC_Receive_Word" declared implicitly
+  		Data = ADC_Receive_Word();
+user\main.c(73): warning:  #223-D: function "Delay" declared implicitly
+  		Delay(150);
+user\main.c(98): warning:  #223-D: function "Delay" declared implicitly
+  		Delay(250);
+user\main.c(90): warning:  #177-D: variable "j"  was declared but never referenced
+  	int j = 0;
+user\main.c(92): warning:  #177-D: variable "stroka"  was declared but never referenced
+  	char stroka[33];
+user\main.c(110): warning:  #177-D: variable "Data"  was declared but never referenced
+  	uint32_t Data = 0;
+user\main.c(111): warning:  #177-D: variable "i"  was declared but never referenced
+  	uint32_t i = 0;
+user\main.c(181): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
+  }
+user\main.c(240): warning:  #159-D: declaration is incompatible with previous "Delay"  (declared at line 73)
+  void Delay(int num)
+user\main.c(251): warning:  #159-D: declaration is incompatible with previous "ADC_Receive_Word"  (declared at line 72)
+  uint16_t ADC_Receive_Word()
+user\main.c(296): warning:  #223-D: function "U_MLT_Init" declared implicitly
+  	U_MLT_Init();
+user\main.c(305): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+  	U_MLT_Put_String("", 0);
+user\main.c(281): warning:  #177-D: variable "stroka"  was declared but never referenced
+  	char stroka[40]; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+user\main.c(287): warning:  #177-D: variable "vosproiz"  was declared but never referenced
+  	char vosproiz[] = "\xC2\xEE\xF1\xEF\xF0\xE8\xE7";
+user\main.c(288): warning:  #177-D: variable "vedenie"  was declared but never referenced
+  	char vedenie[] = "\xE2\xE5\xE4\xE5\xED\xE8\xE5...";
+user\main.c: 15 warnings, 0 errors
+linking...
+Program Size: Code=5900 RO-data=2400 RW-data=8 ZI-data=1636  
+".\Objects\example.axf" - 0 Error(s), 15 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.MDR1986BExx.1.5.3.pack
+                Keil.MDR1986BExx.1.5.3
+                Milandr MDR1986BExx Series Device Support, Drivers and Examples
+   * Component: Startup Version: 1.5
+   * Component: ADC Version: 1.5
+   * Component: DAC Version: 1.5
+   * Component: EEPROM Version: 1.5
+   * Component: LIB Version: 1.5
+   * Component: PORT Version: 1.5
+   * Component: POWER Version: 1.5
+   * Component: RST_CLK Version: 1.5
+   * Component: TIMER Version: 1.5
+   * Component: WWDG Version: 1.5
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\Device\MDR1986BE92
+  .\RTE\_Target_1
+  C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\CMSIS\CM3\CoreSupport
+  C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\inc
+  C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\inc
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: Keil::Device:Startup:1.5
+      Include file:  Config\MDR32F9Qx_config.h
+      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c
+      Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\startup_MDR32F9Qx.s
+      Include file:  Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.h
+      Include file:  Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
+
+   * Component: Keil::Drivers:ADC:1.5
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_adc.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_adc.c
+
+   * Component: Keil::Drivers:DAC:1.5
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_dac.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dac.c
+
+   * Component: Keil::Drivers:EEPROM:1.5
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_eeprom.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c
+
+   * Component: Keil::Drivers:LIB:1.5
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_lib.h
+
+   * Component: Keil::Drivers:PORT:1.5
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_port.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c
+
+   * Component: Keil::Drivers:POWER:1.5
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_power.h
+
+   * Component: Keil::Drivers:RST_CLK:1.5
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_rst_clk.h
+
+   * Component: Keil::Drivers:TIMER:1.5
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_timer.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_timer.c
+
+   * Component: Keil::Drivers:WWDG:1.5
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_wwdg.h
+Build Time Elapsed:  00:00:00
+</pre>
+</body>
+</html>

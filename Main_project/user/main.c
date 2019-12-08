@@ -20,7 +20,7 @@ void MY_U_RST_Init(void)
 	// (CPU_C1_SEL = HSE / 1 * 10 = 8 ??? / 1 * 10 = 80 ???)
 	//8MHZ/2*3 = 12MHZ
 	// 8/1*10 = 4 MHz
-	RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSEdiv2,
+	RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSEdiv1,
 	RST_CLK_CPU_PLLmul1);
 	
 	RST_CLK_CPU_PLLcmd (ENABLE);
