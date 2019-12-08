@@ -30,38 +30,40 @@ Build target 'Target 1'
 compiling main.c...
 user\main.c(72): warning:  #223-D: function "ADC_Receive_Word" declared implicitly
   		Data = ADC_Receive_Word();
-user\main.c(73): warning:  #223-D: function "Delay" declared implicitly
-  		Delay(150);
-user\main.c(98): warning:  #223-D: function "Delay" declared implicitly
-  		Delay(250);
-user\main.c(90): warning:  #177-D: variable "j"  was declared but never referenced
+user\main.c(96): warning:  #223-D: function "Delay" declared implicitly
+  		Delay(110);
+user\main.c(89): warning:  #177-D: variable "j"  was declared but never referenced
   	int j = 0;
-user\main.c(92): warning:  #177-D: variable "stroka"  was declared but never referenced
+user\main.c(90): warning:  #177-D: variable "stroka"  was declared but never referenced
   	char stroka[33];
-user\main.c(110): warning:  #177-D: variable "Data"  was declared but never referenced
+user\main.c(108): warning:  #177-D: variable "Data"  was declared but never referenced
   	uint32_t Data = 0;
-user\main.c(111): warning:  #177-D: variable "i"  was declared but never referenced
+user\main.c(109): warning:  #177-D: variable "i"  was declared but never referenced
   	uint32_t i = 0;
-user\main.c(181): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
+user\main.c(133): warning:  #177-D: variable "j"  was declared but never referenced
+  	int j = 0;
+user\main.c(137): warning:  #177-D: variable "stroka"  was declared but never referenced
+  	char stroka[33];
+user\main.c(209): warning:  #940-D: missing return statement at end of non-void function "current_btn_status" 
   }
-user\main.c(240): warning:  #159-D: declaration is incompatible with previous "Delay"  (declared at line 73)
+user\main.c(268): warning:  #159-D: declaration is incompatible with previous "Delay"  (declared at line 96)
   void Delay(int num)
-user\main.c(251): warning:  #159-D: declaration is incompatible with previous "ADC_Receive_Word"  (declared at line 72)
+user\main.c(279): warning:  #159-D: declaration is incompatible with previous "ADC_Receive_Word"  (declared at line 72)
   uint16_t ADC_Receive_Word()
-user\main.c(296): warning:  #223-D: function "U_MLT_Init" declared implicitly
+user\main.c(324): warning:  #223-D: function "U_MLT_Init" declared implicitly
   	U_MLT_Init();
-user\main.c(305): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
+user\main.c(333): warning:  #223-D: function "U_MLT_Put_String" declared implicitly
   	U_MLT_Put_String("", 0);
-user\main.c(281): warning:  #177-D: variable "stroka"  was declared but never referenced
+user\main.c(309): warning:  #177-D: variable "stroka"  was declared but never referenced
   	char stroka[40]; //������������ ������ ���������������� �� ������������ �������������������� ��������������������
-user\main.c(287): warning:  #177-D: variable "vosproiz"  was declared but never referenced
+user\main.c(315): warning:  #177-D: variable "vosproiz"  was declared but never referenced
   	char vosproiz[] = "\xC2\xEE\xF1\xEF\xF0\xE8\xE7";
-user\main.c(288): warning:  #177-D: variable "vedenie"  was declared but never referenced
+user\main.c(316): warning:  #177-D: variable "vedenie"  was declared but never referenced
   	char vedenie[] = "\xE2\xE5\xE4\xE5\xED\xE8\xE5...";
-user\main.c: 15 warnings, 0 errors
+user\main.c: 16 warnings, 0 errors
 linking...
-Program Size: Code=5900 RO-data=2400 RW-data=8 ZI-data=1636  
-".\Objects\example.axf" - 0 Error(s), 15 Warning(s).
+Program Size: Code=5976 RO-data=2400 RW-data=8 ZI-data=1636  
+".\Objects\example.axf" - 0 Error(s), 16 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -90,11 +92,11 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: Keil::Device:Startup:1.5
+      Include file:  Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.h
+      Include file:  Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
       Include file:  Config\MDR32F9Qx_config.h
       Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c
       Source file:   Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\startup_MDR32F9Qx.s
-      Include file:  Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.h
-      Include file:  Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
 
    * Component: Keil::Drivers:ADC:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_adc.h
@@ -105,8 +107,8 @@ Package Vendor: Keil
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dac.c
 
    * Component: Keil::Drivers:EEPROM:1.5
-      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_eeprom.h
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c
+      Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_eeprom.h
 
    * Component: Keil::Drivers:LIB:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_lib.h
@@ -116,12 +118,12 @@ Package Vendor: Keil
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c
 
    * Component: Keil::Drivers:POWER:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_power.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c
 
    * Component: Keil::Drivers:RST_CLK:1.5
-      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_rst_clk.h
+      Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c
 
    * Component: Keil::Drivers:TIMER:1.5
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_timer.h
@@ -130,7 +132,7 @@ Package Vendor: Keil
    * Component: Keil::Drivers:WWDG:1.5
       Source file:   Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c
       Include file:  Libraries\MDR32F9Qx_StdPeriph_Driver\inc\MDR32F9Qx_wwdg.h
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

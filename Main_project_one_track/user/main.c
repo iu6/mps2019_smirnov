@@ -70,7 +70,6 @@ void write_track()
 	for (i = 2; i < size_in_half_words; i++)
 	{
 		Data = ADC_Receive_Word();
-		Delay(150);
 		EEPROM_ProgramHalfWord (Address + i*2, BankSelector, Data);
 	}
 
@@ -88,14 +87,13 @@ void read_track()
 	uint16_t Data = 0;
 	uint32_t i = 0;
 	int j = 0;
-
 	char stroka[33];
 	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 	for (i = 2; i < size_in_half_words; i++)
 	{
 		Data = (EEPROM_ReadHalfWord(Address + i*2, BankSelector)) & 0x0FFF;
-		Delay(250);
+		Delay(110);
 		DAC2_SetData(Data);
 	}
 
@@ -125,6 +123,36 @@ int track_is_empty()
 //===============================================================================
 //=========  КОНЕЦ ОПИСАНИЯ ФУНКЦИЙ ДЛЯ РАБОТЫ С ПАМЯТЬЮ   ======================
 //===============================================================================
+
+uint32_t amplitude_out(void){
+	uint32_t size_in_half_words = ENTIRE_MEM_HALF_WORDS; //same as EEPROM_PAGE_SIZE*13
+	uint32_t Address = 0;
+	uint32_t BankSelector = 0;
+	uint16_t Data = 0;
+	uint32_t i = 0;
+	int j = 0;
+	uint32_t max = 0;
+	uint32_t min = 0xFFFFFFFF;
+
+	char stroka[33];
+	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
+	BankSelector = EEPROM_Main_Bank_Select;
+	for (i = 2; i < size_in_half_words; i++)
+	{
+		Data = (EEPROM_ReadHalfWord(Address + i*2, BankSelector)) & 0x0FFF;
+		if (Data > max){
+			max = Data;
+		}
+
+		if (Data < min){
+			min = Data;
+		}
+
+	}
+
+	
+	return (max - min);
+}
 
 //btn_name = 0 - кнопка SELECT (Очистка памяти)
 //btn_name = 1 - кнопка UP
@@ -334,10 +362,7 @@ int32_t main(void)
 		if (current_btn_status(4) == 1 && current_status_down == 0)
 		{
 			//обработка нажатия (начало)
-			current_status_down = 1;
-			current_track -= 1;
-			if (current_track == -1)
-				current_track = num_of_tracks - 1;
+				amplitude_out();
 			//обработка нажатия (конец)
 		}
 		current_status_down = current_btn_status(4);
@@ -374,6 +399,7 @@ int32_t main(void)
 			if (track_is_empty() == 1)
 			{
 				U_MLT_Put_String(pusto, 4);
+				Delay(5000000);
 			}
 			else
 			{
