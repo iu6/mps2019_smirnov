@@ -21,7 +21,7 @@ void MY_U_RST_Init(void)
 
 	//40 MHz
 	RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSEdiv1,
-	RST_CLK_CPU_PLLmul5);
+	RST_CLK_CPU_PLLmul2);
 	
 	RST_CLK_CPU_PLLcmd (ENABLE);
 
@@ -75,10 +75,11 @@ void write_track()
 
 	//создание метки
 	EEPROM_ProgramWord(Address, BankSelector, 0xABCDEFAB);
+	
 }
 
 /* Функция считывания памяти и вывода на ЦАП (AUDIO)  */
-void read_track()
+void read_track(int norm)
 {
 	//чтение из EEPROM
 	uint32_t size_in_half_words = ENTIRE_MEM_HALF_WORDS; //same as EEPROM_PAGE_SIZE*13
@@ -90,12 +91,34 @@ void read_track()
 	char stroka[33];
 	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
+
+	//Вычисление Max и Min для Нормализации
+	uint32_t min = 0xFFFFFFFF;
+	uint32_t max = 0;
+
 	for (i = 2; i < size_in_half_words; i++)
 	{
 		Data = (EEPROM_ReadHalfWord(Address + i*2, BankSelector)) & 0x0FFF;
-		Delay(110);
+		if (Data > max){max = Data;}
+		if (Data < min){min = Data;}
+	}
+
+
+	//Вывод
+	for (i = 2; i < size_in_half_words; i++)
+	{
+		
+		Data = (EEPROM_ReadHalfWord(Address + i*2, BankSelector)) & 0xFFF;
+		if (norm == 1){
+			Data = (uint16_t)(((double)(Data - min))*(((double)0xFFF)/((double)(max - min)))); //Нормализация
+			if (Data > 0xFFF){Data = 0xFFF;}
+			Delay(80);
+		} else {
+			Delay(110);
+		}
 		DAC2_SetData(Data);
 	}
+
 
 }
 
@@ -404,7 +427,7 @@ int32_t main(void)
 			else
 			{
 				U_MLT_Put_String(vosproizvedenie, 4);
-				read_track();
+				read_track(1); //с нормализацией
 			}
 			Delay(500000);
 			//обработка нажатия (конец)
