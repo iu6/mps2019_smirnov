@@ -6,52 +6,30 @@
 #include "MDR32F9Qx_adc.h"	 //библиотека для работы с АЦП
 #include "MDR32F9Qx_dac.h"	 //библиотека для работы с ЦАП
 #include <cmath>			   // библиотека для отладки вывода звука (sin...)
-#include "MDR32F9Qx_timer.h"     // библиотека для работы с таймером
+#include "MDR32F9Qx_timer.h"            // Keil::Drivers:TIMER
 #define EEPROM_PAGE_SIZE (4 * 1024) //1 страница памяти - 4К
 #define MAIN_EEPAGE 5
+#define ENTIRE_MEM_BYTES 86016 // 0x15000 - свободная память до 0x08020000
 int timer_count = 0;
 
-void Timer_init(int period) {
-	
-	//Тактирование таймера
-	RST_CLK_PCLKcmd(RST_CLK_PCLK_TIMER1, ENABLE);
-	TIMER_CntInitTypeDef timerCnt;
-	TIMER_ChnInitTypeDef timerChn;
-	TIMER_ChnOutInitTypeDef timerChnOut;
-	
-	//настройки по умолчанию
-	TIMER_CntStructInit(&timerCnt);
-	TIMER_ChnStructInit(&timerChn);
-	TIMER_ChnOutStructInit(&timerChnOut);
-	
-	//установка предделителя 80МГц/8 = 1МГц
-	timerCnt.TIMER_Prescaler = 8;
-	//установка периода
-	timerCnt.TIMER_Period = period; //schet do 1 i virobotka signala
-	
-	//установка делителя на входе таймера (80MHz / 1 = 80МHz)
-	TIMER_BRGInit(MDR_TIMER1, TIMER_HCLKdiv1);
-	
-	//инициализация
-	TIMER_CntInit(MDR_TIMER1, &timerCnt);
-	//разрешения прерывания и установка приоритета
-	NVIC_EnableIRQ (Timer1_IRQn);
-	NVIC_SetPriority (Timer1_IRQn, 0);
-	//конфигурация срабатывания прерывания по установке 0	
-	TIMER_ITConfig(MDR_TIMER1, TIMER_STATUS_CNT_ZERO, ENABLE);
-}
+//Настройка частоты работы
+void MY_U_RST_Init(void)
+{
+	RST_CLK_PCLKcmd (RST_CLK_PCLK_BKP, ENABLE);
+	RST_CLK_HSEconfig (RST_CLK_HSE_ON);
+	while (RST_CLK_HSEstatus () != SUCCESS);
 
-/*Обработчик прерывания от таймера*/
-void Timer1_IRQHandler(){
+	//40 MHz
+	RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSEdiv1,
+	RST_CLK_CPU_PLLmul5);
 	
-	if (TIMER_GetITStatus(MDR_TIMER1, TIMER_STATUS_CNT_ZERO)){
-		/*выполняемые действия */
-		if (timer_count == 0) {
-			timer_count = 1;
-		} else {
-			timer_count = 0;
-		}
-	}
+	RST_CLK_CPU_PLLcmd (ENABLE);
+
+	while (RST_CLK_CPU_PLLstatus () != SUCCESS);
+
+	RST_CLK_CPUclkPrescaler (RST_CLK_CPUclkDIV1);
+	RST_CLK_CPU_PLLuse (ENABLE);
+	RST_CLK_CPUclkSelection (RST_CLK_CPUclkCPU_C3);
 }
 
 //===============================================================================
@@ -62,157 +40,105 @@ void Timer1_IRQHandler(){
 void erise_mem()
 {
 	//всего 26624 слова по 32 бита памяти доступно
-	int num_of_tracks = 2;
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint32_t i = 0;
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	//очистка первого трека (13 страниц)
-	for (i = 0; i < 13; i++)
+	//очистка трека (26 страниц)
+	for (i = 0; i < 21; i++)
 	{
 		EEPROM_ErasePage(Address + i * EEPROM_PAGE_SIZE, BankSelector);
 	}
-	//очистка второго трека (13 страниц)
-	for (i = 0; i < 13; i++)
-	{
-		EEPROM_ErasePage(Address + 13 * EEPROM_PAGE_SIZE + i * EEPROM_PAGE_SIZE, BankSelector);
-	}
+
 }
 
 /*Функция считывания значения напряжения на АЦП и записи в память EEPROM
 num >= 0 (1,2..) */
-void write_track(int num)
+void write_track()
 {
 	//Write to EEPROM
 	uint32_t Address = 0;
-	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
+	uint32_t size_in_bytes = ENTIRE_MEM_BYTES; //same as EEPROM_PAGE_SIZE*26
 	uint32_t BankSelector = 0;
-	uint32_t Data = num; //16 bit na odnu zipis'
+	uint16_t Data; //16 бит на одну запись
+	uint8_t Data_8bit;
 	uint32_t i = 0;
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1) * EEPROM_PAGE_SIZE * 13; // Address = 0x08012000 dlya treka 2
-	BankSelector = EEPROM_Main_Bank_Select;													   //Address = 0x08005000 dlya traka 1
+	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
+	BankSelector = EEPROM_Main_Bank_Select;													 
 
-	for (i = 1; i < size_in_words; i++)
+	for (i = 4; i < size_in_bytes; i++)
 	{
-		EEPROM_ProgramWord (Address + i*4, BankSelector, Data);
+		Data = ADC_Receive_Word();
+		Data_8bit = (uint8_t)(Data >> 4);
+		EEPROM_ProgramByte (Address + i, BankSelector, Data_8bit);
 	}
 
-	//вывод синусоиды ==========================================================<
-	// for (j = 0; j < freq_des; j++)
-	// {
-	// 	DAC2_SetData(d[j]);
-	// 	Delay(10); //настройка частоты
-	// }
-	//конец вывода синусоиды ===================================================>
-
-	//sozdanie metki
+	//создание метки
 	EEPROM_ProgramWord(Address, BankSelector, 0xABCDEFAB);
+	
 }
 
 /* Функция считывания памяти и вывода на ЦАП (AUDIO)  */
-void read_track(int num)
+void read_track(int norm)
 {
-	//Read from EEPROM
-	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
+	//чтение из EEPROM
+	uint32_t size_in_bytes = ENTIRE_MEM_BYTES; //same as EEPROM_PAGE_SIZE*13
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
-	uint32_t Data = 0;
+	uint16_t Data = 0;
+	uint8_t Data_8bit;
 	uint32_t i = 0;
 	int j = 0;
-	int k = 0;
-	int d[200];
 	char stroka[33];
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1) * EEPROM_PAGE_SIZE * 13;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	while(1){
-		for (i = 1; i < 200; i++)
-		{
-				Data = (EEPROM_ReadWord(Address + i*4, BankSelector)) & 0x00000FFF;
-				Delay(10);
-				DAC2_SetData(Data);
-		}
-	}
+	//Вычисление Max и Min для Нормализации
+	uint32_t min = 0xFFFF;
+	uint32_t max = 0x0000;
 
-}
-
-/*вывод синусоиды бесконечный*/
-void test_loop(int num){
-	int j = 0;
-	uint32_t Address = 0;
-	uint32_t size_in_words = 13312; //same as EEPROM_PAGE_SIZE*13
-	uint32_t BankSelector = 0;
-	uint32_t Data = num; //16 bit na odnu zipis'
-	uint32_t i = 0;
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE + (num - 1) * EEPROM_PAGE_SIZE * 13; // Address = 0x08012000 dlya treka 2
-	BankSelector = EEPROM_Main_Bank_Select;				
-
-	int freq_des = 200;
-	int amplitude = 20;
-	int d[200]; // freq_des = 200
-
-	for (i = 0; i < freq_des; i++)
+	for (i = 4; i < size_in_bytes; i++)
 	{
-		d[i] = (int)(300 + 300 * sin((double)(((double)i / (double)freq_des)) * 2 * 3.1415));
+		Data_8bit = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
+		Data = ((0x0000 + Data_8bit) << 4) + 0x7;
+		if (Data > max){max = Data;}
+		if (Data < min){min = Data;}
 	}
 
 
-	//вывод синусоиды ==========================================================<
-	for(i = 0; i < 66; i++){
-		for (j = 0; j < freq_des; j++)
-		{
-			if (i == 0 && j == 0){
-				DAC2_SetData(d[0]);
-				Data = ADC_Receive_Word();
-				EEPROM_ProgramWord (Address + (i*200+1)*4, BankSelector, Data);
-			} else {
-				DAC2_SetData(d[j]);
-				Data = ADC_Receive_Word();
-				EEPROM_ProgramWord (Address + (i*200+j)*4, BankSelector, Data);
-			}
-
-		}
-	}
-	//пометить как записанное
-	EEPROM_ProgramWord(Address, BankSelector, 0xABCDEFAB);
-
-}
-
-test_loop2(){
-	int freq_des = 200;
-	int amplitude = 20;
-	int d[200]; // freq_des = 200
-	int i = 0;
-
-	for (i = 0; i < freq_des; i++)
+	//Вывод
+	for (i = 4; i < size_in_bytes; i++)
 	{
-		d[i] = (int)(300 + 300 * sin((double)(((double)i / (double)freq_des)) * 2 * 3.1415));
-	}
-
-	while(1){
-		for (i = 0; i < 200; i++){
-			DAC2_SetData(d[i]);
-			Delay(1);
+		
+		Data_8bit = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
+		Data = ((0x0000 + Data_8bit) << 4) + 0x7;
+		if (norm == 1){
+			Data = (uint16_t)(((double)(Data - min))*(((double)0xFFF)/((double)(max - min)))); //Нормализация
+			if (Data > 0xFFF){Data = 0xFFF;}
+			Delay(80);
+		} else {
+			Delay(110);
 		}
+		DAC2_SetData(Data);
 	}
+
+
 }
-
-
 
 /* Функция проверки, записан ли трек под номером num или пуст 
 num = 1,2... (>0)*/
-int track_is_empty(int num)
+int track_is_empty()
 {
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint32_t Data = 0;
 	uint32_t i = 0;
-	Address = 0x08000000 + MAIN_EEPAGE * EEPROM_PAGE_SIZE;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	if (EEPROM_ReadWord(Address + (num - 1) * EEPROM_PAGE_SIZE * 13, BankSelector) == 0xABCDEFAB)
+	if (EEPROM_ReadWord(Address, BankSelector) == 0xABCDEFAB)
 	{
 		return 0;
 	}
@@ -225,6 +151,37 @@ int track_is_empty(int num)
 //===============================================================================
 //=========  КОНЕЦ ОПИСАНИЯ ФУНКЦИЙ ДЛЯ РАБОТЫ С ПАМЯТЬЮ   ======================
 //===============================================================================
+
+//не закончена
+uint32_t amplitude_out(void){
+	uint32_t size_in_bytes = ENTIRE_MEM_BYTES; //same as EEPROM_PAGE_SIZE*13
+	uint32_t Address = 0;
+	uint32_t BankSelector = 0;
+	uint16_t Data = 0;
+	uint32_t i = 0;
+	int j = 0;
+	uint32_t max = 0;
+	uint32_t min = 0xFFFFFFFF;
+
+	char stroka[33];
+	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
+	BankSelector = EEPROM_Main_Bank_Select;
+	for (i = 4; i < size_in_bytes; i++)
+	{
+		Data = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
+		if (Data > max){
+			max = Data;
+		}
+
+		if (Data < min){
+			min = Data;
+		}
+
+	}
+
+	
+	return (max - min);
+}
 
 //btn_name = 0 - кнопка SELECT (Очистка памяти)
 //btn_name = 1 - кнопка UP
@@ -348,11 +305,13 @@ void Delay(int num)
 /* функция считывания результата преобразования. 
 После считывания флаг будет сброшен и может быть произведено
 следующее преобразование командой ADC1_Start()*/
-uint32_t ADC_Receive_Word()
+uint16_t ADC_Receive_Word()
 {
+	uint16_t result;
 	ADC1_Start();
 	while (ADC1_GetFlagStatus(ADC1_FLAG_END_OF_CONVERSION) == 0);
-	return ADC1_GetResult() & 0x00000FFF; //получение 12-разрядного результата
+	result = ADC1_GetResult() & 0x00000FFF;//получение 12-разрядного результата
+	return result;
 }
 
 /* Функция настройки ЦАП  */
@@ -375,7 +334,7 @@ void MY_DAC2_Init(void)
 int32_t main(void)
 {
 	int current_track = 0; //current_track = 0,1,...
-	int num_of_tracks = 2;
+	int num_of_tracks = 1;
 	char stroka[40]; //строка для хранения и вывода результата вычислений
 	char track_array[10][32] = {"\xD2\xF0\xE5\xEA 1", "\xD2\xF0\xE5\xEA 2", "\xD2\xF0\xE5\xEA 3", "\xD2\xF0\xE5\xEA 4", "\xD2\xF0\xE5\xEA 5", "\xD2\xF0\xE5\xEA 6", "\xD2\xF0\xE5\xEA 7", "\xD2\xF0\xE5\xEA 8", "\xD2\xF0\xE5\xEA 9", "\xD2\xF0\xE5\xEA 10"};
 	/* определение выводимых на экран строк (кириллица) */
@@ -396,7 +355,8 @@ int32_t main(void)
 	MY_ADC_Init();
 	MY_ADC_1_Init();
 	MY_DAC2_Init();
-	Timer_init(375);
+	//Установка частоты тактирования 80МГц
+	MY_U_RST_Init();
 
 	/* Вывод имени, фамилии и группы*/
 	U_MLT_Put_String("", 0);
@@ -410,8 +370,6 @@ int32_t main(void)
 	int current_status_right = 0;  //кнопка записи трека
 	int current_status_left = 0;   //кнопка воспроизведения трека
 
-	//test_loop(1);
-	test_loop2();
 	/* Основной цикл */
 	while (1)
 	{
@@ -433,10 +391,7 @@ int32_t main(void)
 		if (current_btn_status(4) == 1 && current_status_down == 0)
 		{
 			//обработка нажатия (начало)
-			current_status_down = 1;
-			current_track -= 1;
-			if (current_track == -1)
-				current_track = num_of_tracks - 1;
+				amplitude_out();
 			//обработка нажатия (конец)
 		}
 		current_status_down = current_btn_status(4);
@@ -460,7 +415,7 @@ int32_t main(void)
 		{
 			//обработка нажатия (начало)
 			U_MLT_Put_String(zapis, 4);
-			write_track(current_track + 1);
+			write_track();
 			Delay(500000);
 			//обработка нажатия (конец)
 		}
@@ -470,14 +425,15 @@ int32_t main(void)
 		if (current_btn_status(3) == 1 && current_status_left == 0)
 		{
 			//обработка нажатия (начало)
-			if (track_is_empty(current_track + 1) == 1)
+			if (track_is_empty() == 1)
 			{
 				U_MLT_Put_String(pusto, 4);
+				Delay(5000000);
 			}
 			else
 			{
 				U_MLT_Put_String(vosproizvedenie, 4);
-				read_track(current_track + 1);
+				read_track(1); //с нормализацией
 			}
 			Delay(500000);
 			//обработка нажатия (конец)
