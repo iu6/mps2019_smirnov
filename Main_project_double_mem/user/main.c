@@ -21,7 +21,7 @@ void MY_U_RST_Init(void)
 
 	//40 MHz
 	RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSEdiv1,
-	RST_CLK_CPU_PLLmul5);
+	RST_CLK_CPU_PLLmul4);
 	
 	RST_CLK_CPU_PLLcmd (ENABLE);
 
