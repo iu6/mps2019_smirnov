@@ -9,7 +9,7 @@
 #include "MDR32F9Qx_timer.h"            // Keil::Drivers:TIMER
 #define EEPROM_PAGE_SIZE (4 * 1024) //1 страница памяти - 4К
 #define MAIN_EEPAGE 5
-#define ENTIRE_MEM_BYTES 86016 // 0x15000 - свободная память до 0x08020000
+#define ENTIRE_MEM_HALF_WORDS 43008 // 0x15000 - свободная память до 0x08020000
 int timer_count = 0;
 
 //Настройка частоты работы
@@ -21,7 +21,7 @@ void MY_U_RST_Init(void)
 
 	//40 MHz
 	RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSEdiv1,
-	RST_CLK_CPU_PLLmul4);
+	RST_CLK_CPU_PLLmul2);
 	
 	RST_CLK_CPU_PLLcmd (ENABLE);
 
@@ -60,19 +60,17 @@ void write_track()
 {
 	//Write to EEPROM
 	uint32_t Address = 0;
-	uint32_t size_in_bytes = ENTIRE_MEM_BYTES; //same as EEPROM_PAGE_SIZE*26
+	uint32_t size_in_half_words = ENTIRE_MEM_HALF_WORDS; //same as EEPROM_PAGE_SIZE*26
 	uint32_t BankSelector = 0;
 	uint16_t Data; //16 бит на одну запись
-	uint8_t Data_8bit;
 	uint32_t i = 0;
 	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;													 
 
-	for (i = 4; i < size_in_bytes; i++)
+	for (i = 2; i < size_in_half_words; i++)
 	{
 		Data = ADC_Receive_Word();
-		Data_8bit = (uint8_t)(Data >> 4);
-		EEPROM_ProgramByte (Address + i, BankSelector, Data_8bit);
+		EEPROM_ProgramHalfWord (Address + i*2, BankSelector, Data);
 	}
 
 	//создание метки
@@ -84,11 +82,10 @@ void write_track()
 void read_track(int norm)
 {
 	//чтение из EEPROM
-	uint32_t size_in_bytes = ENTIRE_MEM_BYTES; //same as EEPROM_PAGE_SIZE*13
+	uint32_t size_in_half_words = ENTIRE_MEM_HALF_WORDS; //same as EEPROM_PAGE_SIZE*13
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint16_t Data = 0;
-	uint8_t Data_8bit;
 	uint32_t i = 0;
 	int j = 0;
 	char stroka[33];
@@ -96,24 +93,22 @@ void read_track(int norm)
 	BankSelector = EEPROM_Main_Bank_Select;
 
 	//Вычисление Max и Min для Нормализации
-	uint32_t min = 0xFFFF;
-	uint32_t max = 0x0000;
+	uint32_t min = 0xFFFFFFFF;
+	uint32_t max = 0;
 
-	for (i = 4; i < size_in_bytes; i++)
+	for (i = 2; i < size_in_half_words; i++)
 	{
-		Data_8bit = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
-		Data = ((0x0000 + Data_8bit) << 4) + 0x7;
+		Data = (EEPROM_ReadHalfWord(Address + i*2, BankSelector)) & 0x0FFF;
 		if (Data > max){max = Data;}
 		if (Data < min){min = Data;}
 	}
 
 
 	//Вывод
-	for (i = 4; i < size_in_bytes; i++)
+	for (i = 2; i < size_in_half_words; i++)
 	{
 		
-		Data_8bit = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
-		Data = ((0x0000 + Data_8bit) << 4) + 0x7;
+		Data = (EEPROM_ReadHalfWord(Address + i*2, BankSelector)) & 0xFFF;
 		if (norm == 1){
 			Data = (uint16_t)(((double)(Data - min))*(((double)0xFFF)/((double)(max - min)))); //Нормализация
 			if (Data > 0xFFF){Data = 0xFFF;}
@@ -152,9 +147,8 @@ int track_is_empty()
 //=========  КОНЕЦ ОПИСАНИЯ ФУНКЦИЙ ДЛЯ РАБОТЫ С ПАМЯТЬЮ   ======================
 //===============================================================================
 
-//не закончена
 uint32_t amplitude_out(void){
-	uint32_t size_in_bytes = ENTIRE_MEM_BYTES; //same as EEPROM_PAGE_SIZE*13
+	uint32_t size_in_half_words = ENTIRE_MEM_HALF_WORDS; //same as EEPROM_PAGE_SIZE*13
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint16_t Data = 0;
@@ -166,9 +160,9 @@ uint32_t amplitude_out(void){
 	char stroka[33];
 	Address = 0x08000000 + EEPROM_PAGE_SIZE*MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
-	for (i = 4; i < size_in_bytes; i++)
+	for (i = 2; i < size_in_half_words; i++)
 	{
-		Data = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
+		Data = (EEPROM_ReadHalfWord(Address + i*2, BankSelector)) & 0x0FFF;
 		if (Data > max){
 			max = Data;
 		}
@@ -333,6 +327,10 @@ void MY_DAC2_Init(void)
 
 int32_t main(void)
 {
+	/*set ifren = 0 (main block) */
+	MDR_EEPROM->CMD = MDR_EEPROM->CMD & 0xFFFFFDFF;
+	int ifren = EEPROM_CMD_IFREN;
+	
 	int current_track = 0; //current_track = 0,1,...
 	int num_of_tracks = 1;
 	char stroka[40]; //строка для хранения и вывода результата вычислений
