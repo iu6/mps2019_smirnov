@@ -19,6 +19,50 @@ void Delay(int num)
 	}
 }
 
+/* Процедура настройки таймера */
+void Timer_init(int period) {
+	
+	//Включение тактирования
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_TIMER1, ENABLE);
+
+	//Инициализация структур
+	TIMER_CntInitTypeDef timerCnt;
+	TIMER_ChnInitTypeDef timerChn;
+	TIMER_ChnOutInitTypeDef timerChnOut;
+	
+	//Установка настроек по умолчанию
+	TIMER_CntStructInit(&timerCnt);
+	TIMER_ChnStructInit(&timerChn);
+	TIMER_ChnOutStructInit(&timerChnOut);
+	
+	//Установка предделителя
+	timerCnt.TIMER_Prescaler = 8000;
+	//Установка числа отсчетов до прерывания
+	timerCnt.TIMER_Period = period; //schet do 1 i virobotka signala
+
+	//Применение настроек	
+	TIMER_CntInit(MDR_TIMER1, &timerCnt);
+	
+	//Разрешение прерываний
+	NVIC_EnableIRQ (Timer1_IRQn);
+	//Установка наибольшего приоритета
+	NVIC_SetPriority (Timer1_IRQn, 0);
+	//Установка прерывания по окончанию счета таймера (достижения 0)
+	TIMER_ITConfig(MDR_TIMER1, TIMER_STATUS_CNT_ZERO, ENABLE);
+}
+
+
+/* Обработчик прерывания таймера */
+void Timer1_IRQHandler(){
+	
+	if (TIMER_GetITStatus(MDR_TIMER1, TIMER_STATUS_CNT_ZERO)){
+		/* Начало логики обработки*/
+		
+		/* Конец логики обработки */
+		TIMER_ClearITPendingBit(MDR_TIMER1, TIMER_STATUS_CNT_ZERO);
+	}
+}
+
 //Настройка частоты работы
 void MY_U_RST_Init(void)
 {
@@ -86,8 +130,8 @@ void write_track()
 	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	//Запуск последовательного преобразвоания
-	MDR_ADC->ADC1_CFG |= ADC1_CFG_REG_SAMPLE;
+	//Запуск таймера
+	TIMER_Cmd(MDR_TIMER1, ENABLE);
 
 	//цикл записи в память
 	for (i = 4; i < size_in_bytes; i++)
@@ -100,7 +144,7 @@ void write_track()
 	}
 
 	//остановка последовательного преобразования
-	MDR_ADC->ADC1_CFG &= ~(ADC1_CFG_REG_SAMPLE);
+	TIMER_Cmd(MDR_TIMER1, DISABLE);
 	//создание метки
 	EEPROM_ProgramWord(Address, BankSelector, 0xABCDEFAB);
 }
@@ -316,6 +360,7 @@ int32_t main(void)
 	char pusto[] = "\xCF\xF3\xF1\xF2\xEE!";
 	char smirnov[] = "\xD1\xEC\xE8\xF0\xED\xEE\xE2 \xC0.\xC0.";
 	char iu673[] = "\xC8\xD3\x36-73";
+	int T_dis = 1000; //Установка периода дискретизации 1000 тактов
 	/* Включение тактирование EEPROM */
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
 	/* вызов инициализирующих функций */
@@ -324,7 +369,7 @@ int32_t main(void)
 	MY_ADC_Init();
 	MY_ADC_1_Init();
 	MY_DAC2_Init();
-
+	Timer_init(T_dis);
 	//Установка частоты тактирования
 	MY_U_RST_Init();
 
