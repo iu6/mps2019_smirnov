@@ -5,10 +5,19 @@
 #include "MDR32F9Qx_rst_clk.h" //библиотека для тактирования
 #include "MDR32F9Qx_adc.h"	 //библиотека для работы с АЦП
 #include "MDR32F9Qx_dac.h"	 //библиотека для работы с ЦАП
+#include "MDR32F9Qx_timer.h"    // библиотека для работы с таймером
+
 
 #define EEPROM_PAGE_SIZE (4 * 1024) //1 страница памяти - 4К
 #define MAIN_EEPAGE 5
-#define ENTIRE_MEM_BYTES 86016 // 0x15000 - свободная память до 0x08020000
+#define ENTIRE_MEM_BYTES 110592 // свободная память до 0x08020000
+#define CPU_FREQ 20000000
+
+int global_byte_counter = 4; //начиная с 4 бита 
+uint8_t global_adc_result = 0x80; //среднее значение
+uint16_t global_dac_result = 0x80; //среднее значение
+uint32_t global_max = 0x0000;
+uint32_t global_min = 0xFFFF;
 
 /* Процедура задержки */
 void Delay(int num)
@@ -19,47 +28,129 @@ void Delay(int num)
 	}
 }
 
-/* Процедура настройки таймера */
-void Timer_init(int period) {
-	
+int freq_to_tact(int freq_dis) {
+	return (int)((1/(double)freq_dis)/(1/(double)CPU_FREQ));
+}
+
+/* Процедура настройки таймера 1 */
+void Timer1_init(int freq) {
+	int period = freq_to_tact(freq);
 	//Включение тактирования
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_TIMER1, ENABLE);
 
 	//Инициализация структур
 	TIMER_CntInitTypeDef timerCnt;
-	TIMER_ChnInitTypeDef timerChn;
-	TIMER_ChnOutInitTypeDef timerChnOut;
 	
 	//Установка настроек по умолчанию
 	TIMER_CntStructInit(&timerCnt);
-	TIMER_ChnStructInit(&timerChn);
-	TIMER_ChnOutStructInit(&timerChnOut);
-	
+
 	//Установка предделителя
-	timerCnt.TIMER_Prescaler = 8000;
+	TIMER_BRGInit(MDR_TIMER1, TIMER_HCLKdiv1);
+	
 	//Установка числа отсчетов до прерывания
-	timerCnt.TIMER_Period = period; //schet do 1 i virobotka signala
+	timerCnt.TIMER_Period = period;
 
 	//Применение настроек	
 	TIMER_CntInit(MDR_TIMER1, &timerCnt);
-	
-	//Разрешение прерываний
-	NVIC_EnableIRQ (Timer1_IRQn);
 	//Установка наибольшего приоритета
 	NVIC_SetPriority (Timer1_IRQn, 0);
 	//Установка прерывания по окончанию счета таймера (достижения 0)
 	TIMER_ITConfig(MDR_TIMER1, TIMER_STATUS_CNT_ZERO, ENABLE);
+	//Разрешение прерываний
+	__enable_irq();
+	//Разрешение прерываний
+	NVIC_EnableIRQ (Timer1_IRQn);
+	NVIC_ClearPendingIRQ(Timer1_IRQn);
 }
 
 
 /* Обработчик прерывания таймера */
 void Timer1_IRQHandler(){
-	
+	uint16_t Data;
+	uint32_t Address = 0;
+	uint32_t BankSelector = 0;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
+	BankSelector = EEPROM_Main_Bank_Select;
+
 	if (TIMER_GetITStatus(MDR_TIMER1, TIMER_STATUS_CNT_ZERO)){
-		/* Начало логики обработки*/
-		
-		/* Конец логики обработки */
 		TIMER_ClearITPendingBit(MDR_TIMER1, TIMER_STATUS_CNT_ZERO);
+		/* Начало логики обработки прерывания*/
+
+	    //запись очередного значения в память (1514 тактов)
+	    EEPROM_ProgramByte(Address + global_byte_counter, BankSelector, global_adc_result);
+		//Запуск преобразования и получение нового результата
+		Data = ADC_Receive_Word();
+	    //отбрасывание младших 4 разрядов
+	    global_adc_result = (uint8_t)(Data >> 4);
+
+		//Инкремент счетчика бит
+		global_byte_counter += 1;
+		//Остановка таймера, если счетчик выходит на пределы доступной памяти
+		if (global_byte_counter > 110588) {
+			TIMER_Cmd(MDR_TIMER1, DISABLE);
+		}
+		/* Конец логики обработки прерывания*/
+	}
+}
+
+/* Процедура настройки таймера 2 */
+void Timer2_init(int freq) {
+	
+	int period = freq_to_tact(freq);
+	//Включение тактирования
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_TIMER2, ENABLE);
+
+	//Инициализация структур
+	TIMER_CntInitTypeDef timerCnt;
+	
+	//Установка настроек по умолчанию
+	TIMER_CntStructInit(&timerCnt);
+
+	//Установка предделителя
+	TIMER_BRGInit(MDR_TIMER2, TIMER_HCLKdiv1);
+	
+	//Установка числа отсчетов до прерывания
+	timerCnt.TIMER_Period = period;
+
+	//Применение настроек	
+	TIMER_CntInit(MDR_TIMER2, &timerCnt);
+	//Установка наибольшего приоритета
+	NVIC_SetPriority (Timer2_IRQn, 0);
+	//Установка прерывания по окончанию счета таймера (достижения 0)
+	TIMER_ITConfig(MDR_TIMER2, TIMER_STATUS_CNT_ZERO, ENABLE);
+	//Разрешение прерываний
+	__enable_irq();
+	//Разрешение прерываний
+	NVIC_EnableIRQ (Timer2_IRQn);
+	NVIC_ClearPendingIRQ(Timer2_IRQn);
+}
+
+void Timer2_IRQHandler(){
+	uint16_t Data;
+	uint8_t Data_8bit;
+	uint32_t Address = 0;
+	uint32_t BankSelector = 0;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
+	BankSelector = EEPROM_Main_Bank_Select;
+
+	if (TIMER_GetITStatus(MDR_TIMER2, TIMER_STATUS_CNT_ZERO)){
+		TIMER_ClearITPendingBit(MDR_TIMER2, TIMER_STATUS_CNT_ZERO);
+		/* Начало логики обработки прерывания*/
+		//Вывод предыдущего значения на ЦАП
+		DAC2_SetData(((uint16_t)global_dac_result << 4) + 0x7);
+		//Чтение очередного значения
+		Data_8bit = (EEPROM_ReadByte(Address + global_byte_counter, BankSelector));
+	    Data = (((uint16_t)Data_8bit) << 4) + 0x7;
+		//Нормализация
+		//Data = (uint16_t)(((double)(Data - global_min)) * (((double)0xFFF) / ((double)(global_max - global_min)))) & 0xFFF;
+		global_dac_result = Data;
+		//Инкремент счетчика бит
+		global_byte_counter += 1;
+		//Остановка таймера, если счетчик выходит на пределы доступной памяти
+		if (global_byte_counter > 110588) {
+			TIMER_Cmd(MDR_TIMER2, DISABLE);
+		}
+		/* Конец логики обработки прерывания*/
 	}
 }
 
@@ -68,8 +159,7 @@ void MY_U_RST_Init(void)
 {
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_BKP, ENABLE);
 	RST_CLK_HSEconfig(RST_CLK_HSE_ON);
-	while (RST_CLK_HSEstatus() != SUCCESS)
-		;
+	while (RST_CLK_HSEstatus() != SUCCESS);
 
 	//12 Мгц
 	RST_CLK_CPU_PLLconfig(RST_CLK_CPU_PLLsrcHSEdiv2,
@@ -91,10 +181,9 @@ void MY_U_RST_Init(void)
 uint16_t ADC_Receive_Word()
 {
 	uint16_t result;
-	while (MDR_ADC->ADC1_STATUS & 0x00000004 == 0)
-	{
-	} //while conversation
-	result = MDR_ADC->ADC1_RESULT;
+	ADC1_Start();
+	while (ADC1_GetFlagStatus(ADC1_FLAG_END_OF_CONVERSION) == 0);
+	result = ADC1_GetResult() & 0x00000FFF;//получение 12-разрядного результата
 	return result;
 }
 
@@ -122,36 +211,21 @@ void erise_mem()
 void write_track()
 {
 	uint32_t Address = 0;
-	uint32_t size_in_bytes = ENTIRE_MEM_BYTES; //количество байт для записи
 	uint32_t BankSelector = 0;
-	uint16_t Data;	 //16 для записи напряжения
-	uint8_t Data_8bit; //8 бит для записи результата в память
-	uint32_t i = 0;
 	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
 	//Запуск таймера
 	TIMER_Cmd(MDR_TIMER1, ENABLE);
-
-	//цикл записи в память
-	for (i = 4; i < size_in_bytes; i++)
-	{
-		Data = ADC_Receive_Word();
-		//отбрасывание младших 4 разрядов
-		Data_8bit = (uint8_t)(Data >> 4);
-		//запись очередного значения в память
-		EEPROM_ProgramByte(Address + i, BankSelector, Data_8bit);
-	}
-
-	//остановка последовательного преобразования
-	TIMER_Cmd(MDR_TIMER1, DISABLE);
+	//ожидание окончания записи
+	while (global_byte_counter <= 110588){}
+	global_byte_counter = 4;
 	//создание метки
 	EEPROM_ProgramWord(Address, BankSelector, 0xABCDEFAB);
 }
 
-/* Процедура считывания памяти и вывода на ЦАП (AUDIO)  
-norm = 0 - без нормализации, norm = 1 - с нормализацией*/
-void read_track(int norm)
+/* Процедура считывания памяти и вывода на ЦАП (AUDIO) */
+void read_track()
 {
 	uint32_t size_in_bytes = ENTIRE_MEM_BYTES;
 	uint32_t Address = 0;
@@ -162,50 +236,25 @@ void read_track(int norm)
 	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	//Вычисление Max и Min для Нормализации
-	uint32_t min = 0xFFFF;
-	uint32_t max = 0x0000;
 
 	for (i = 4; i < size_in_bytes; i++)
 	{
 		Data_8bit = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
 		Data = ((0x0000 + Data_8bit) << 4) + 0x7;
-		if (Data > max)
+		if (Data > global_max)
 		{
-			max = Data;
+			global_max = Data;
 		}
-		if (Data < min)
+		if (Data < global_min)
 		{
-			min = Data;
+			global_min = Data;
 		}
 	}
 
-	//Цикл последовательного вывода значений из памяти на ЦАП
-	for (i = 4; i < size_in_bytes; i++)
-	{
-
-		Data_8bit = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
-		Data = ((0x0000 + Data_8bit) << 4) + 0x7;
-		if (norm == 1)
-		{
-			//Нормализация
-			Data = (uint16_t)(((double)(Data - min)) * (((double)0xFFF) / ((double)(max - min))));
-			//Ограничение результатов, больших 0xFFF
-			if (Data > 0xFFF)
-			{
-				Data = 0xFFF;
-			}
-			//Задержка для корректной скорости проигрывания при использовании нормализации
-			Delay(70);
-		}
-		else
-		{
-			//Задержка для корректной скорости проигрывания без нормализации
-			Delay(105);
-		}
-		//вывод очередного значения на ЦАП
-		DAC2_SetData(Data);
-	}
+	//Запуск таймера
+	TIMER_Cmd(MDR_TIMER2, ENABLE);
+	while (global_byte_counter <= 110588){}
+	global_byte_counter = 4;
 }
 
 /* Функция проверки, записан ли трек под номером num или пуст */
@@ -244,9 +293,7 @@ void MY_ADC_1_Init(void)
 {
 	ADCx_InitTypeDef ADC_1_Nastroyka;
 	ADCx_StructInit(&ADC_1_Nastroyka);
-	ADC_1_Nastroyka.ADC_ChannelNumber = ADC_CH_ADC7;				  //выбор канала
-	ADC_1_Nastroyka.ADC_SamplingMode = ADC_SAMPLING_MODE_CICLIC_CONV; //режим последовательного преобразования
-	ADC_1_Nastroyka.ADC_DelayGo = 0b010;							  //задержка между преобразованиями - 2 такта
+	ADC_1_Nastroyka.ADC_ChannelNumber = ADC_CH_ADC7; //channel 7 connected to BNC
 	ADC1_Init(&ADC_1_Nastroyka);
 	ADC1_Cmd(ENABLE);
 }
@@ -360,7 +407,7 @@ int32_t main(void)
 	char pusto[] = "\xCF\xF3\xF1\xF2\xEE!";
 	char smirnov[] = "\xD1\xEC\xE8\xF0\xED\xEE\xE2 \xC0.\xC0.";
 	char iu673[] = "\xC8\xD3\x36-73";
-	int T_dis = 1000; //Установка периода дискретизации 1000 тактов
+	int freq_dis = 5000; //Установка частоты дискретизации записи и воспроизведения
 	/* Включение тактирование EEPROM */
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
 	/* вызов инициализирующих функций */
@@ -369,7 +416,8 @@ int32_t main(void)
 	MY_ADC_Init();
 	MY_ADC_1_Init();
 	MY_DAC2_Init();
-	Timer_init(T_dis);
+	Timer1_init(freq_dis);
+	Timer2_init(freq_dis);
 	//Установка частоты тактирования
 	MY_U_RST_Init();
 
@@ -454,7 +502,7 @@ int32_t main(void)
 				U_MLT_Put_String("", 5);
 				U_MLT_Put_String("", 6);
 				U_MLT_Put_String("", 7);
-				read_track(1); //воспроизведение трека
+				read_track(); //воспроизведение трека
 			}
 			//обработка нажатия (конец)
 		}
