@@ -11,11 +11,11 @@
 #define EEPROM_PAGE_SIZE (4 * 1024) //1 страница памяти - 4К
 #define MAIN_EEPAGE 5
 #define ENTIRE_MEM_BYTES 110592 // свободная память до 0x08020000
-#define CPU_FREQ 20000000
+#define CPU_FREQ 20000000 //20МГц
 
 int global_byte_counter = 4; //начиная с 4 бита 
-uint8_t global_adc_result = 0x80; //среднее значение
-uint16_t global_dac_result = 0x80; //среднее значение
+uint8_t global_adc_result = 0x0800; //среднее значение
+uint16_t global_dac_result = 0x80; //ср	еднее значение
 uint32_t global_max = 0x0000;
 uint32_t global_min = 0xFFFF;
 
@@ -28,6 +28,7 @@ void Delay(int num)
 	}
 }
 
+/* Функция преобразования частоты дискретизации в число тактов отсчета таймера */
 int freq_to_tact(int freq_dis) {
 	return (int)((1/(double)freq_dis)/(1/(double)CPU_FREQ));
 }
@@ -64,7 +65,7 @@ void Timer1_init(int freq) {
 }
 
 
-/* Обработчик прерывания таймера */
+/* Обработчик прерывания таймера 1 */
 void Timer1_IRQHandler(){
 	uint16_t Data;
 	uint32_t Address = 0;
@@ -125,6 +126,7 @@ void Timer2_init(int freq) {
 	NVIC_ClearPendingIRQ(Timer2_IRQn);
 }
 
+/* Обработчик прерывания таймера 2 */
 void Timer2_IRQHandler(){
 	uint16_t Data;
 	uint8_t Data_8bit;
@@ -137,12 +139,12 @@ void Timer2_IRQHandler(){
 		TIMER_ClearITPendingBit(MDR_TIMER2, TIMER_STATUS_CNT_ZERO);
 		/* Начало логики обработки прерывания*/
 		//Вывод предыдущего значения на ЦАП
-		DAC2_SetData(((uint16_t)global_dac_result << 4) + 0x7);
+		DAC2_SetData(global_dac_result);
 		//Чтение очередного значения
 		Data_8bit = (EEPROM_ReadByte(Address + global_byte_counter, BankSelector));
 	    Data = (((uint16_t)Data_8bit) << 4) + 0x7;
 		//Нормализация
-		//Data = (uint16_t)(((double)(Data - global_min)) * (((double)0xFFF) / ((double)(global_max - global_min)))) & 0xFFF;
+		//Data = ((uint16_t)(((double)(Data - global_min - 0x0800))*(((double)0xFFF) / ((double)(global_max - global_min)))) + 0x800) & 0xFFF;
 		global_dac_result = Data;
 		//Инкремент счетчика бит
 		global_byte_counter += 1;
@@ -161,7 +163,7 @@ void MY_U_RST_Init(void)
 	RST_CLK_HSEconfig(RST_CLK_HSE_ON);
 	while (RST_CLK_HSEstatus() != SUCCESS);
 
-	//12 Мгц
+	//20 Мгц
 	RST_CLK_CPU_PLLconfig(RST_CLK_CPU_PLLsrcHSEdiv2,
 						  RST_CLK_CPU_PLLmul5);
 
@@ -200,8 +202,8 @@ void erise_mem()
 	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	//очистка трека (21 странца)
-	for (i = 0; i < 21; i++)
+	//очистка трека (27 странц)
+	for (i = 0; i < 27; i++)
 	{
 		EEPROM_ErasePage(Address + i * EEPROM_PAGE_SIZE, BankSelector);
 	}
@@ -236,7 +238,7 @@ void read_track()
 	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-
+	//Вычислиение global_max и global_min
 	for (i = 4; i < size_in_bytes; i++)
 	{
 		Data_8bit = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
@@ -253,6 +255,7 @@ void read_track()
 
 	//Запуск таймера
 	TIMER_Cmd(MDR_TIMER2, ENABLE);
+	//Ожидание завершения воспроизведения
 	while (global_byte_counter <= 110588){}
 	global_byte_counter = 4;
 }
@@ -391,7 +394,7 @@ void BUTTONS_Init(void)
 	PORT_Init(MDR_PORTE, &Nastroyka_e);
 }
 
-/* Главноя функция */
+/* Главная функция */
 int32_t main(void)
 {
 	//char track_array[1][32] = {"\xD2\xF0\xE5\xEA 1"};
@@ -407,7 +410,7 @@ int32_t main(void)
 	char pusto[] = "\xCF\xF3\xF1\xF2\xEE!";
 	char smirnov[] = "\xD1\xEC\xE8\xF0\xED\xEE\xE2 \xC0.\xC0.";
 	char iu673[] = "\xC8\xD3\x36-73";
-	int freq_dis = 5000; //Установка частоты дискретизации записи и воспроизведения
+	int freq_dis = 8000; //Установка частоты дискретизации записи и воспроизведения (не больше 10к)
 	/* Включение тактирование EEPROM */
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
 	/* вызов инициализирующих функций */
