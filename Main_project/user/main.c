@@ -76,13 +76,14 @@ void Timer1_IRQHandler(){
 	if (TIMER_GetITStatus(MDR_TIMER1, TIMER_STATUS_CNT_ZERO)){
 		TIMER_ClearITPendingBit(MDR_TIMER1, TIMER_STATUS_CNT_ZERO);
 		/* Начало логики обработки прерывания*/
-
-	    //запись очередного значения в память (1514 тактов)
-	    EEPROM_ProgramByte(Address + global_byte_counter, BankSelector, global_adc_result);
 		//Запуск преобразования и получение нового результата
 		Data = ADC_Receive_Word();
 	    //отбрасывание младших 4 разрядов
 	    global_adc_result = (uint8_t)(Data >> 4);
+
+	    //запись очередного значения в память (1514 тактов)
+	    EEPROM_ProgramByte(Address + global_byte_counter, BankSelector, global_adc_result);
+
 
 		//Инкремент счетчика бит
 		global_byte_counter += 1;
@@ -144,7 +145,7 @@ void Timer2_IRQHandler(){
 		Data_8bit = (EEPROM_ReadByte(Address + global_byte_counter, BankSelector));
 	    Data = (((uint16_t)Data_8bit) << 4) + 0x7;
 		//Нормализация
-		//Data = ((uint16_t)(((double)(Data - global_min - 0x0800))*(((double)0xFFF) / ((double)(global_max - global_min)))) + 0x800) & 0xFFF;
+		//Data = ((uint16_t)(((double)(Data - global_min))*(((double)0xFFF) / ((double)(global_max - global_min)))) + 0x800) & 0xFFF;
 		global_dac_result = Data;
 		//Инкремент счетчика бит
 		global_byte_counter += 1;
@@ -410,7 +411,7 @@ int32_t main(void)
 	char pusto[] = "\xCF\xF3\xF1\xF2\xEE!";
 	char smirnov[] = "\xD1\xEC\xE8\xF0\xED\xEE\xE2 \xC0.\xC0.";
 	char iu673[] = "\xC8\xD3\x36-73";
-	int freq_dis = 8000; //Установка частоты дискретизации записи и воспроизведения (не больше 10к)
+	int freq_dis = 10000; //Установка частоты дискретизации записи и воспроизведения (не больше 10к)
 	/* Включение тактирование EEPROM */
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
 	/* вызов инициализирующих функций */
