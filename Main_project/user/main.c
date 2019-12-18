@@ -1,22 +1,26 @@
 /* Includes ------------------------------------------------------------------*/
 #include "MDR32Fx.h"
 #include "MDR32F9Qx_eeprom.h"  //библиотека для работы с EEPROM
-#include "MDR32F9Qx_port.h"	//библиотека для работы с портами
+#include "MDR32F9Qx_port.h"	   //библиотека для работы с портами
 #include "MDR32F9Qx_rst_clk.h" //библиотека для тактирования
-#include "MDR32F9Qx_adc.h"	 //библиотека для работы с АЦП
-#include "MDR32F9Qx_dac.h"	 //библиотека для работы с ЦАП
+#include "MDR32F9Qx_adc.h"	   //библиотека для работы с АЦП
+#include "MDR32F9Qx_dac.h"	   //библиотека для работы с ЦАП
 #include "MDR32F9Qx_timer.h"   // библиотека для работы с таймером
 
 #define EEPROM_PAGE_SIZE (4 * 1024) //1 страница памяти - 4К
 #define MAIN_EEPAGE 6
-#define TRACK_MEM_BYTES 53248 // свободная память для одного трека
-#define PEGES 26			  //всего доступно страниц для записи
-#define CPU_FREQ 20000000	 //20МГц
+#define TRACK_MEM_BYTES 53248  // свободная память для одного трека
+#define PEGES 26			   //всего доступно страниц для записи
+#define CPU_FREQ 20000000	   //20МГц
 
 int global_byte_counter = 4;		//начиная с 4 бита
 uint8_t global_adc_result = 0x0800; //результат преобразования на АЦП
 uint16_t global_dac_result = 0x80;  //результат преобразования на ЦАП
 int global_current_track = 0;		// текущий трек
+
+//===============================================================================
+//====================  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ И ПРОЦЕДУРЫ  ====================
+//===============================================================================
 
 /* Процедура задержки */
 void Delay(int num)
@@ -27,7 +31,7 @@ void Delay(int num)
 	}
 }
 
-/* процедура вычисления сдвига для записи трека в память */
+/* функция вычисления сдвига для записи трека в память */
 int track_offset(void)
 {
 	return global_current_track * TRACK_MEM_BYTES;
@@ -38,6 +42,80 @@ int freq_to_tact(int freq_dis)
 {
 	return (int)((1 / (double)freq_dis) / (1 / (double)CPU_FREQ));
 }
+
+/* функция считывания результата преобразования. 
+После считывания флаг ADC1_STATUS->Flg_REG_EOCIF будет сброшен
+следующее преобразование начнется автоматически через 2 такта*/
+uint16_t ADC_Receive_Word()
+{
+	uint16_t result;
+	ADC1_Start();
+	while (ADC1_GetFlagStatus(ADC1_FLAG_END_OF_CONVERSION) == 0)
+		;
+	result = ADC1_GetResult() & 0x00000FFF; //получение 12-разрядного результата
+	return result;
+}
+
+
+/* Функция определения статуа (нажата или нет) кнопок (на пульте оператора)*/
+//btn_name = 0 - кнопка SELECT (Очистка памяти)
+//btn_name = 1 - кнопка UP
+//btn_name = 2 - кнопка RIGHT (Запись трека)
+//btn_name = 3 - кнопка LEFT (Воспроизведение трека)
+//btn_name = 4 - кнопка DOWN
+int current_btn_status(int btn_name)
+{
+	int status = 0xA;
+
+	//SELECT
+	if (btn_name == 0)
+	{
+		status = PORT_ReadInputDataBit(MDR_PORTC, PORT_Pin_2);
+	}
+
+	//UP
+	if (btn_name == 1)
+	{
+		status = PORT_ReadInputDataBit(MDR_PORTB, PORT_Pin_5);
+	}
+
+	//RIGHT
+	if (btn_name == 2)
+	{
+		status = PORT_ReadInputDataBit(MDR_PORTB, PORT_Pin_6);
+	}
+
+	//LEFT
+	if (btn_name == 3)
+	{
+		status = PORT_ReadInputDataBit(MDR_PORTE, PORT_Pin_3);
+	}
+
+	//DOWN
+	if (btn_name == 4)
+	{
+		status = PORT_ReadInputDataBit(MDR_PORTE, PORT_Pin_1);
+	}
+
+	//Инвертирование результата (1 - нажата, 0 - не нажата)
+	if (status == 1)
+	{
+		return 0;
+	}
+	if (status == 0)
+	{
+		return 1;
+	}
+	if (status != 0 && status != 1)
+	{
+		return 0xA;
+	}
+}
+
+
+//===============================================================================
+//=============  ПРОЦЕДУРЫ ИНИЦИАЛИЗАЦИИ ТАЙМЕРОВ И ОБРАБОТЧИКИ ПРЕР.  ==========
+//===============================================================================
 
 /* Процедура настройки таймера 1 */
 void Timer1_init(int freq)
@@ -167,43 +245,8 @@ void Timer2_IRQHandler()
 	}
 }
 
-//Настройка частоты работы
-void MY_U_RST_Init(void)
-{
-	RST_CLK_PCLKcmd(RST_CLK_PCLK_BKP, ENABLE);
-	RST_CLK_HSEconfig(RST_CLK_HSE_ON);
-	while (RST_CLK_HSEstatus() != SUCCESS)
-		;
-
-	//20 Мгц
-	RST_CLK_CPU_PLLconfig(RST_CLK_CPU_PLLsrcHSEdiv2,
-						  RST_CLK_CPU_PLLmul5);
-
-	RST_CLK_CPU_PLLcmd(ENABLE);
-
-	while (RST_CLK_CPU_PLLstatus() != SUCCESS)
-		;
-
-	RST_CLK_CPUclkPrescaler(RST_CLK_CPUclkDIV1);
-	RST_CLK_CPU_PLLuse(ENABLE);
-	RST_CLK_CPUclkSelection(RST_CLK_CPUclkCPU_C3);
-}
-
-/* функция считывания результата преобразования. 
-После считывания флаг ADC1_STATUS->Flg_REG_EOCIF будет сброшен
-следующее преобразование начнется автоматически через 2 такта*/
-uint16_t ADC_Receive_Word()
-{
-	uint16_t result;
-	ADC1_Start();
-	while (ADC1_GetFlagStatus(ADC1_FLAG_END_OF_CONVERSION) == 0)
-		;
-	result = ADC1_GetResult() & 0x00000FFF; //получение 12-разрядного результата
-	return result;
-}
-
 //===============================================================================
-//=========    ОПИСАНИЕ ФУНКЦИЙ ЧТЕНИЯ И ЗАПИСИ В ПАМЯТЬ    =====================
+//=========  ФУНКЦИИ ЧТЕНИЯ, ЗАПИСИ, ОЧИСТКИ    =================================
 //===============================================================================
 
 //Процедура очистки памяти
@@ -293,8 +336,31 @@ int track_is_empty()
 }
 
 //===============================================================================
-//=========  КОНЕЦ ОПИСАНИЯ ФУНКЦИЙ ЧТЕНИЯ И ЗАПИСИ В ПАМЯТЬ   ==================
+//=========  ПРОЦЕДУРЫ ИНИЦИАЛИЗАЦИИ МОДУЛЕЙ  ===================================
 //===============================================================================
+
+//Настройка частоты тактирования процессора
+void MY_U_RST_Init(void)
+{
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_BKP, ENABLE);
+	RST_CLK_HSEconfig(RST_CLK_HSE_ON);
+	while (RST_CLK_HSEstatus() != SUCCESS)
+		;
+
+	//20 Мгц
+	RST_CLK_CPU_PLLconfig(RST_CLK_CPU_PLLsrcHSEdiv2,
+						  RST_CLK_CPU_PLLmul5);
+
+	RST_CLK_CPU_PLLcmd(ENABLE);
+
+	while (RST_CLK_CPU_PLLstatus() != SUCCESS)
+		;
+
+	RST_CLK_CPUclkPrescaler(RST_CLK_CPUclkDIV1);
+	RST_CLK_CPU_PLLuse(ENABLE);
+	RST_CLK_CPUclkSelection(RST_CLK_CPUclkCPU_C3);
+}
+
 
 /* Настройка АЦП */
 void MY_ADC_Init(void)
@@ -332,60 +398,6 @@ void MY_DAC2_Init(void)
 	DAC2_Cmd(ENABLE);	 //включение АЦП
 }
 
-/* Функция определения статуа (нажата или нет) кнопок (на пульте оператора)*/
-//btn_name = 0 - кнопка SELECT (Очистка памяти)
-//btn_name = 1 - кнопка UP
-//btn_name = 2 - кнопка RIGHT (Запись трека)
-//btn_name = 3 - кнопка LEFT (Воспроизведение трека)
-//btn_name = 4 - кнопка DOWN
-int current_btn_status(int btn_name)
-{
-	int status = 0xA;
-
-	//SELECT
-	if (btn_name == 0)
-	{
-		status = PORT_ReadInputDataBit(MDR_PORTC, PORT_Pin_2);
-	}
-
-	//UP
-	if (btn_name == 1)
-	{
-		status = PORT_ReadInputDataBit(MDR_PORTB, PORT_Pin_5);
-	}
-
-	//RIGHT
-	if (btn_name == 2)
-	{
-		status = PORT_ReadInputDataBit(MDR_PORTB, PORT_Pin_6);
-	}
-
-	//LEFT
-	if (btn_name == 3)
-	{
-		status = PORT_ReadInputDataBit(MDR_PORTE, PORT_Pin_3);
-	}
-
-	//DOWN
-	if (btn_name == 4)
-	{
-		status = PORT_ReadInputDataBit(MDR_PORTE, PORT_Pin_1);
-	}
-
-	//Инвертирование результата (1 - нажата, 0 - не нажата)
-	if (status == 1)
-	{
-		return 0;
-	}
-	if (status == 0)
-	{
-		return 1;
-	}
-	if (status != 0 && status != 1)
-	{
-		return 0xA;
-	}
-}
 
 /*  Настройка портов ввода-вывода для кнопок  */
 void BUTTONS_Init(void)
