@@ -8,15 +8,15 @@
 #include "MDR32F9Qx_timer.h"   // библиотека для работы с таймером
 
 #define EEPROM_PAGE_SIZE (4 * 1024) //1 страница памяти - 4К
-#define MAIN_EEPAGE 5
-#define ENTIRE_MEM_BYTES 110592 // свободная память до 0x08020000
-#define CPU_FREQ 20000000		//20МГц
+#define MAIN_EEPAGE 6
+#define TRACK_MEM_BYTES 53248 // свободная память для одного трека
+#define PEGES 26			  //всего доступно страниц для записи
+#define CPU_FREQ 20000000	 //20МГц
 
 int global_byte_counter = 4;		//начиная с 4 бита
-uint8_t global_adc_result = 0x0800; //среднее значение
-uint16_t global_dac_result = 0x80;  //ср	еднее значение
-uint32_t global_max = 0x0000;
-uint32_t global_min = 0xFFFF;
+uint8_t global_adc_result = 0x0800; //результат преобразования на АЦП
+uint16_t global_dac_result = 0x80;  //результат преобразования на ЦАП
+int global_current_track = 0;		// текущий трек
 
 /* Процедура задержки */
 void Delay(int num)
@@ -25,6 +25,12 @@ void Delay(int num)
 	for (i = 0; i < num; i++)
 	{
 	}
+}
+
+/* процедура вычисления сдвига для записи трека в память */
+int track_offset(void)
+{
+	return global_current_track * TRACK_MEM_BYTES;
 }
 
 /* Функция преобразования частоты дискретизации в число тактов отсчета таймера */
@@ -71,7 +77,7 @@ void Timer1_IRQHandler()
 	uint16_t Data;
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
-	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE + track_offset();
 	BankSelector = EEPROM_Main_Bank_Select;
 
 	if (TIMER_GetITStatus(MDR_TIMER1, TIMER_STATUS_CNT_ZERO))
@@ -89,7 +95,7 @@ void Timer1_IRQHandler()
 		//Инкремент счетчика бит
 		global_byte_counter += 1;
 		//Остановка таймера, если счетчик выходит на пределы доступной памяти
-		if (global_byte_counter > 110588)
+		if (global_byte_counter >= TRACK_MEM_BYTES)
 		{
 			TIMER_Cmd(MDR_TIMER1, DISABLE);
 		}
@@ -137,7 +143,7 @@ void Timer2_IRQHandler()
 	uint8_t Data_8bit;
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
-	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE + track_offset();
 	BankSelector = EEPROM_Main_Bank_Select;
 
 	if (TIMER_GetITStatus(MDR_TIMER2, TIMER_STATUS_CNT_ZERO))
@@ -149,13 +155,11 @@ void Timer2_IRQHandler()
 		//Чтение очередного значения
 		Data_8bit = (EEPROM_ReadByte(Address + global_byte_counter, BankSelector));
 		Data = (((uint16_t)Data_8bit) << 4) + 0x7;
-		//Нормализация
-		//Data = ((uint16_t)(((double)(Data - global_min))*(((double)0xFFF) / ((double)(global_max - global_min)))) + 0x800) & 0xFFF;
 		global_dac_result = Data;
 		//Инкремент счетчика бит
 		global_byte_counter += 1;
 		//Остановка таймера, если счетчик выходит на пределы доступной памяти
-		if (global_byte_counter > 110588)
+		if (global_byte_counter >= TRACK_MEM_BYTES)
 		{
 			TIMER_Cmd(MDR_TIMER2, DISABLE);
 		}
@@ -211,10 +215,22 @@ void erise_mem()
 	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
 	BankSelector = EEPROM_Main_Bank_Select;
 
-	//очистка трека (27 странц)
-	for (i = 0; i < 27; i++)
+	if (global_current_track == 0)
 	{
-		EEPROM_ErasePage(Address + i * EEPROM_PAGE_SIZE, BankSelector);
+		//очистка трека 1 (13 странц)
+		for (i = 0; i < 13; i++)
+		{
+			EEPROM_ErasePage(Address + i * EEPROM_PAGE_SIZE, BankSelector);
+		}
+	}
+
+	if (global_current_track == 1)
+	{
+		//очистка трека 2 (13 странц)
+		for (i = 13; i < 26; i++)
+		{
+			EEPROM_ErasePage(Address + i * EEPROM_PAGE_SIZE, BankSelector);
+		}
 	}
 }
 
@@ -223,13 +239,13 @@ void write_track()
 {
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
-	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE + track_offset();
 	BankSelector = EEPROM_Main_Bank_Select;
 
 	//Запуск таймера
 	TIMER_Cmd(MDR_TIMER1, ENABLE);
 	//ожидание окончания записи
-	while (global_byte_counter <= 110588)
+	while (global_byte_counter < TRACK_MEM_BYTES)
 	{
 	}
 	global_byte_counter = 4;
@@ -240,34 +256,19 @@ void write_track()
 /* Процедура считывания памяти и вывода на ЦАП (AUDIO) */
 void read_track()
 {
-	uint32_t size_in_bytes = ENTIRE_MEM_BYTES;
+	uint32_t size_in_bytes = TRACK_MEM_BYTES;
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
 	uint16_t Data = 0; //16 бит для вывода на ЦАП
 	uint8_t Data_8bit; //8 бит для считывания из памяти
 	uint32_t i = 0;
-	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE + track_offset();
 	BankSelector = EEPROM_Main_Bank_Select;
-
-	//Вычислиение global_max и global_min
-	for (i = 4; i < size_in_bytes; i++)
-	{
-		Data_8bit = (EEPROM_ReadByte(Address + i, BankSelector)) & 0xFF;
-		Data = ((0x0000 + Data_8bit) << 4) + 0x7;
-		if (Data > global_max)
-		{
-			global_max = Data;
-		}
-		if (Data < global_min)
-		{
-			global_min = Data;
-		}
-	}
 
 	//Запуск таймера
 	TIMER_Cmd(MDR_TIMER2, ENABLE);
 	//Ожидание завершения воспроизведения
-	while (global_byte_counter <= 110588)
+	while (global_byte_counter < TRACK_MEM_BYTES)
 	{
 	}
 	global_byte_counter = 4;
@@ -278,7 +279,7 @@ int track_is_empty()
 {
 	uint32_t Address = 0;
 	uint32_t BankSelector = 0;
-	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE;
+	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE + track_offset();
 	BankSelector = EEPROM_Main_Bank_Select;
 
 	if (EEPROM_ReadWord(Address, BankSelector) == 0xABCDEFAB)
@@ -427,9 +428,7 @@ void BUTTONS_Init(void)
 int32_t main(void)
 {
 	/* Список треков */
-	char track_array[1][32] = {"\xD2\xF0\xE5\xEA 1", "\xD2\xF0\xE5\xEA 2"};
-	/* текущий трек */
-	int current_track = 0;
+	char track_array[2][32] = {"       \xD2\xF0\xE5\xEA 1", "       \xD2\xF0\xE5\xEA 2"};
 	/* количество треков */
 	int num_of_tracks = 2;
 	/* определение выводимых на экран строк (кириллица) */
@@ -476,25 +475,25 @@ int32_t main(void)
 		/* проверка нажатия кнопок */
 
 		//UP -> Переход к предыдущему треку
-		if (current_btn_status(0) == 1 && current_status_select == 0)
+		if (current_btn_status(1) == 1 && current_status_up == 0)
 		{
 			//обработка нажатия (начало)
 			current_status_up = 1;
-			current_track += 1;
-			if (current_track == num_of_tracks)
-				current_track = 0;
+			global_current_track += 1;
+			if (global_current_track == num_of_tracks)
+				global_current_track = 0;
 			//обработка нажатия (конец)
 		}
 		current_status_up = current_btn_status(1);
 
 		//DOWN -> переход к следующему треку
-		if (current_btn_status(0) == 1 && current_status_select == 0)
+		if (current_btn_status(4) == 1 && current_status_down == 0)
 		{
 			//обработка нажатия (начало)
 			current_status_down = 1;
-			current_track -= 1;
-			if (current_track == -1)
-				current_track = num_of_tracks - 1;
+			global_current_track -= 1;
+			if (global_current_track == -1)
+				global_current_track = num_of_tracks - 1;
 			//обработка нажатия (конец)
 		}
 		current_status_down = current_btn_status(4);
@@ -575,7 +574,7 @@ int32_t main(void)
 		current_status_left = current_btn_status(3);
 
 		//Вывод селект-листа треков на экран
-		U_MLT_Put_String(track_array[current_track], 3);
+		U_MLT_Put_String(track_array[global_current_track], 3);
 		U_MLT_Put_String(zapis_short, 4);
 		U_MLT_Put_String(steret, 5);
 		U_MLT_Put_String(vosproizvedenie_short, 6);
