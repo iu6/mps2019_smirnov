@@ -123,14 +123,19 @@ void Timer1_init(int freq)
 	int period = freq_to_tact(freq);
 	//Включение тактирования
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_TIMER1, ENABLE);
+
 	//Инициализация структур
 	TIMER_CntInitTypeDef timerCnt;
+
 	//Установка настроек по умолчанию
 	TIMER_CntStructInit(&timerCnt);
+
 	//Установка предделителя
 	TIMER_BRGInit(MDR_TIMER1, TIMER_HCLKdiv1);
+
 	//Установка числа отсчетов до прерывания
 	timerCnt.TIMER_Period = period;
+
 	//Применение настроек
 	TIMER_CntInit(MDR_TIMER1, &timerCnt);
 	//Установка наибольшего приоритета
@@ -161,8 +166,10 @@ void Timer1_IRQHandler()
 		Data = ADC_Receive_Word();
 		//отбрасывание младших 4 разрядов
 		global_adc_result = (uint8_t)(Data >> 4);
+
 		//запись очередного значения в память (1514 тактов)
 		EEPROM_ProgramByte(Address + global_byte_counter, BankSelector, global_adc_result);
+
 		//Инкремент счетчика бит
 		global_byte_counter += 1;
 		//Остановка таймера, если счетчик выходит на пределы доступной памяти
@@ -181,14 +188,19 @@ void Timer2_init(int freq)
 	int period = freq_to_tact(freq);
 	//Включение тактирования
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_TIMER2, ENABLE);
+
 	//Инициализация структур
 	TIMER_CntInitTypeDef timerCnt;
+
 	//Установка настроек по умолчанию
 	TIMER_CntStructInit(&timerCnt);
+
 	//Установка предделителя
 	TIMER_BRGInit(MDR_TIMER2, TIMER_HCLKdiv1);
+
 	//Установка числа отсчетов до прерывания
 	timerCnt.TIMER_Period = period;
+
 	//Применение настроек
 	TIMER_CntInit(MDR_TIMER2, &timerCnt);
 	//Установка наибольшего приоритета
@@ -383,15 +395,15 @@ void MY_DAC2_Init(void)
 	PORT_Init(MDR_PORTE, &PORT_InitStructure);
 
 	DAC2_Init(DAC2_AVCC); //выбор опорного напряжения (3.3V)
-	DAC2_Cmd(ENABLE);	  //включение АЦП
+	DAC2_Cmd(ENABLE);	 //включение АЦП
 }
 
 
 /*  Настройка портов ввода-вывода для кнопок  */
 void BUTTONS_Init(void)
 {
-	//Включение тактирования портов B, E, C
-	RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTB | RST_CLK_PCLK_PORTE | RST_CLK_PCLK_PORTC, ENABLE);
+
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTB | RST_CLK_PCLK_PORTE | RST_CLK_PCLK_PORTC, ENABLE); //taktirovanie porta B, C, E
 
 	//Настройка PB5 (UP) и PB6 (RIGHT)
 	PORT_InitTypeDef Nastroyka_b;
@@ -443,10 +455,10 @@ int32_t main(void)
 	char pusto[] = "\xCF\xF3\xF1\xF2\xEE!";
 	char smirnov[] = "\xD1\xEC\xE8\xF0\xED\xEE\xE2 \xC0.\xC0.";
 	char iu673[] = "\xC8\xD3\x36-73";
-	int freq_dis = 10000; //Установка частоты дискретизации записи и воспроизведения (не рекомендуется больше 10к)
+	int freq_dis = 10000; //Установка частоты дискретизации записи и воспроизведения (не больше 10к)
 	/* Включение тактирование EEPROM */
 	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
-	/* Вызов инициализирующих процедур */
+	/* вызов инициализирующих функций */
 	U_MLT_Init();
 	BUTTONS_Init();
 	MY_ADC_Init();
@@ -454,9 +466,10 @@ int32_t main(void)
 	MY_DAC2_Init();
 	Timer1_init(freq_dis);
 	Timer2_init(freq_dis);
+	//Установка частоты тактирования
 	MY_U_RST_Init();
 
-	/* Вывод имени, фамилии и группы на ЖК экран*/
+	/* Вывод имени, фамилии и группы*/
 	U_MLT_Put_String("", 0);
 	U_MLT_Put_String(smirnov, 1);
 	U_MLT_Put_String(iu673, 2);
@@ -465,12 +478,13 @@ int32_t main(void)
 	int current_status_select = 0; //кнопка очистка памяти
 	int current_status_right = 0;  //кнопка записи трека
 	int current_status_left = 0;   //кнопка воспроизведения трека
-	int current_status_up = 0;	   //кнопка перехода к следующему треку
+	int current_status_up = 0;	 //кнопка перехода к следующему треку
 	int current_status_down = 0;   //кнопка перехода к предыдущему треку
 
 	/* Основной цикл проверки кнопок */
 	while (1)
 	{
+		/* проверка нажатия кнопок */
 
 		//UP -> Переход к предыдущему треку
 		if (current_btn_status(1) == 1 && current_status_up == 0)
@@ -499,7 +513,6 @@ int32_t main(void)
 		//SELECT -> Очистка памяти
 		if (current_btn_status(0) == 1 && current_status_select == 0)
 		{
-
 			//обработка нажатия (начало)
 			if (track_is_empty() == 1)
 			{
@@ -566,7 +579,7 @@ int32_t main(void)
 				U_MLT_Put_String("", 5);
 				U_MLT_Put_String("", 6);
 				U_MLT_Put_String("", 7);
-				read_track();
+				read_track(); //воспроизведение трека
 			}
 			//обработка нажатия (конец)
 		}
