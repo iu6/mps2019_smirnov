@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\example.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\example.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Thu Dec 19 00:37:41 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Sun Dec 22 19:33:56 2019
 <BR><P>
 <H3>Maximum Stack Usage =        320 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -883,7 +883,7 @@ Global Symbols
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;U_MLT_Clear_Page
 </UL>
 
-<P><STRONG><a name="[76]"></a>current_btn_status</STRONG> (Thumb, 104 bytes, Stack size 16 bytes, main.o(i.current_btn_status))
+<P><STRONG><a name="[76]"></a>current_btn_status</STRONG> (Thumb, 92 bytes, Stack size 16 bytes, main.o(i.current_btn_status))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = current_btn_status
 </UL>
 <BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PORT_ReadInputDataBit
@@ -934,11 +934,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[81]"></a>read_track</STRONG> (Thumb, 58 bytes, Stack size 24 bytes, main.o(i.read_track))
-<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = read_track
+<P><STRONG><a name="[81]"></a>read_track</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, main.o(i.read_track))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = read_track
 </UL>
 <BR>[Calls]<UL><LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIMER_Cmd
-<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;track_offset
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -955,7 +954,6 @@ Global Symbols
 <P><STRONG><a name="[54]"></a>track_offset</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, main.o(i.track_offset))
 <BR><BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_track
 <LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;track_is_empty
-<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_track
 <LI><a href="#[18]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timer2_IRQHandler
 <LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timer1_IRQHandler
 </UL>

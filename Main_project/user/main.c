@@ -1,22 +1,22 @@
 /* Includes ------------------------------------------------------------------*/
 #include "MDR32Fx.h"
 #include "MDR32F9Qx_eeprom.h"  //библиотека для работы с EEPROM
-#include "MDR32F9Qx_port.h"	   //библиотека для работы с портами
+#include "MDR32F9Qx_port.h"	//библиотека для работы с портами
 #include "MDR32F9Qx_rst_clk.h" //библиотека для тактирования
-#include "MDR32F9Qx_adc.h"	   //библиотека для работы с АЦП
-#include "MDR32F9Qx_dac.h"	   //библиотека для работы с ЦАП
+#include "MDR32F9Qx_adc.h"	 //библиотека для работы с АЦП
+#include "MDR32F9Qx_dac.h"	 //библиотека для работы с ЦАП
 #include "MDR32F9Qx_timer.h"   // библиотека для работы с таймером
 
 #define EEPROM_PAGE_SIZE (4 * 1024) //1 страница памяти - 4К
 #define MAIN_EEPAGE 6
-#define TRACK_MEM_BYTES 53248  // свободная память для одного трека
-#define PEGES 26			   //всего доступно страниц для записи
-#define CPU_FREQ 20000000	   //20МГц
+#define TRACK_MEM_BYTES 53248 // свободная память для одного трека
+#define PEGES 26			  //всего доступно страниц для записи
+#define CPU_FREQ 20000000	 //20МГц
 
-int global_byte_counter = 4;		//начиная с 4 бита
-uint8_t global_adc_result = 0x0800; //результат преобразования на АЦП
-uint16_t global_dac_result = 0x80;  //результат преобразования на ЦАП
-int global_current_track = 0;		// текущий трек
+int global_byte_counter = 4;	   //начиная с 4 бита
+uint8_t global_adc_result = 0x08;  //результат преобразования на АЦП
+uint16_t global_dac_result = 0x80; //результат преобразования на ЦАП
+int global_current_track = 0;	  // текущий трек
 
 //===============================================================================
 //====================  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ И ПРОЦЕДУРЫ  ====================
@@ -55,7 +55,6 @@ uint16_t ADC_Receive_Word()
 	result = ADC1_GetResult() & 0x00000FFF; //получение 12-разрядного результата
 	return result;
 }
-
 
 /* Функция определения статуа (нажата или нет) кнопок (на пульте оператора)*/
 //btn_name = 0 - кнопка SELECT (Очистка памяти)
@@ -106,12 +105,8 @@ int current_btn_status(int btn_name)
 	{
 		return 1;
 	}
-	if (status != 0 && status != 1)
-	{
-		return 0xA;
-	}
+	return 0xA;
 }
-
 
 //===============================================================================
 //=============  ПРОЦЕДУРЫ ИНИЦИАЛИЗАЦИИ ТАЙМЕРОВ И ОБРАБОТЧИКИ ПРЕР.  ==========
@@ -300,18 +295,11 @@ void write_track()
 void read_track()
 {
 	uint32_t size_in_bytes = TRACK_MEM_BYTES;
-	uint32_t Address = 0;
-	uint32_t BankSelector = 0;
-	uint16_t Data = 0; //16 бит для вывода на ЦАП
-	uint8_t Data_8bit; //8 бит для считывания из памяти
-	uint32_t i = 0;
-	Address = 0x08000000 + EEPROM_PAGE_SIZE * MAIN_EEPAGE + track_offset();
-	BankSelector = EEPROM_Main_Bank_Select;
 
 	//Запуск таймера
 	TIMER_Cmd(MDR_TIMER2, ENABLE);
 	//Ожидание завершения воспроизведения
-	while (global_byte_counter < TRACK_MEM_BYTES)
+	while (global_byte_counter < size_in_bytes)
 	{
 	}
 	global_byte_counter = 4;
@@ -361,7 +349,6 @@ void MY_U_RST_Init(void)
 	RST_CLK_CPUclkSelection(RST_CLK_CPUclkCPU_C3);
 }
 
-
 /* Настройка АЦП */
 void MY_ADC_Init(void)
 {
@@ -397,7 +384,6 @@ void MY_DAC2_Init(void)
 	DAC2_Init(DAC2_AVCC); //выбор опорного напряжения (3.3V)
 	DAC2_Cmd(ENABLE);	 //включение АЦП
 }
-
 
 /*  Настройка портов ввода-вывода для кнопок  */
 void BUTTONS_Init(void)

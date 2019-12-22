@@ -86,7 +86,6 @@ Section Cross References
     main.o(i.main) refers to main.o(i.read_track) for read_track
     main.o(i.main) refers to main.o(.constdata) for .constdata
     main.o(i.main) refers to main.o(.data) for global_current_track
-    main.o(i.read_track) refers to main.o(i.track_offset) for track_offset
     main.o(i.read_track) refers to mdr32f9qx_timer.o(i.TIMER_Cmd) for TIMER_Cmd
     main.o(i.read_track) refers to main.o(.data) for global_byte_counter
     main.o(i.track_is_empty) refers to main.o(i.track_offset) for track_offset
@@ -810,25 +809,25 @@ Image Symbol Table
     i.U_MLT_Set_Page                         0x08001280   Section        0  mlt_lcd.o(i.U_MLT_Set_Page)
     i.U_MLT_Write_Data                       0x08001350   Section        0  mlt_lcd.o(i.U_MLT_Write_Data)
     i.current_btn_status                     0x08001420   Section        0  main.o(i.current_btn_status)
-    i.erise_mem                              0x08001494   Section        0  main.o(i.erise_mem)
-    i.freq_to_tact                           0x080014e0   Section        0  main.o(i.freq_to_tact)
-    i.main                                   0x0800151c   Section        0  main.o(i.main)
-    i.read_track                             0x08001878   Section        0  main.o(i.read_track)
-    i.track_is_empty                         0x080018c0   Section        0  main.o(i.track_is_empty)
-    i.track_offset                           0x080018f0   Section        0  main.o(i.track_offset)
-    i.write_track                            0x08001900   Section        0  main.o(i.write_track)
-    x$fpl$ddiv                               0x08001948   Section      688  ddiv.o(x$fpl$ddiv)
-    ddiv_entry                               0x0800194f   Thumb Code     0  ddiv.o(x$fpl$ddiv)
-    x$fpl$dfix                               0x08001bf8   Section       94  dfix.o(x$fpl$dfix)
-    x$fpl$dflt                               0x08001c56   Section       46  dflt_clz.o(x$fpl$dflt)
-    x$fpl$dnaninf                            0x08001c84   Section      156  dnaninf.o(x$fpl$dnaninf)
-    x$fpl$dretinf                            0x08001d20   Section       12  dretinf.o(x$fpl$dretinf)
-    .constdata                               0x08001d2c   Section       64  main.o(.constdata)
-    x$fpl$usenofp                            0x08001d2c   Section        0  usenofp.o(x$fpl$usenofp)
-    .constdata                               0x08001d6c   Section     1824  mlt_lcd.o(.constdata)
-    MLT_Font                                 0x08001d6c   Data        1792  mlt_lcd.o(.constdata)
-    init_image                               0x0800246c   Data          32  mlt_lcd.o(.constdata)
-    .conststring                             0x0800248c   Section       16  mlt_lcd.o(.conststring)
+    i.erise_mem                              0x08001488   Section        0  main.o(i.erise_mem)
+    i.freq_to_tact                           0x080014d4   Section        0  main.o(i.freq_to_tact)
+    i.main                                   0x08001510   Section        0  main.o(i.main)
+    i.read_track                             0x0800186c   Section        0  main.o(i.read_track)
+    i.track_is_empty                         0x08001894   Section        0  main.o(i.track_is_empty)
+    i.track_offset                           0x080018c4   Section        0  main.o(i.track_offset)
+    i.write_track                            0x080018d4   Section        0  main.o(i.write_track)
+    x$fpl$ddiv                               0x0800191c   Section      688  ddiv.o(x$fpl$ddiv)
+    ddiv_entry                               0x08001923   Thumb Code     0  ddiv.o(x$fpl$ddiv)
+    x$fpl$dfix                               0x08001bcc   Section       94  dfix.o(x$fpl$dfix)
+    x$fpl$dflt                               0x08001c2a   Section       46  dflt_clz.o(x$fpl$dflt)
+    x$fpl$dnaninf                            0x08001c58   Section      156  dnaninf.o(x$fpl$dnaninf)
+    x$fpl$dretinf                            0x08001cf4   Section       12  dretinf.o(x$fpl$dretinf)
+    .constdata                               0x08001d00   Section       64  main.o(.constdata)
+    x$fpl$usenofp                            0x08001d00   Section        0  usenofp.o(x$fpl$usenofp)
+    .constdata                               0x08001d40   Section     1824  mlt_lcd.o(.constdata)
+    MLT_Font                                 0x08001d40   Data        1792  mlt_lcd.o(.constdata)
+    init_image                               0x08002440   Data          32  mlt_lcd.o(.constdata)
+    .conststring                             0x08002460   Section       16  mlt_lcd.o(.conststring)
     EXECUTABLE_MEMORY_SECTION                0x20000000   Section        0  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
     ProgramDelay                             0x20000001   Thumb Code    20  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
     .data                                    0x2000031c   Section       12  main.o(.data)
@@ -1044,25 +1043,25 @@ Image Symbol Table
     U_MLT_Set_Data_Bits                      0x0800123d   Thumb Code    60  mlt_lcd.o(i.U_MLT_Set_Data_Bits)
     U_MLT_Set_Page                           0x08001281   Thumb Code   192  mlt_lcd.o(i.U_MLT_Set_Page)
     U_MLT_Write_Data                         0x08001351   Thumb Code   190  mlt_lcd.o(i.U_MLT_Write_Data)
-    current_btn_status                       0x08001421   Thumb Code   104  main.o(i.current_btn_status)
-    erise_mem                                0x08001495   Thumb Code    68  main.o(i.erise_mem)
-    freq_to_tact                             0x080014e1   Thumb Code    46  main.o(i.freq_to_tact)
-    main                                     0x0800151d   Thumb Code   698  main.o(i.main)
-    read_track                               0x08001879   Thumb Code    58  main.o(i.read_track)
-    track_is_empty                           0x080018c1   Thumb Code    38  main.o(i.track_is_empty)
-    track_offset                             0x080018f1   Thumb Code    12  main.o(i.track_offset)
-    write_track                              0x08001901   Thumb Code    54  main.o(i.write_track)
-    __aeabi_ddiv                             0x08001949   Thumb Code     0  ddiv.o(x$fpl$ddiv)
-    _ddiv                                    0x08001949   Thumb Code   552  ddiv.o(x$fpl$ddiv)
-    __aeabi_d2iz                             0x08001bf9   Thumb Code     0  dfix.o(x$fpl$dfix)
-    _dfix                                    0x08001bf9   Thumb Code    94  dfix.o(x$fpl$dfix)
-    __aeabi_i2d                              0x08001c57   Thumb Code     0  dflt_clz.o(x$fpl$dflt)
-    _dflt                                    0x08001c57   Thumb Code    46  dflt_clz.o(x$fpl$dflt)
-    __fpl_dnaninf                            0x08001c85   Thumb Code   156  dnaninf.o(x$fpl$dnaninf)
-    __fpl_dretinf                            0x08001d21   Thumb Code    12  dretinf.o(x$fpl$dretinf)
-    __I$use$fp                               0x08001d2c   Number         0  usenofp.o(x$fpl$usenofp)
-    Region$$Table$$Base                      0x0800249c   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x080024cc   Number         0  anon$$obj.o(Region$$Table)
+    current_btn_status                       0x08001421   Thumb Code    92  main.o(i.current_btn_status)
+    erise_mem                                0x08001489   Thumb Code    68  main.o(i.erise_mem)
+    freq_to_tact                             0x080014d5   Thumb Code    46  main.o(i.freq_to_tact)
+    main                                     0x08001511   Thumb Code   698  main.o(i.main)
+    read_track                               0x0800186d   Thumb Code    32  main.o(i.read_track)
+    track_is_empty                           0x08001895   Thumb Code    38  main.o(i.track_is_empty)
+    track_offset                             0x080018c5   Thumb Code    12  main.o(i.track_offset)
+    write_track                              0x080018d5   Thumb Code    54  main.o(i.write_track)
+    __aeabi_ddiv                             0x0800191d   Thumb Code     0  ddiv.o(x$fpl$ddiv)
+    _ddiv                                    0x0800191d   Thumb Code   552  ddiv.o(x$fpl$ddiv)
+    __aeabi_d2iz                             0x08001bcd   Thumb Code     0  dfix.o(x$fpl$dfix)
+    _dfix                                    0x08001bcd   Thumb Code    94  dfix.o(x$fpl$dfix)
+    __aeabi_i2d                              0x08001c2b   Thumb Code     0  dflt_clz.o(x$fpl$dflt)
+    _dflt                                    0x08001c2b   Thumb Code    46  dflt_clz.o(x$fpl$dflt)
+    __fpl_dnaninf                            0x08001c59   Thumb Code   156  dnaninf.o(x$fpl$dnaninf)
+    __fpl_dretinf                            0x08001cf5   Thumb Code    12  dretinf.o(x$fpl$dretinf)
+    __I$use$fp                               0x08001d00   Number         0  usenofp.o(x$fpl$usenofp)
+    Region$$Table$$Base                      0x08002470   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x080024a0   Number         0  anon$$obj.o(Region$$Table)
     EEPROM_ReadByte                          0x20000015   Thumb Code    84  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
     EEPROM_ReadHalfWord                      0x20000069   Thumb Code    86  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
     EEPROM_ReadWord                          0x200000bf   Thumb Code    76  mdr32f9qx_eeprom.o(EXECUTABLE_MEMORY_SECTION)
@@ -1087,9 +1086,9 @@ Memory Map of the image
 
   Image Entry point : 0x080000c1
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000027fc, Max: 0x00020000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000027d0, Max: 0x00020000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000024cc, Max: 0x00020000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000024a0, Max: 0x00020000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1224,34 +1223,34 @@ Memory Map of the image
     0x0800123c   0x0800123c   0x00000044   Code   RO          212    i.U_MLT_Set_Data_Bits  mlt_lcd.o
     0x08001280   0x08001280   0x000000d0   Code   RO          213    i.U_MLT_Set_Page    mlt_lcd.o
     0x08001350   0x08001350   0x000000d0   Code   RO          214    i.U_MLT_Write_Data  mlt_lcd.o
-    0x08001420   0x08001420   0x00000074   Code   RO           17    i.current_btn_status  main.o
-    0x08001494   0x08001494   0x0000004c   Code   RO           18    i.erise_mem         main.o
-    0x080014e0   0x080014e0   0x0000003c   Code   RO           19    i.freq_to_tact      main.o
-    0x0800151c   0x0800151c   0x0000035c   Code   RO           20    i.main              main.o
-    0x08001878   0x08001878   0x00000048   Code   RO           21    i.read_track        main.o
-    0x080018c0   0x080018c0   0x00000030   Code   RO           22    i.track_is_empty    main.o
-    0x080018f0   0x080018f0   0x00000010   Code   RO           23    i.track_offset      main.o
-    0x08001900   0x08001900   0x00000048   Code   RO           24    i.write_track       main.o
-    0x08001948   0x08001948   0x000002b0   Code   RO         1704    x$fpl$ddiv          fz_ws.l(ddiv.o)
-    0x08001bf8   0x08001bf8   0x0000005e   Code   RO         1707    x$fpl$dfix          fz_ws.l(dfix.o)
-    0x08001c56   0x08001c56   0x0000002e   Code   RO         1712    x$fpl$dflt          fz_ws.l(dflt_clz.o)
-    0x08001c84   0x08001c84   0x0000009c   Code   RO         1727    x$fpl$dnaninf       fz_ws.l(dnaninf.o)
-    0x08001d20   0x08001d20   0x0000000c   Code   RO         1729    x$fpl$dretinf       fz_ws.l(dretinf.o)
-    0x08001d2c   0x08001d2c   0x00000000   Code   RO         1731    x$fpl$usenofp       fz_ws.l(usenofp.o)
-    0x08001d2c   0x08001d2c   0x00000040   Data   RO           25    .constdata          main.o
-    0x08001d6c   0x08001d6c   0x00000720   Data   RO          215    .constdata          mlt_lcd.o
-    0x0800248c   0x0800248c   0x00000010   Data   RO          216    .conststring        mlt_lcd.o
-    0x0800249c   0x0800249c   0x00000030   Data   RO         1886    Region$$Table       anon$$obj.o
+    0x08001420   0x08001420   0x00000068   Code   RO           17    i.current_btn_status  main.o
+    0x08001488   0x08001488   0x0000004c   Code   RO           18    i.erise_mem         main.o
+    0x080014d4   0x080014d4   0x0000003c   Code   RO           19    i.freq_to_tact      main.o
+    0x08001510   0x08001510   0x0000035c   Code   RO           20    i.main              main.o
+    0x0800186c   0x0800186c   0x00000028   Code   RO           21    i.read_track        main.o
+    0x08001894   0x08001894   0x00000030   Code   RO           22    i.track_is_empty    main.o
+    0x080018c4   0x080018c4   0x00000010   Code   RO           23    i.track_offset      main.o
+    0x080018d4   0x080018d4   0x00000048   Code   RO           24    i.write_track       main.o
+    0x0800191c   0x0800191c   0x000002b0   Code   RO         1704    x$fpl$ddiv          fz_ws.l(ddiv.o)
+    0x08001bcc   0x08001bcc   0x0000005e   Code   RO         1707    x$fpl$dfix          fz_ws.l(dfix.o)
+    0x08001c2a   0x08001c2a   0x0000002e   Code   RO         1712    x$fpl$dflt          fz_ws.l(dflt_clz.o)
+    0x08001c58   0x08001c58   0x0000009c   Code   RO         1727    x$fpl$dnaninf       fz_ws.l(dnaninf.o)
+    0x08001cf4   0x08001cf4   0x0000000c   Code   RO         1729    x$fpl$dretinf       fz_ws.l(dretinf.o)
+    0x08001d00   0x08001d00   0x00000000   Code   RO         1731    x$fpl$usenofp       fz_ws.l(usenofp.o)
+    0x08001d00   0x08001d00   0x00000040   Data   RO           25    .constdata          main.o
+    0x08001d40   0x08001d40   0x00000720   Data   RO          215    .constdata          mlt_lcd.o
+    0x08002460   0x08002460   0x00000010   Data   RO          216    .conststring        mlt_lcd.o
+    0x08002470   0x08002470   0x00000030   Data   RO         1886    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080024cc, Size: 0x00000990, Max: 0x00008000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080024a0, Size: 0x00000990, Max: 0x00008000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x080024cc   0x0000031c   Code   RO          806    EXECUTABLE_MEMORY_SECTION  mdr32f9qx_eeprom.o
-    0x2000031c   0x080027e8   0x0000000c   Data   RW           26    .data               main.o
-    0x20000328   0x080027f4   0x00000004   Data   RW          217    .data               mlt_lcd.o
-    0x2000032c   0x080027f8   0x00000004   Data   RW          415    .data               system_mdr32f9qx.o
+    0x20000000   0x080024a0   0x0000031c   Code   RO          806    EXECUTABLE_MEMORY_SECTION  mdr32f9qx_eeprom.o
+    0x2000031c   0x080027bc   0x0000000c   Data   RW           26    .data               main.o
+    0x20000328   0x080027c8   0x00000004   Data   RW          217    .data               mlt_lcd.o
+    0x2000032c   0x080027cc   0x00000004   Data   RW          415    .data               system_mdr32f9qx.o
     0x20000330        -       0x00000060   Zero   RW         1760    .bss                c_w.l(libspace.o)
     0x20000390        -       0x00000200   Zero   RW          405    HEAP                startup_mdr32f9qx.o
     0x20000590        -       0x00000400   Zero   RW          404    STACK               startup_mdr32f9qx.o
@@ -1264,7 +1263,7 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-      2222        322         64         12          0     128115   main.o
+      2178        316         64         12          0     127979   main.o
        286         42          0          0          0       5172   mdr32f9qx_adc.o
         60         14          0          0          0       1682   mdr32f9qx_dac.o
        796          8          0          0          0       4361   mdr32f9qx_eeprom.o
@@ -1276,7 +1275,7 @@ Image component sizes
        208         24          0          4          0       1327   system_mdr32f9qx.o
 
     ----------------------------------------------------------------------
-      6698        652       2144         20       1536     169150   Object Totals
+      6654        646       2144         20       1536     169014   Object Totals
         50          0         48          0          0          0   (incl. Generated)
          8          0          0          0          0          0   (incl. Padding)
 
@@ -1333,15 +1332,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      8072        816       2144         20       1632     166334   Grand Totals
-      8072        816       2144         20       1632     166334   ELF Image Totals
-      8072        816       2144         20          0          0   ROM Totals
+      8028        810       2144         20       1632     166198   Grand Totals
+      8028        810       2144         20       1632     166198   ELF Image Totals
+      8028        810       2144         20          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                10216 (   9.98kB)
+    Total RO  Size (Code + RO Data)                10172 (   9.93kB)
     Total RW  Size (RW Data + ZI Data)              1652 (   1.61kB)
-    Total ROM Size (Code + RO Data + RW Data)      10236 (  10.00kB)
+    Total ROM Size (Code + RO Data + RW Data)      10192 (   9.95kB)
 
 ==============================================================================
 
