@@ -503,7 +503,7 @@ int32_t main(void)
 			if (track_is_empty() == 1)
 			{
 				U_MLT_Put_String(pusto, 4);
-				U_MLT_Put_String("", 5);
+				U_MLT_Put_String("", 5);	
 				U_MLT_Put_String("", 6);
 				U_MLT_Put_String("", 7);
 				Delay(5000000);
