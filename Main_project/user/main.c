@@ -168,7 +168,7 @@ void Timer1_IRQHandler()
 		//Инкремент счетчика бит
 		global_byte_counter += 1;
 		//Остановка таймера, если счетчик выходит на пределы доступной памяти
-		if (global_byte_counter >= TRACK_MEM_BYTES)
+		if (global_byte_counter >= 50000)
 		{
 			TIMER_Cmd(MDR_TIMER1, DISABLE);
 		}
@@ -232,7 +232,7 @@ void Timer2_IRQHandler()
 		//Инкремент счетчика бит
 		global_byte_counter += 1;
 		//Остановка таймера, если счетчик выходит на пределы доступной памяти
-		if (global_byte_counter >= TRACK_MEM_BYTES)
+		if (global_byte_counter >= 50000)
 		{
 			TIMER_Cmd(MDR_TIMER2, DISABLE);
 		}
@@ -283,7 +283,7 @@ void write_track()
 	//Запуск таймера
 	TIMER_Cmd(MDR_TIMER1, ENABLE);
 	//ожидание окончания записи
-	while (global_byte_counter < TRACK_MEM_BYTES)
+	while (global_byte_counter < 50000)
 	{
 	}
 	global_byte_counter = 4;
@@ -299,7 +299,7 @@ void read_track()
 	//Запуск таймера
 	TIMER_Cmd(MDR_TIMER2, ENABLE);
 	//Ожидание завершения воспроизведения
-	while (global_byte_counter < size_in_bytes)
+	while (global_byte_counter < 50000)
 	{
 	}
 	global_byte_counter = 4;
