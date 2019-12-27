@@ -658,22 +658,22 @@ Image Symbol Table
     ../fplib/dretinf.s                       0x00000000   Number         0  dretinf.o ABSOLUTE
     ../fplib/fpinit.s                        0x00000000   Number         0  fpinit.o ABSOLUTE
     ../fplib/usenofp.s                       0x00000000   Number         0  usenofp.o ABSOLUTE
-    C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_adc.c 0x00000000   Number         0  mdr32f9qx_adc.o ABSOLUTE
-    C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dac.c 0x00000000   Number         0  mdr32f9qx_dac.o ABSOLUTE
-    C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c 0x00000000   Number         0  mdr32f9qx_eeprom.o ABSOLUTE
-    C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c 0x00000000   Number         0  mdr32f9qx_port.o ABSOLUTE
-    C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c 0x00000000   Number         0  mdr32f9qx_power.o ABSOLUTE
-    C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c 0x00000000   Number         0  mdr32f9qx_rst_clk.o ABSOLUTE
-    C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_timer.c 0x00000000   Number         0  mdr32f9qx_timer.o ABSOLUTE
-    C:\Packs\Keil\MDR1986BExx\1.5.3\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c 0x00000000   Number         0  mdr32f9qx_wwdg.o ABSOLUTE
-    C:\\Packs\\Keil\\MDR1986BExx\\1.5.3\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_adc.c 0x00000000   Number         0  mdr32f9qx_adc.o ABSOLUTE
-    C:\\Packs\\Keil\\MDR1986BExx\\1.5.3\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_dac.c 0x00000000   Number         0  mdr32f9qx_dac.o ABSOLUTE
-    C:\\Packs\\Keil\\MDR1986BExx\\1.5.3\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_eeprom.c 0x00000000   Number         0  mdr32f9qx_eeprom.o ABSOLUTE
-    C:\\Packs\\Keil\\MDR1986BExx\\1.5.3\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_port.c 0x00000000   Number         0  mdr32f9qx_port.o ABSOLUTE
-    C:\\Packs\\Keil\\MDR1986BExx\\1.5.3\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_power.c 0x00000000   Number         0  mdr32f9qx_power.o ABSOLUTE
-    C:\\Packs\\Keil\\MDR1986BExx\\1.5.3\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_rst_clk.c 0x00000000   Number         0  mdr32f9qx_rst_clk.o ABSOLUTE
-    C:\\Packs\\Keil\\MDR1986BExx\\1.5.3\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_timer.c 0x00000000   Number         0  mdr32f9qx_timer.o ABSOLUTE
-    C:\\Packs\\Keil\\MDR1986BExx\\1.5.3\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_wwdg.c 0x00000000   Number         0  mdr32f9qx_wwdg.o ABSOLUTE
+    C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_adc.c 0x00000000   Number         0  mdr32f9qx_adc.o ABSOLUTE
+    C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dac.c 0x00000000   Number         0  mdr32f9qx_dac.o ABSOLUTE
+    C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c 0x00000000   Number         0  mdr32f9qx_eeprom.o ABSOLUTE
+    C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c 0x00000000   Number         0  mdr32f9qx_port.o ABSOLUTE
+    C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c 0x00000000   Number         0  mdr32f9qx_power.o ABSOLUTE
+    C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c 0x00000000   Number         0  mdr32f9qx_rst_clk.o ABSOLUTE
+    C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_timer.c 0x00000000   Number         0  mdr32f9qx_timer.o ABSOLUTE
+    C:\Users\Alexandr\AppData\Local\Arm\Packs\Keil\MDR1986BExx\1.5.2\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c 0x00000000   Number         0  mdr32f9qx_wwdg.o ABSOLUTE
+    C:\\Users\\Alexandr\\AppData\\Local\\Arm\\Packs\\Keil\\MDR1986BExx\\1.5.2\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_adc.c 0x00000000   Number         0  mdr32f9qx_adc.o ABSOLUTE
+    C:\\Users\\Alexandr\\AppData\\Local\\Arm\\Packs\\Keil\\MDR1986BExx\\1.5.2\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_dac.c 0x00000000   Number         0  mdr32f9qx_dac.o ABSOLUTE
+    C:\\Users\\Alexandr\\AppData\\Local\\Arm\\Packs\\Keil\\MDR1986BExx\\1.5.2\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_eeprom.c 0x00000000   Number         0  mdr32f9qx_eeprom.o ABSOLUTE
+    C:\\Users\\Alexandr\\AppData\\Local\\Arm\\Packs\\Keil\\MDR1986BExx\\1.5.2\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_port.c 0x00000000   Number         0  mdr32f9qx_port.o ABSOLUTE
+    C:\\Users\\Alexandr\\AppData\\Local\\Arm\\Packs\\Keil\\MDR1986BExx\\1.5.2\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_power.c 0x00000000   Number         0  mdr32f9qx_power.o ABSOLUTE
+    C:\\Users\\Alexandr\\AppData\\Local\\Arm\\Packs\\Keil\\MDR1986BExx\\1.5.2\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_rst_clk.c 0x00000000   Number         0  mdr32f9qx_rst_clk.o ABSOLUTE
+    C:\\Users\\Alexandr\\AppData\\Local\\Arm\\Packs\\Keil\\MDR1986BExx\\1.5.2\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_timer.c 0x00000000   Number         0  mdr32f9qx_timer.o ABSOLUTE
+    C:\\Users\\Alexandr\\AppData\\Local\\Arm\\Packs\\Keil\\MDR1986BExx\\1.5.2\\Libraries\\MDR32F9Qx_StdPeriph_Driver\\src\\MDR32F9Qx_wwdg.c 0x00000000   Number         0  mdr32f9qx_wwdg.o ABSOLUTE
     RTE\Device\MDR1986BE92\startup_MDR32F9Qx.s 0x00000000   Number         0  startup_mdr32f9qx.o ABSOLUTE
     RTE\Device\MDR1986BE92\system_MDR32F9Qx.c 0x00000000   Number         0  system_mdr32f9qx.o ABSOLUTE
     RTE\\Device\\MDR1986BE92\\system_MDR32F9Qx.c 0x00000000   Number         0  system_mdr32f9qx.o ABSOLUTE
@@ -784,11 +784,11 @@ Image Symbol Table
     i.SystemInit                             0x08000a2c   Section        0  system_mdr32f9qx.o(i.SystemInit)
     i.TIMER_BRGInit                          0x08000a6c   Section        0  mdr32f9qx_timer.o(i.TIMER_BRGInit)
     i.TIMER_ClearFlag                        0x08000ac0   Section        0  mdr32f9qx_timer.o(i.TIMER_ClearFlag)
-    i.TIMER_Cmd                              0x08000ac6   Section        0  mdr32f9qx_timer.o(i.TIMER_Cmd)
-    i.TIMER_CntInit                          0x08000ada   Section        0  mdr32f9qx_timer.o(i.TIMER_CntInit)
-    i.TIMER_CntStructInit                    0x08000b10   Section        0  mdr32f9qx_timer.o(i.TIMER_CntStructInit)
-    i.TIMER_GetITStatus                      0x08000b2c   Section        0  mdr32f9qx_timer.o(i.TIMER_GetITStatus)
-    i.TIMER_ITConfig                         0x08000b44   Section        0  mdr32f9qx_timer.o(i.TIMER_ITConfig)
+    i.TIMER_Cmd                              0x08000ac8   Section        0  mdr32f9qx_timer.o(i.TIMER_Cmd)
+    i.TIMER_CntInit                          0x08000adc   Section        0  mdr32f9qx_timer.o(i.TIMER_CntInit)
+    i.TIMER_CntStructInit                    0x08000b12   Section        0  mdr32f9qx_timer.o(i.TIMER_CntStructInit)
+    i.TIMER_GetITStatus                      0x08000b2e   Section        0  mdr32f9qx_timer.o(i.TIMER_GetITStatus)
+    i.TIMER_ITConfig                         0x08000b46   Section        0  mdr32f9qx_timer.o(i.TIMER_ITConfig)
     i.Timer1_IRQHandler                      0x08000b58   Section        0  main.o(i.Timer1_IRQHandler)
     i.Timer1_init                            0x08000bc8   Section        0  main.o(i.Timer1_init)
     i.Timer2_IRQHandler                      0x08000c24   Section        0  main.o(i.Timer2_IRQHandler)
@@ -1018,12 +1018,12 @@ Image Symbol Table
     SystemCoreClockUpdate                    0x0800099d   Thumb Code   130  system_mdr32f9qx.o(i.SystemCoreClockUpdate)
     SystemInit                               0x08000a2d   Thumb Code    54  system_mdr32f9qx.o(i.SystemInit)
     TIMER_BRGInit                            0x08000a6d   Thumb Code    68  mdr32f9qx_timer.o(i.TIMER_BRGInit)
-    TIMER_ClearFlag                          0x08000ac1   Thumb Code     6  mdr32f9qx_timer.o(i.TIMER_ClearFlag)
-    TIMER_Cmd                                0x08000ac7   Thumb Code    20  mdr32f9qx_timer.o(i.TIMER_Cmd)
-    TIMER_CntInit                            0x08000adb   Thumb Code    54  mdr32f9qx_timer.o(i.TIMER_CntInit)
-    TIMER_CntStructInit                      0x08000b11   Thumb Code    28  mdr32f9qx_timer.o(i.TIMER_CntStructInit)
-    TIMER_GetITStatus                        0x08000b2d   Thumb Code    24  mdr32f9qx_timer.o(i.TIMER_GetITStatus)
-    TIMER_ITConfig                           0x08000b45   Thumb Code    18  mdr32f9qx_timer.o(i.TIMER_ITConfig)
+    TIMER_ClearFlag                          0x08000ac1   Thumb Code     8  mdr32f9qx_timer.o(i.TIMER_ClearFlag)
+    TIMER_Cmd                                0x08000ac9   Thumb Code    20  mdr32f9qx_timer.o(i.TIMER_Cmd)
+    TIMER_CntInit                            0x08000add   Thumb Code    54  mdr32f9qx_timer.o(i.TIMER_CntInit)
+    TIMER_CntStructInit                      0x08000b13   Thumb Code    28  mdr32f9qx_timer.o(i.TIMER_CntStructInit)
+    TIMER_GetITStatus                        0x08000b2f   Thumb Code    24  mdr32f9qx_timer.o(i.TIMER_GetITStatus)
+    TIMER_ITConfig                           0x08000b47   Thumb Code    18  mdr32f9qx_timer.o(i.TIMER_ITConfig)
     Timer1_IRQHandler                        0x08000b59   Thumb Code    96  main.o(i.Timer1_IRQHandler)
     Timer1_init                              0x08000bc9   Thumb Code    86  main.o(i.Timer1_init)
     Timer2_IRQHandler                        0x08000c25   Thumb Code   102  main.o(i.Timer2_IRQHandler)
@@ -1196,13 +1196,12 @@ Memory Map of the image
     0x0800099c   0x0800099c   0x00000090   Code   RO          413    i.SystemCoreClockUpdate  system_mdr32f9qx.o
     0x08000a2c   0x08000a2c   0x00000040   Code   RO          414    i.SystemInit        system_mdr32f9qx.o
     0x08000a6c   0x08000a6c   0x00000054   Code   RO         1225    i.TIMER_BRGInit     mdr32f9qx_timer.o
-    0x08000ac0   0x08000ac0   0x00000006   Code   RO         1251    i.TIMER_ClearFlag   mdr32f9qx_timer.o
-    0x08000ac6   0x08000ac6   0x00000014   Code   RO         1252    i.TIMER_Cmd         mdr32f9qx_timer.o
-    0x08000ada   0x08000ada   0x00000036   Code   RO         1255    i.TIMER_CntInit     mdr32f9qx_timer.o
-    0x08000b10   0x08000b10   0x0000001c   Code   RO         1256    i.TIMER_CntStructInit  mdr32f9qx_timer.o
-    0x08000b2c   0x08000b2c   0x00000018   Code   RO         1272    i.TIMER_GetITStatus  mdr32f9qx_timer.o
-    0x08000b44   0x08000b44   0x00000012   Code   RO         1274    i.TIMER_ITConfig    mdr32f9qx_timer.o
-    0x08000b56   0x08000b56   0x00000002   PAD
+    0x08000ac0   0x08000ac0   0x00000008   Code   RO         1251    i.TIMER_ClearFlag   mdr32f9qx_timer.o
+    0x08000ac8   0x08000ac8   0x00000014   Code   RO         1252    i.TIMER_Cmd         mdr32f9qx_timer.o
+    0x08000adc   0x08000adc   0x00000036   Code   RO         1255    i.TIMER_CntInit     mdr32f9qx_timer.o
+    0x08000b12   0x08000b12   0x0000001c   Code   RO         1256    i.TIMER_CntStructInit  mdr32f9qx_timer.o
+    0x08000b2e   0x08000b2e   0x00000018   Code   RO         1272    i.TIMER_GetITStatus  mdr32f9qx_timer.o
+    0x08000b46   0x08000b46   0x00000012   Code   RO         1274    i.TIMER_ITConfig    mdr32f9qx_timer.o
     0x08000b58   0x08000b58   0x00000070   Code   RO           13    i.Timer1_IRQHandler  main.o
     0x08000bc8   0x08000bc8   0x0000005c   Code   RO           14    i.Timer1_init       main.o
     0x08000c24   0x08000c24   0x00000078   Code   RO           15    i.Timer2_IRQHandler  main.o
@@ -1263,21 +1262,21 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-      2186        314         64         12          0     127979   main.o
-       286         42          0          0          0       5172   mdr32f9qx_adc.o
-        60         14          0          0          0       1682   mdr32f9qx_dac.o
-       796          8          0          0          0       4361   mdr32f9qx_eeprom.o
-       556         18          0          0          0       4034   mdr32f9qx_port.o
-       380         52          0          0          0       9160   mdr32f9qx_rst_clk.o
-       234         16          0          0          0       5145   mdr32f9qx_timer.o
-      1834        130       1840          4          0       9362   mlt_lcd.o
-        64         26        192          0       1536        792   startup_mdr32f9qx.o
-       208         24          0          4          0       1327   system_mdr32f9qx.o
+      2186        314         64         12          0     129239   main.o
+       286         42          0          0          0       5804   mdr32f9qx_adc.o
+        60         14          0          0          0       1878   mdr32f9qx_dac.o
+       796          8          0          0          0       4529   mdr32f9qx_eeprom.o
+       556         18          0          0          0       4462   mdr32f9qx_port.o
+       380         52          0          0          0       9920   mdr32f9qx_rst_clk.o
+       236         16          0          0          0       5717   mdr32f9qx_timer.o
+      1834        130       1840          4          0       9866   mlt_lcd.o
+        64         26        192          0       1536        820   startup_mdr32f9qx.o
+       208         24          0          4          0       1411   system_mdr32f9qx.o
 
     ----------------------------------------------------------------------
-      6662        644       2144         20       1536     169014   Object Totals
+      6662        644       2144         20       1536     173646   Object Totals
         50          0         48          0          0          0   (incl. Generated)
-         8          0          0          0          0          0   (incl. Padding)
+         6          0          0          0          0          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -1332,8 +1331,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      8036        808       2144         20       1632     166198   Grand Totals
-      8036        808       2144         20       1632     166198   ELF Image Totals
+      8036        808       2144         20       1632     170830   Grand Totals
+      8036        808       2144         20       1632     170830   ELF Image Totals
       8036        808       2144         20          0          0   ROM Totals
 
 ==============================================================================
